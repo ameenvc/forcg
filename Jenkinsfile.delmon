@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    environment {
+        DEPLOY_USER      = 'minhaj'
+        DEPLOY_HOST      = '139.84.140.187'
+        DEPLOY_PATH      = '/home/delmon/web/delmon-stage.cgbod.com/public_html/quickqmlaravel'
+        PHP_BIN          = 'php'
+        GIT_BRANCH_NAME  = 'staging'
+        SSH_CRED_ID      = 'sptc-minhaj-deploy'
+    }
+    stages {
+        stage('Git Pull') {
+            steps {
+                sshagent(credentials: [SSH_CRED_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${DEPLOY_USER}@${DEPLOY_HOST} '
+                            cd ${DEPLOY_PATH} &&
+                            sudo chmod -R 777 storage bootstrap/cache &&
+                            git fetch origin &&
+                            git checkout ${GIT_BRANCH_NAME} &&
+                            git reset --hard origin/${GIT_BRANCH_NAME} &&
+                            git pull origin ${GIT_BRANCH_NAME}
+                        '
+                    """
+                }
+            }
+        }
+        stage('Composer Install') {
+            steps {
+                sshagent(credentials: [SSH_CRED_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${DEPLOY_USER}@${DEPLOY_HOST} '
+                            cd ${DEPLOY_PATH} &&
+                            composer install --no-dev --optimize-autoloader --no-interaction
+                        '
+                    """
+                }
+            }
+        }
+        stage('Artisan: cache + migrate') {
+            steps {
+                sshagent(credentials: [SSH_CRED_ID]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${DEPLOY_USER}@${DEPLOY_HOST} '
+                            cd ${DEPLOY_PATH} &&
+                            ${PHP_BIN} artisan config:cache &&
+                            ${PHP_BIN} artisan view:cache &&
+                            ${PHP_BIN} artisan migrate --force
+                        '
+                    """
+                }
+            }
+        }
+    }
+    post {
+        failure { echo "Deploy to delmon-stage.cgbod.com FAILED" }
+        success { echo "Deploy to delmon-stage.cgbod.com succeeded" }
+    }
+}

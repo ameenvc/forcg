@@ -1,0 +1,50 @@
+/*** userscore ****/
+.font-shape {
+    font-size: 25px;
+    font-size: lighter
+}
+
+.bg-pink {
+    background-color: #BF114C;
+}
+
+.dark {
+    background-color: #474747;
+}
+
+.medium {
+    background-color: #6C6C6C;
+}
+
+.light {
+    background-color: #B1B1B1;
+}
+
+.text-font {
+    font-weight: lighter;
+    font-size: 21px;
+}
+
+.global-height {
+    height: 14%;
+}
+
+.cg-score-style {
+    font-size: 50px;
+    position: relative;
+    bottom: 25px;
+}
+
+.last-month-style {
+    position: relative;
+    bottom: 15px;
+    font-weight: lighter;
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%),
+        0 6px 20px 0 rgb(0 0 0 / 19%);
+}
+.module-score-style{
+    font-size: 35px;
+    font-weight:lighter
+}
+
+/*** End: userscore ****/

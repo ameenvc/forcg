@@ -1,0 +1,23 @@
+.small-font {
+    font-size: 10px !important;
+}
+
+.bg-poor {
+    background-color: #BF091E !important;
+}
+
+.bg-below-average {
+    background-color: #F06B1A !important;
+}
+
+.bg-fair {
+    background-color: #FDC40E !important;
+}
+
+.bg-good {
+    background-color: #88C32E !important;
+}
+
+.bg-excellent {
+    background-color: #1A8D38 !important;
+}

@@ -1,0 +1,444 @@
+
+    .wrap-content {
+        padding: 1.875rem 3.875rem 1px;
+        justify-content: space-between;
+        display: flex;
+    }
+    .wrap-content .textwc {
+        width: 65%;
+    }
+    .profile-img {
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+    .profile-btn-wrap {
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    .update-profile-btn {
+        padding: 10px 12px;
+        border-radius: 8px;
+        background-color: #252945;
+        color: white;
+        font-size: 14px;
+        border-color: #252945;
+    }
+    .update-profile-btn:hover {
+        color: #fff;
+        background-color: #3261cf;
+        border-color: #2f5cc5;
+    }
+    
+    .module-item {
+        background: #F6F7F9;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        width: 23%;
+        margin-left: auto;
+        margin-right: auto;
+        align-items: center;
+    }
+    .module-item h5 {
+        margin-bottom: 0;
+        font-size: 16px;
+    }
+    .module-item .module-desc {
+        font-size: 12px;
+        color: grey;
+    }
+    .module-item .module-icon {
+        padding: 7px 5px;
+        border-radius: 8px;
+        margin-right: 10px;
+        width: 42px;
+        height: 42px;
+        text-align: center;
+    }
+    .module-item.disabled {
+        background: #ccc;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    .separate-div {
+        display: none;
+    }
+    .content-section {
+        position: relative;
+        width: 100%;
+        padding-right: 5px;
+        padding-left: 5px;
+        flex: 0 0 83.3333333333%;
+        max-width: 83.333333333%;
+        margin-left:auto !important;
+        margin-right:auto !important;
+        margin-top: 2rem;
+    }
+    .textwc h5 {
+        font-size: 16px
+    }
+    .textwc p {
+        font-size: 14px;
+    }
+    @media screen and (min-width: 1244px) and (max-width: 1400px) {
+        .module-item h5, .textwc h5, .update-profile-btn, .tab-menu a, .textwc p {
+            font-size: clamp(14px, 0.25vw, 16px);
+        }
+        .module-item .module-desc {
+            font-size:clamp(10px, 0.25vw, 12px);
+        }
+    }
+    @media screen and (min-width: 1200px) and (max-width: 1244px) {
+        .module-item h5, .textwc h5, .update-profile-btn, .tab-menu a, .textwc p {
+            font-size: clamp(14px, 0.25vw, 16px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(9px, 0.25vw, 11px);
+        }
+        .module-item .module-icon {
+            padding: 7px 5px;
+            border-radius: 8px;
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+        }
+    }
+    @media screen and (min-width: 1117px) and (max-width: 1200px) {
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(14px, 0.25vw, 16px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(9px, 0.20vw, 11px);
+        }
+        .module-item {
+            width: 23%;
+        }
+        .action-name{
+            font-size:12px !important;
+        }
+        .number-of-action{
+            font-size:16px !important;
+        }
+        .custom-bottom-margin{
+            margin-bottom: 20px !important;
+        }
+    }
+    @media screen and (min-width: 1024px) and (max-width: 1117px) {
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 90%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(14px, 0.25vw, 16px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(9px, 0.20vw, 11px);
+        }
+        .module-item {
+            width: 23%;
+        }
+        .action-name{
+            font-size: clamp(11px, 0.25vw, 13px) !important;
+        }
+        .number-of-action{
+            font-size: clamp(14px, 0.25vw, 16px) !important;
+        }
+        .custom-bottom-margin{
+            margin-bottom: 10px !important;
+        }
+    }
+    @media screen and (min-width: 992px) and (max-width: 1024px) {
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 90%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(14px, 0.25vw, 16px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(9px, 0.25vw, 11px);
+        }
+        .module-item {
+            width: 23%;
+        }
+        .action-name{
+            font-size: clamp(11px, 0.25vw, 13px) !important;
+        }
+        .number-of-action{
+            font-size: clamp(14px, 0.25vw, 16px) !important;
+        }
+        .custom-bottom-margin{
+            margin-bottom: 10px !important;
+        }
+    }
+    @media screen and (min-width: 901px) and (max-width: 991px) {
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 95%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(14px, 0.25vw, 16px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(10px, 0.25vw, 12px);
+        }
+        .module-item {
+            width: 23%;
+        }
+        .action-name{
+            font-size: clamp(11px, 0.25vw, 14px) !important;
+        }
+        .number-of-action{
+            font-size: clamp(14px, 0.25vw, 16px) !important;
+        }
+        .custom-bottom-margin{
+            margin-bottom: 10px !important;
+        }
+    }
+    @media screen and (min-width: 777px) and (max-width: 900px) {
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 95%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .wrap-content .textwc {
+            width: 60%;
+        }
+        .module-item {
+            width: 47.85%;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(14px, 0.25vw, 16px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(10px, 0.25vw, 12px);
+        }
+        .custom-bottom-margin{
+            margin-bottom: 20px !important;
+        }
+    }
+    @media screen and (min-width: 658px) and (max-width: 776px) {
+        .wrap-content {
+            padding: 1.875rem 0.75rem 1px;
+        }
+        .wrap-content .textwc {
+            width: 55%;
+        }
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 95%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .profile-img {
+            width: 60px;
+            height: 60px;
+        }
+        .module-item {
+            width: 47.85%;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(12px, 0.25vw, 14px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(10px, 0.25vw, 12px);
+        }
+        .custom-bottom-margin{
+            margin-bottom: 20px !important;
+        }
+    }
+    @media screen and (min-width: 599px) and (max-width: 658px) {
+        .wrap-content {
+            padding: 1.875rem 0.75rem 1px;
+        }
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 95%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .profile-img {
+            width: 60px;
+            height: 60px;
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+        .module-item {
+            width: 47.85%;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(12px, 0.25vw, 14px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(10px, 0.25vw, 12px);
+        }
+        .custom-bottom-margin{
+            margin-bottom: 20px !important;
+        }
+    }
+    @media screen and (min-width: 421px) and (max-width: 599px) {
+        .wrap-content {
+            padding: 1.875rem 0.75rem 1px;
+        }
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 95%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .module-item {
+            width: 45%;
+        }
+        .wrap-content .textwc {
+            width: 50vw;
+        }
+        .profile-img {
+            width: 48px;
+            height: 48px;
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+        .update-profile-btn {
+            padding: 8px 10px;
+        }
+        .module-item {
+            width: 100%;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(12px, 0.25vw, 14px);
+        }
+        .module-item .module-desc {
+            font-size: clamp(10px, 0.25vw, 12px);
+        }
+        .custom-bottom-margin{
+            margin-bottom: 20px !important;
+        }
+        .module-image img{
+            width: 38px !important;
+            height: 38px !important;
+            margin-right: auto;
+        }
+        .date-and-flag-status{
+            font-size: 12px !important;
+        }
+    }
+    @media screen and (min-width: 397px) and (max-width: 420px) {
+        .wrap-content {
+            padding: 1.875rem 0.5rem 1px;
+        }
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 95%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .module-item {
+            width: 45%;
+        }
+        .profile-img {
+            width: 48px;
+            height: 48px;
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+        .update-profile-btn {
+            display: inline-block;
+            padding: 8px 10px;
+        }
+        .module-item {
+            width: 100%;
+            margin-right: 0;
+        }
+        .profile-btn-wrap {
+            margin-bottom: 20px;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(12px, 0.25vw, 14px);
+        }
+        .module-icon img {
+            width: 20px;
+            height: 20px;
+        }
+        .module-image img{
+            width: 38px !important;
+            height: 38px !important;
+            margin-right: auto;
+        }
+        .date-and-flag-status{
+            font-size: 10px !important ;
+        }
+        .custom-bottom-margin{
+            margin-bottom: 20px !important;
+        }
+    }
+    @media screen and (max-width: 397px) {
+        .wrap-content {
+            padding: 1.875rem 0.5rem 1px;
+        }
+        .content-section {
+            flex: 0 0 95%;
+            max-width: 95%;
+            margin-left:auto !important;
+            margin-right:auto !important;
+        }
+        .module-item {
+            width: 45%;
+        }
+        .profile-img {
+            width: 48px;
+            height: 48px;
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+        .update-profile-btn {
+            display: inline-block;
+            padding: 8px 10px;
+        }
+        .module-item {
+            width: 100%;
+            margin-right: 0;
+        }
+        .profile-btn-wrap {
+            margin-bottom: 20px;
+        }
+        .module-item h5, .textwc h5, .update-profile-btn, .textwc p {
+            font-size: clamp(12px, 0.25vw, 14px);
+        }
+        .module-icon img {
+            width: 20px;
+            height: 20px;
+        }
+        .module-image img{
+            width: 32px !important;
+            height: 35px !important;
+            margin-right: auto;
+        }
+        .date-and-flag-status{
+            font-size: 9px !important ;
+        }
+        .custom-bottom-margin{
+            margin-bottom: 20px !important;
+        }
+    }
+    .module-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #e3e8f0;
+    }

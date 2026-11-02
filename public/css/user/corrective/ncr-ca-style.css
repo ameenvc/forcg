@@ -1,0 +1,396 @@
+
+@media screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1366px) {
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+    }
+
+    .pb-1,
+    .py-1 {
+        bottom: 0;
+        position: relative;
+        display: inline-block;
+        clear: both;
+    }
+}
+.custom-badge{
+    display:inline-block; font-size:9px !important;
+    color:#555 !important;
+    background:#f2f2f2 !important;
+    padding:2px 6px !important;
+    border-radius:4px !important;
+    margin-top:2px !important;
+}
+.headingselect {
+    white-space: break-spaces;
+    line-height: 1rem;
+}
+
+.breadcrumb>li+li:before {
+    display: none !important;
+}
+
+.breadcrumb {
+    font-size: 15px;
+    padding: 0.75rem 1.25rem;
+    background: #F6F7F9;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.breadcrumb li:first-child {
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.breadcrumb li:last-child {
+    font-size: 1rem;
+    color: gray;
+}
+
+.status-red {
+    color: #af1e1e;
+    background-color: #f8d4d4;
+    border-color: #fbeaea;
+}
+
+.status-red-light {
+    color: #e27e7e;
+    background-color: #f8d4d4;
+    border-color: #fbeaea;
+}
+
+.status-warning {
+    color: #af6f1e;
+    background-color: #fbdece;
+    border-color: #fbf4ea;
+}
+
+.status-gray {
+    color: #737373;
+    background-color: #e6e6e6;
+    border-color: #fbf4ea;
+}
+
+.status-blue {
+    color: #25499c;
+    background-color: #d9e2f6;
+    border-color: #d9e2f6;
+}
+
+.status-success {
+    color: #176044;
+    background-color: #e0edcf;
+    border-color: #bff0dd;
+}
+
+.status-success-light {
+    color: #488a71;
+    background-color: #e0edcf;
+    border-color: #bff0dd;
+}
+
+
+.status {
+    display: inline-block;
+    padding: 7px 5px 5px 7px;
+    font-size: 75%;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.w-49 {
+    width: 49% !important;
+}
+
+.w-100 {
+    width: 98.5% !important;
+}
+
+.titleheading {
+    font-size: 10px !important;
+    text-transform: capitalize !important;
+    position: sticky !important;
+    position: relative !important;
+    top: 2px !important;
+    font-weight: 600 !important;
+}
+.titleheading2{
+    min-width: 110px !important;
+    background-color: white;
+}
+.freezelastcolumn {
+    font-size: 10px !important;
+    text-transform: capitalize !important;
+    position: sticky !important;
+    right: 0 !important;
+    /* top: -4px !important; */
+    padding-top: 14px !important;
+    font-weight: 600 !important;
+    min-width: 50px !important;
+    background-color: inherit !important;
+    z-index: 5 !important;
+}
+.freezelastcolumn .dropdown-menu {
+    /* right: 1% !important; */
+    left: auto !important;
+    top: -10px !important;
+    z-index: 99 !important;
+} 
+.freezeheading {
+    font-size: 10px;
+    text-transform: capitalize;
+    /* position: sticky !important; */
+    top: -1px;
+    background: white;
+    /* z-index: 100; */
+    border-top: 1px solid #e1e6e9 !important;
+    box-shadow: 1px 1px 1px #e1e6e9;
+}
+
+.non-draggable-title-heading {
+    font-size: 10px !important;
+    text-transform: capitalize !important;
+    /* position: sticky !important;
+    position: relative !important; */
+    top: 2px !important;
+    font-weight: 600 !important;
+}
+
+.td-class {
+    text-align: center !important;
+    font-size: 10px !important;
+}
+
+.disabled-link {
+    pointer-events: none;
+    color: #999 !important;
+    text-decoration: none;
+}
+.scrollable{
+    height:100%;
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+.badge-class {
+    display: inline-block;
+    padding: 7px 5px 5px 7px;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.even{
+    background-color:#fff !important;
+}
+
+
+/* --------------------------header dropdown arrow css----------------------------------------------- */
+/* arrow css starts */
+    .header-arrow {
+        position: relative;
+        padding-right: 15px; 
+    }
+    .header-arrow::after {
+        content: '\2191'; 
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0; 
+        transition: opacity 0.2s ease;
+    }
+
+    .header-arrow:hover::after {
+        opacity: 1; 
+    }
+
+    .header-arrow.desc::after {
+        content: '\2193'; 
+    }
+
+/*---------- arrow css ends -----------*/
+#dropdownMenucol {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    list-style: none;
+    margin: 0;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: .2rem;
+}
+#dropdownMenucol li {
+    padding: 5px 5px;
+}
+#dropdownMenucol li a {
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+#dropdownMenucol li a:hover {
+    background-color: #f0f0f0;
+}
+/* -------------------------MyOpen--------------------------- */
+#dropdownMenucolMyOpen {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    list-style: none;
+    margin: 0;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: .2rem;
+}
+#dropdownMenucolMyOpen li {
+    padding: 5px 5px;
+}
+#dropdownMenucolMyOpen li a {
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+#dropdownMenucolMyOpen li a:hover {
+    background-color: #f0f0f0;
+}
+
+/* -----------------------------Closed------------------------------ */
+#dropdownMenucolClosed {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background-color: white;
+    list-style: none;
+    margin: 0;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: .2rem;
+}
+#dropdownMenucolClosed li {
+    padding: 5px 5px;
+}
+#dropdownMenucolClosed li a {
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+#dropdownMenucolClosed li a:hover {
+    background-color: #f0f0f0;
+}
+/* ---------------------------------------------------------------- */
+.modal-second.show {
+    background: #80808096;
+}
+
+.btn-configure-table {
+    border-radius: 50%;
+    background: #d9e2f6;
+    /* border: 1px solid; */
+}
+.btn-configure-table:hover {
+    border: 1px solid white;
+}
+.dragging {
+    opacity: 0.5;
+    background-color: #f0f0f0; /* Light gray background when dragging */
+    border: 2px solid #aaa; /* Border to indicate dragging */
+}
+td.titleheading {
+    cursor: move;
+}
+td.non-draggable-title-heading {
+    cursor: none;
+}
+.scrollable2 {
+    max-height: 60%;
+    overflow-x: scroll;
+}
+
+
+.nested {
+    display: none;
+    padding-left: 20px;
+}
+.filter-container {
+    background-color: #fff;
+}
+.filter-header {
+    cursor: pointer;
+    font-size: 10px;
+}
+.filter-content {
+    display: none;
+    position: absolute;
+    background: white;
+    width: 100%;
+    border: 1px solid #e1e6e9;
+    box-shadow: 2px 2px 2px #e1e6e9;
+    max-height: 200px;
+    overflow: scroll;
+}
+.date-filter {
+    padding: 5px 5px;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.3s;
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.date-filter.month {
+    padding: 5px 15px;
+    border-left: 1px dashed;
+}
+.date-filter.day {
+    padding: 5px 30px;
+    border-left: 1px dashed;
+}
+.date-filter.month::before,.date-filter.day::before {
+    content: " ";
+    border-bottom: 1px dashed black;
+    position: absolute;
+    left: 0px;
+    top: 12px;
+}
+.date-filter.month::before {
+    width: 15px;
+}
+.date-filter.day::before {
+    width: 29px;
+}
+.expand-icon {
+    padding: 0.5px 5px;
+    border: 1px solid #d9e2f6;
+    margin-right: 2px;
+    color: #24499c;
+}
+.nested {
+    display: none;
+    padding-left: 15px;
+}
+.nested:not(.year) {
+    border-left: 1px dashed;
+}
+.cke-filter {
+    margin-right: 5px;
+}

@@ -1,0 +1,23 @@
+@component('mail::message')
+Module: HSE Observations.
+
+<strong>{{$data['item']}}</strong>
+
+Dear Sir,
+
+{{$data['email_content']}}<br/><br>
+@if(isset($data['issueid']))
+Issue ID: <strong>{{$data['issueid']}}</strong>
+@endif
+@if(isset($data['type'])) 
+Type: <strong>{{$data['type']}}</strong><br>
+@endif
+Department: <strong>{{$data['department']}}</strong><br>
+@if(isset($data['duedate']))
+Closed Date as: <strong>{{$data['closed']}}</strong><br>
+@endif
+
+
+Thanks & Regards,<br>
+{{ config('app.name') }}
+@endcomponent

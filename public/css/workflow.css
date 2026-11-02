@@ -1,0 +1,25 @@
+.width-150 {
+    width: 150px !important;
+}
+
+.m-dialog {
+    max-width: 800px;
+    margin: 30px auto;
+}
+
+
+.m-body {
+    position: relative;
+    padding: 0px;
+}
+
+.close {
+    position: absolute;
+    right: -30px;
+    top: 0;
+    z-index: 999;
+    font-size: 2rem;
+    font-weight: normal;
+    color: #fff;
+    opacity: 1;
+}

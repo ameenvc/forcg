@@ -1,0 +1,124 @@
+th {
+    position: sticky;
+    top: 0;
+}
+
+.scrollable {
+    height: 300px;
+    overflow-x: scroll;
+
+}
+
+.disabled-link {
+    pointer-events: none;
+    color: #999;
+    text-decoration: none;
+}
+
+.fw-normal {
+    font-weight: 400 !important;
+    font-size:11px !important;
+}
+.border-3{
+    border-width: 3px !important;
+}
+
+.flex-grow-1 {
+    flex-grow: 1 !important;
+}
+
+
+.link-active {
+    color: #fff !important;
+    background-color: transparent !important;
+}
+
+.navbar-fixed {
+    top: 0;
+    z-index: 100;
+    position: fixed;
+    width: 100%;
+}
+
+th {
+    background: white;
+    position: sticky;
+    top: -3;
+}
+
+#a {
+    margin: 0 auto;
+}
+
+/*** start: user/nearmiss/issues ***/
+@media screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1366px) {
+    .move {
+        margin-left: 5%;
+        position: absolute;
+        top: 17%
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+    }
+
+    .pb-1,
+    .py-1 {
+        bottom: 0;
+        position: relative;
+        display: inline-block;
+        clear: both;
+    }
+}
+
+.width-87 {
+    width: 87% !important;
+}
+
+.width-5 {
+    width: 5% !important;
+}
+
+/*** end: user/nearmiss/issues ***/
+.up {
+    position: relative;
+    bottom: 20px;
+}
+
+.display_none {
+    display: none !important;
+}
+
+.display_inline_block {
+    display: inline-block !important;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.division-gray {
+    color: #808080 !important;
+}
+
+.subdivision-brown {
+    color: #B5651D !important;
+}
+
+.note-editable.card-block .table-bordered,
+.note-editable.card-block .table-bordered td,
+.note-editable.card-block .table-bordered th {
+    border: 1px solid #6f7171 !important;
+}

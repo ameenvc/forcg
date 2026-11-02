@@ -1,0 +1,133 @@
+@extends('admin.datatable')
+
+@section('content')
+
+<main id="main-container">
+    <!-- Services -->
+    <!-- Hero -->
+
+    <!-- END Hero -->
+
+    <!-- Page Content -->
+    <div class="content" style="width:88%;margin-left:70px;margin-top:-75px">
+        <!-- Horizontal -->
+        <div class="block block-rounded">
+            <div class="block-header">
+                <h3 class="block-title">Edit Employees</h3>
+                <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb" style="margin-left:70px">
+                    <ol class="breadcrumb breadcrumb-alt">
+
+                        <li class="breadcrumb-item" aria-current="page">
+
+                        </li>
+                        <li class="breadcrumb-item" aria-current="page">
+                            <a class="link-fx" href="/admin/employeelist">Back</a>
+                        </li>
+                    </ol>
+                </nav>
+
+
+            </div>
+            <div class="block-content block-content-full" style="width:90%;margin-left:100px">
+                <div class="row">
+                    <div class="col-lg-10">
+                        <!-- Form Horizontal - Default Style -->
+                        <form class="mb-5" method="POST" action="{{url('/admin/updateEmp/'.$emp->emp_number)}}" onsubmit="return validation()" enctype="multipart/form-data">
+                            {{csrf_field()}}
+                            @if(Session::has('msg'))
+                            <div class="alert alert-primary">
+                                <a class="close" data-dismiss="alert">×</a>
+                                {!!Session::get('msg')!!}
+                            </div>
+                            @endif
+                           
+                            <div class="col-lg-10">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" style="font-size: 13px;" for="type">Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" name="name" value="{{$emp->emp_name}}" style="font-size: 13px;" required class="form-control">
+                                    </div>
+                                </div>
+
+                               
+
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" for="issue" style="font-size: 13px;">Position</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" style="font-size: 13px;"   name="position" value="{{$emp->emp_position}}">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" for="issue" style="font-size: 13px;">Department</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" style="font-size: 13px;"   name="dept" value="{{$emp->emp_department}}">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" for="issue" style="font-size: 13px;">Joining Date</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" style="font-size: 13px;" required  name="joindt" value="{{$emp->joining_date}}">
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label" for="issue" style="font-size: 13px;">DOB</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" style="font-size: 13px;" required  name="dob" value="{{$emp->emp_dob}}">
+                                    </div>
+                                </div>
+
+
+
+                            </tr>
+                                <input type="hidden" name="empid" value="{{$emp->emp_number}}">
+                                <div>
+                                    <div>
+                                        <input type="submit" name="update" class="btn btn-primary" style="font-size:10px;margin-left:720px" value="Update">
+                                    </div>
+                                </div>
+                               
+                        </form>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END Page Content -->
+</main>
+<!-- END Main Container -->
+
+<script>
+    function ddlselect() {
+        var d = document.getElementById("dept");
+        var displaytext = d.options[d.selectedIndex].text;
+        document.getElementById("dept").value = displaytext;
+
+    }
+
+</script>
+<script>
+    function validation() {
+
+
+        if (document.getElementById('dept').value == 0) {
+            alert('Please select a department');
+            document.getElementById('dept').focus();
+            return false;
+        }
+
+
+
+        // always return false to prevent form from submission.
+    }
+
+</script>
+
+
+
+
+@endsection

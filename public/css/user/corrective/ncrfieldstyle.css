@@ -1,0 +1,164 @@
+/* ===== CATEGORY DETAILS SECTION ===== */
+.category-details-block {
+    background: #F6F7F9;
+    border-radius: 10px;
+    padding: 16px;
+    max-width: 1400px;
+}
+
+/* Header */
+.category-details-block .section-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+    gap: 10px;
+}
+
+.category-details-block .section-header .header-icon {
+    background: #2529453D;
+    padding: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.category-details-block .section-header label {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Card grid */
+.category-details-block .card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+/* Individual card — grows with content, no max-width cap */
+.category-details-block .detail-card {
+    flex: 1 1 200px;
+    min-width: 180px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    word-break: break-word;  
+}
+.category-details-block .detail-card-auto {
+    flex: 0 1 calc(33.333% - 8px) !important;
+    min-width: 180px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    word-break: break-word;
+}
+/* Full-width card for textarea fields */
+.category-details-block .detail-card.is-textarea {
+    flex: 1 1 100%;
+    min-width: 100%;
+}
+
+/* Allow text to wrap naturally */
+.category-details-block .detail-card.is-textarea .card-value span {
+    white-space: pre-wrap;  /* respects line breaks from textarea */
+    word-break: break-word;
+    line-height: 1.6;
+    text-align: justify;
+}
+/* Label */
+.category-details-block .detail-card .card-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    display: block;
+    margin-bottom: 6px;
+}
+
+/* Value row */
+.category-details-block .detail-card .card-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.category-details-block .detail-card .card-value .field-icon {
+    width: 21px;
+    height: 21px;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.category-details-block .detail-card .card-value span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.4;
+}
+.category-details-block .detail-card.is-textarea .card-value {
+    align-items: flex-start;
+}
+
+.category-details-block .detail-card.is-textarea .card-value .field-icon {
+    margin-top: 2px;  /* slight nudge to align with first line of text */
+    flex-shrink: 0;
+}
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+    .category-details-block .detail-card {
+        flex: 1 1 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    .category-details-block {
+        padding: 12px;
+    }
+    .category-details-block .detail-card {
+        flex: 1 1 100%;
+    }
+}
+
+/* ===== PRINT ===== */
+@media print {
+    .category-details-block {
+        padding: 16px !important;
+        /* margin: 20px 0 10px !important; */
+        background: #F6F7F9 !important;
+        break-inside: avoid;
+    }
+
+    /* Use CSS Grid for reliable 4-col print layout */
+    .category-details-block .card-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 8px !important;
+    }
+    .category-details-block .detail-card.is-textarea {
+        grid-column: 1 / -1 !important; /* Forces the card to span from column 1 to the end */
+        width: 100% !important;
+        flex: none !important; /* Disables flex behavior inside the grid context */
+    }
+    .category-details-block .detail-card {
+        background: #fff !important;
+        border-radius: 8px !important;
+        padding: 8px 10px !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .category-details-block .detail-card .card-label {
+        font-size: 11px !important;
+    }
+
+    .category-details-block .detail-card .card-value span {
+        font-size: 11px !important;
+    }
+    .category-details-block .detail-card.is-textarea {
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+    }
+}

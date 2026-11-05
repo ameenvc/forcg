@@ -430,8 +430,8 @@
 /* Risk-specific accents built on the shared form palette. */
 .risk-back-link { color:var(--cgbod-accent); }
 .risk-step-nav a:hover { color:var(--cgbod-primary); text-decoration:none; }
-.risk-workspace .risk-ai-trigger { background:var(--cgbod-accent); border-color:var(--cgbod-accent); box-shadow:0 4px 12px rgba(124,58,237,.14); }
-.risk-workspace .risk-ai-trigger:hover { background:var(--cgbod-accent-hover); border-color:var(--cgbod-accent-hover); }
+.risk-workspace .risk-ai-trigger { background:var(--cgbod-primary); border-color:var(--cgbod-primary); box-shadow:0 4px 12px rgba(53,99,219,.14); }
+.risk-workspace .risk-ai-trigger:hover { background:var(--cgbod-primary-hover); border-color:var(--cgbod-primary-hover); }
 .risk-ai-symbol { border:1px solid #e3ddf6; background:linear-gradient(135deg,var(--cgbod-primary-soft),var(--cgbod-accent-soft)); color:var(--cgbod-accent); }
 .risk-ai-choice[aria-pressed=true] { background:var(--cgbod-accent-soft); border-color:var(--cgbod-accent); box-shadow:0 0 0 1px rgba(124,58,237,.09); }
 .risk-score-card[data-rating=Low] .risk-score-icon { color:var(--cgbod-success); background:#dff0e6; }

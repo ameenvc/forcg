@@ -252,13 +252,13 @@ class RiskController extends Controller
                 ->where('riskgroup', $riskgroup)
                 ->update($data3);
 
-            Session::flash('msg', "Risk sent for approval Successfully");
+            Session::flash('msg', 'Risk saved successfully.');
 
             // shifted mail service to helper function
             $status = NewRiskAddedEmailHelper::sendEmail($newlyAddedRisk->id);
 
             if(!$status) {
-                Session::flash('errmsg', 'Mail Sending Blocked for New Risk Added');
+                Session::flash('risk_notification_warning', 'Risk saved. Its email notification could not be completed. Please contact your administrator; do not submit the risk again.');
                 return redirect()->route('risk.index');
             }
             $models = DB::table('modenadisable')->First();
@@ -378,7 +378,7 @@ class RiskController extends Controller
             $status = NewRiskAddedEmailHelper::sendEmail($id);
 
             if(!$status){
-                Session::flash('errmsg', 'Mail Sending Blocked for New Risk Added');
+                Session::flash('risk_notification_warning', 'Risk resubmitted. Its email notification could not be completed. Please contact your administrator; do not resubmit again.');
                 return redirect()->route('risk.index');
             }
 
@@ -3457,7 +3457,7 @@ class RiskController extends Controller
             $status = NewRiskAddedEmailHelper::sendEmail($id);
 
             if(!$status){
-                Session::flash('errmsg', 'Mail Sending Blocked for New Risk Added');
+                Session::flash('risk_notification_warning', 'Your risk changes were saved. Email notification could not be completed. Please contact your administrator.');
                 return redirect()->back();
             }
 

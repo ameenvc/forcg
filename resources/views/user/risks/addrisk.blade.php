@@ -22,6 +22,7 @@
             <small><span aria-hidden="true">*</span> Required fields</small>
         </nav>
         <div class="block-content block-content-full">
+            @include('user.risks.notification-warning')
             @if(Session::has('errmsg'))
                 <div class="alert alert-danger">
                     <a class="close" data-dismiss="alert">×</a>

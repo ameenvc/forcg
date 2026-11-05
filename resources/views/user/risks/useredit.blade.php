@@ -43,7 +43,8 @@
             </nav>
 
             <div class="block-content block-content-full">
-                @if (Session::has('errmsg'))
+                @include('user.risks.notification-warning')
+            @if (Session::has('errmsg'))
                     <div class="alert alert-danger">
                         <a class="close" data-dismiss="alert">×</a>
                         {!! Session::get('errmsg') !!}

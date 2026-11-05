@@ -2,6 +2,7 @@
 namespace App\Helpers\Risk;
 
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\EmailNotification;
 use App\EmailNotificationsUserDetails;
 use App\Departments;
@@ -14,6 +15,21 @@ use Session;
 class NewRiskAddedEmailHelper
 {
     public static function sendEmail($id) {
+        try {
+            return self::deliver($id);
+        } catch (\Swift_TransportException $exception) {
+            // Callers have already saved the risk. Do not turn a notification
+            // transport failure into an apparent submission failure or retry it
+            // automatically: earlier recipients may already have received mail.
+            Log::warning('Risk notification transport failed.', [
+                'risk_id' => $id,
+                'transport_code' => $exception->getCode(),
+            ]);
+            return false;
+        }
+    }
+
+    private static function deliver($id) {
         $data = Risk::where('Rid', $id)->first();
         // starting email notification
         $mails = EmailNotification::where('module','riskmanagement')

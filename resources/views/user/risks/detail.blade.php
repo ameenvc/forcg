@@ -1,6 +1,10 @@
 @extends('layouts.multiselect')
 
 @section('content')
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
+
     <style>
         .status {
             display: inline-block;
@@ -978,7 +982,7 @@
                     </div>
                     <div class="mt-2 col-md-10 offset-md-1 m-auto table-risk-history"
                          style="overflow-x:auto; display: none">
-                        <table class="table table-bordered table-custom">
+                        <table class="risk-module-table table table-bordered table-custom">
                             <thead>
                                 <tr>
                                     <th>ID</th>

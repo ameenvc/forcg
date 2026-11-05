@@ -1,5 +1,9 @@
 @extends('pages.datatables')
 @section('content')
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
+
 @include('shared.forms.assets')
 @include('user.risks.review-assets')
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
@@ -34,7 +38,7 @@
             </div>
             <div class="register-table-hint" aria-hidden="true"><i class="fa fa-arrows-alt-h"></i>Swipe the table to see more columns</div>
             <div id="content" class="risk-table-scroll" role="region" aria-label="Risk register table; scroll horizontally for more columns" tabindex="0">
-                <table class="table table-vcenter risk-register-table" id="tabledata">
+                <table class="risk-module-table table table-vcenter risk-register-table" id="tabledata">
                     <thead>
                     <tr>
                         <th data-orderable="false" data-searchable="false"><input type="checkbox" id="risk-select-page" aria-label="Select risks on this page"></th>

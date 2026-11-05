@@ -27,6 +27,10 @@
 @endsection
 
 @section('content')
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
+
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <style>
         .select2-results__options,
@@ -158,7 +162,7 @@
                     @csrf
                     <div style="overflow-x:hidden;overflow-y:auto;" id="content">
                         <!-- approved documents listing starts -->
-                        <table class="table table-borderless table-striped table-vcenter" id="tabledata">
+                        <table class="risk-module-table table table-borderless table-striped table-vcenter" id="tabledata">
                             <thead>
                             <tr>
                                 <th class="text-center" data-orderable="false" style="font-size:11px;width:1%;text-transform:capitalize;position:sticky;vertical-align: middle">#</th>

@@ -1,5 +1,9 @@
 @extends('pages.datatables')
 @section('content')
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
+
 @include('shared.forms.assets')
 @include('user.risks.review-assets')
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
@@ -32,7 +36,7 @@
         <div id="closed-risk-feedback" role="status" aria-live="polite"></div>
         <div class="register-table-hint" aria-hidden="true"><i class="fa fa-arrows-alt-h"></i>Swipe the table to see more columns</div>
         <div class="risk-table-scroll" tabindex="0" role="region" aria-label="Closed risk register; scroll horizontally for more columns">
-        <table id="tabledata" class="table table-vcenter risk-register-table"><thead><tr><th>S.No</th><th>Internal ID</th><th>Risk ID</th><th>Risk name</th><th>Risk group</th><th>Risk area</th><th>Rating</th><th>Risk owner</th><th>Response</th><th>Target date</th><th>Process stage</th><th>Action status</th><th>Actions</th></tr></thead><tbody>
+        <table id="tabledata" class="risk-module-table table table-vcenter risk-register-table"><thead><tr><th>S.No</th><th>Internal ID</th><th>Risk ID</th><th>Risk name</th><th>Risk group</th><th>Risk area</th><th>Rating</th><th>Risk owner</th><th>Response</th><th>Target date</th><th>Process stage</th><th>Action status</th><th>Actions</th></tr></thead><tbody>
         @php $ownerMap = $users->keyBy('email'); @endphp
         @foreach($data2 as $risk)
         @php

@@ -1,0 +1,36 @@
+/* Shared risk table hierarchy. Header and content share one type scale. */
+html body .risk-module-table { --risk-table-header:#eef2fb; --risk-table-heading:#3e5175; --risk-table-rule:#dce3f1; --risk-table-content:#536781; font-family:var(--app-font, sans-serif)!important; }
+html body #main-container table.risk-module-table>thead>tr>:is(th,td) {
+    font-family:var(--app-font,sans-serif)!important;
+    font-size:12px!important; font-weight:600!important; line-height:18px!important;
+    letter-spacing:.01em!important; text-transform:none!important;
+    color:var(--risk-table-heading)!important; background:var(--risk-table-header)!important;
+    padding:12px 12px!important; vertical-align:middle;
+    border-top:0!important; border-bottom:2px solid var(--risk-table-rule)!important;
+    box-shadow:none;
+}
+html body #main-container table.risk-module-table>thead>tr>:is(th,td) :is(span,a,label,select,button):not(.fa):not(.fas):not(.far):not(.fab):not(.si) {
+    font-family:var(--app-font,sans-serif)!important;
+    font-size:12px!important; font-weight:600!important; line-height:18px!important;
+    letter-spacing:0!important; text-transform:none!important;
+}
+html body #main-container table.risk-module-table>thead select { color:var(--risk-table-heading)!important; background:transparent!important; border:0; border-radius:5px; padding:3px 16px 3px 0!important; }
+html body #main-container table.risk-module-table>thead select:focus-visible { outline:2px solid #7564d9; outline-offset:3px; }
+html body #main-container table.risk-module-table>tbody>tr>td {
+    font-family:var(--app-font,sans-serif)!important;
+    font-size:12px!important; font-weight:400; line-height:18px!important;
+    letter-spacing:0!important; color:var(--risk-table-content); vertical-align:middle;
+}
+html body #main-container table.risk-module-table>tbody>tr>td :is(.workflow-name,.register-risk-name a,.register-owner-label,.register-cell-text,.register-name-text,.workflow-description,.headingselect,.status,.badge,.fs-xs) {
+    font-family:var(--app-font,sans-serif)!important; font-size:12px!important; line-height:18px!important;
+}
+html body #main-container table.risk-module-table>tbody>tr>td :is(span,a,p,small,label,em):not(.fa):not(.fas):not(.far):not(.fab):not(.si) {
+    font-family:var(--app-font,sans-serif)!important; font-size:12px!important; line-height:18px!important; font-style:normal;
+}
+/* Rating headers retain their semantic colours without full blocks of saturated colour. */
+html body #main-container .workflow-racm table.risk-module-table>thead th>span { padding:4px 9px!important; border-radius:6px; }
+html body #main-container .workflow-racm table.risk-module-table>thead th:nth-child(5)>span { background:#fee9ec!important; color:#a72f4a!important; }
+html body #main-container .workflow-racm table.risk-module-table>thead th:nth-child(6)>span { background:#fff0d7!important; color:#8a5a12!important; }
+html body #main-container .workflow-racm table.risk-module-table>thead th:nth-child(7)>span { background:#e1f3e9!important; color:#247052!important; }
+html[data-risk-theme=dark] body .risk-module-table { --risk-table-header:#24344f; --risk-table-heading:#d2ddf1; --risk-table-rule:#405174; --risk-table-content:#bdcbe1; }
+@media print { html body #main-container table.risk-module-table>thead>tr>:is(th,td) { background:#edf0f5!important; color:#263750!important; font-size:9pt!important; } html body #main-container table.risk-module-table>tbody>tr>td { color:#263750; font-size:9pt!important; } }

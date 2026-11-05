@@ -1,5 +1,9 @@
 @extends('layouts.backend')
 @section('content')
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
+
 @include('shared.forms.assets')
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/risk-pages.css') }}?v={{ filemtime(public_path('css/risk-pages.css')) }}">
@@ -24,7 +28,7 @@
             </div></div><p class="analysis-note" id="analysis-rating-note">{{ $highShare }}% of recorded risks are rated High. Ratings use the approved 3 × 3 matrix.</p>
         </section>
         <section class="analysis-card"><div class="analysis-card-heading"><div><h2>Risk groups</h2><p>Select a group to explore its profile.</p></div><button type="button" class="analysis-reset" id="analysis-reset">Reset view</button></div>
-            <p class="analysis-group-hint">Swipe to see all ratings</p><div class="analysis-group-scroll" role="region" aria-label="Risk group ratings; scroll for more columns" tabindex="0"><table class="analysis-group-table"><thead><tr><th scope="col">Group</th><th scope="col">Total</th><th scope="col">High</th><th scope="col">Moderate</th><th scope="col">Low</th><th scope="col">Unassessed</th></tr></thead><tbody>
+            <p class="analysis-group-hint">Swipe to see all ratings</p><div class="analysis-group-scroll" role="region" aria-label="Risk group ratings; scroll for more columns" tabindex="0"><table class="risk-module-table analysis-group-table"><thead><tr><th scope="col">Group</th><th scope="col">Total</th><th scope="col">High</th><th scope="col">Moderate</th><th scope="col">Low</th><th scope="col">Unassessed</th></tr></thead><tbody>
                 @forelse($analysisData['groups'] as $group => $groupData)<tr data-analysis-group-row="{{ $group }}"><th scope="row"><button type="button" data-analysis-group="{{ $group }}" aria-pressed="false">{{ $group }}</button></th>@foreach(['total', 'High', 'Moderate', 'Low', 'Unassessed'] as $rating)<td>{{ $groupData['counts'][$rating] }}</td>@endforeach</tr>@empty<tr><td colspan="6">No risk groups to display yet.</td></tr>@endforelse
             </tbody></table></div>
         </section>

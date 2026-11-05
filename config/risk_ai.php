@@ -1,6 +1,8 @@
 <?php
 
 return [
+    // The retired organization workspace is not exposed in the application.
+    'organization_workspace_enabled' => false,
     // Disabled until explicitly enabled by the application administrator.
     'organization_key' => env('RISK_AI_ORGANIZATION_KEY', 'installation'),
     'enabled' => env('RISK_AI_ENABLED', false),

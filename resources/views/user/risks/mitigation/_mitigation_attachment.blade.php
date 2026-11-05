@@ -1,3 +1,6 @@
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
 @if(isset($mitigation))
     <div id="viewModalAttachment{{ $mitigation->id }}"
          class="modal fade bd-example-modal-lg modal-second" tabindex="-1" role="dialog" aria-hidden="false">
@@ -10,7 +13,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-hover table-bordered table-striped" style="font-size:100%;font-family: Arial, Helvetica, sans-serif">
+                    <table class="risk-module-table table table-hover table-bordered table-striped" style="font-size:100%;font-family: Arial, Helvetica, sans-serif">
                         <thead>
                         <tr class="table-secondary">
                             <th>S.No</th>

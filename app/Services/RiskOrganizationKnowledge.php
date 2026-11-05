@@ -71,7 +71,7 @@ class RiskOrganizationKnowledge
             'profile_revision' => $organization['profile_revision'] ?? null,
             'source_reference' => $organization['source_reference'] ?? null,
             'notes' => array_map(function ($note) { return array_intersect_key($note, array_flip(['id', 'title', 'source_reference', 'review_by'])); }, $organization['approved_notes'] ?? []),
-            'url' => route('risk.ai.organization')];
+            'url' => config('risk_ai.organization_workspace_enabled', false) ? route('risk.ai.organization') : null];
         if (!$this->ready()) return $result;
         $id = (string) Str::uuid();
         DB::table('risk_ai_runs')->insert(['id' => $id, 'organization_key' => $this->organizationKey(), 'actor' => $this->actor(),

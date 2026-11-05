@@ -13,6 +13,10 @@ class RiskAiOrganizationController extends Controller
     public function __construct()
     {
         $this->middleware(['auth:web,admin', 'mfa', 'throttle:30,1']);
+        $this->middleware(function ($request, $next) {
+            abort_unless(config('risk_ai.organization_workspace_enabled', false), 404);
+            return $next($request);
+        })->except(['feedback']);
     }
 
     private function manager(RiskOrganizationKnowledge $knowledge)

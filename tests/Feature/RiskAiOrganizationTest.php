@@ -19,7 +19,7 @@ class RiskAiOrganizationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        config(['risk_ai.enabled' => true, 'risk_ai.mode' => 'demo', 'risk_ai.organization_key' => 'organization-a']);
+        config(['risk_ai.organization_workspace_enabled' => true, 'risk_ai.enabled' => true, 'risk_ai.mode' => 'demo', 'risk_ai.organization_key' => 'organization-a']);
         Schema::create('users', function (Blueprint $table) { $table->increments('id'); $table->string('email'); $table->string('password')->nullable(); $table->string('last_seen')->nullable(); $table->softDeletes(); $table->timestamps(); });
         Schema::create('app_configurations', function (Blueprint $table) { $table->increments('id'); $table->string('meta_key'); $table->string('meta_value')->nullable(); });
         Schema::create('error_logs', function (Blueprint $table) { $table->increments('id'); $table->text('error'); $table->string('logged_date'); $table->integer('solved'); $table->integer('occurence'); });
@@ -45,6 +45,19 @@ class RiskAiOrganizationTest extends TestCase
     private function profile()
     {
         return ['revision' => 0, 'enabled' => 1, 'company_name' => 'Paperworks', 'industry' => 'Paper manufacturing', 'operations' => 'Recovered-fibre paper production', 'objectives' => 'Maintain production continuity', 'source_reference' => 'Approved organization risk policy v3'];
+    }
+
+    public function testRetiredWorkspaceCannotBeOpenedOrUpdated()
+    {
+        $this->signIn();
+        config(['risk_ai.organization_workspace_enabled' => false]);
+        $this->get(route('risk.ai.organization'))->assertNotFound();
+        $this->postJson(route('risk.ai.organization.profile'), $this->profile())->assertNotFound();
+        $this->postJson(route('risk.ai.organization.notes'), ['title' => 'Note'])->assertNotFound();
+        $this->postJson(route('risk.ai.organization.withdraw', 1))->assertNotFound();
+        $draft = $this->postJson(route('risk.ai.draft'), ['action' => 'review', 'concern' => 'supplier interruption'])->assertOk();
+        $draft->assertJsonPath('organization_context.url', null);
+        $this->postJson(route('risk.ai.feedback'), ['run_id' => $draft->json('feedback.run_id'), 'rating' => 'helpful'])->assertOk();
     }
 
     public function testGuestsAndOrdinaryUsersCannotChangeSharedKnowledge()

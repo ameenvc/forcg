@@ -36,6 +36,8 @@ class RiskRegisterWorkflowTest extends TestCase
             $this->assertStringContainsString(route('mitigations.index'), $html);
             $this->assertStringNotContainsString('workflow-guide', $html);
             $this->assertStringContainsString('js/risk-workflow.js', $html);
+            $this->assertStringContainsString('css/risk-tables.css', $html);
+            $this->assertStringNotContainsString('>Organization AI</a>', $html);
         }
         $scoped = view('user.risks.mitigation.index', array_merge($vars, ['riskId' => 42]))->render();
         $this->assertStringContainsString(route('risk.detail', 42), $scoped);

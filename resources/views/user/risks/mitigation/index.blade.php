@@ -38,6 +38,10 @@
 </div>
 @endsection
 @section('content')
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
+
 @include('shared.forms.assets')
 <script defer src="{{ asset('js/risk-workflow.js') }}?v={{ filemtime(public_path('js/risk-workflow.js')) }}"></script>
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
@@ -184,7 +188,7 @@
                         </div>
                     @endif
                     <input type="hidden" value="a1" id="tabselected">
-                    <table class="table table-striped table-vcenter js-dataTable-full" id="tabledata">
+                    <table class="risk-module-table table table-striped table-vcenter js-dataTable-full" id="tabledata">
                         <colgroup><col style="width:38px"><col style="width:44px"><col style="width:100px"><col style="width:300px"><col style="width:180px"><col style="width:145px"><col style="width:95px"><col style="width:110px"><col style="width:160px"><col style="width:120px"></colgroup>
                         <thead>
                             <tr>

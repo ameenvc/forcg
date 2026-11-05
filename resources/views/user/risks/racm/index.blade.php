@@ -27,6 +27,10 @@
 @endsection
 
 @section('content')
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
+
 @include('shared.forms.assets')
 <script defer src="{{ asset('js/risk-workflow.js') }}?v={{ filemtime(public_path('js/risk-workflow.js')) }}"></script>
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
@@ -291,7 +295,7 @@
             <div class="block-content block-content-full">
                 <div class="table-responsive" id="content">
                     <!-- approved documents listing starts -->
-                    <table class="table table-borderless table-striped table-vcenter js-dataTable-full" id="tabledata">
+                    <table class="risk-module-table table table-borderless table-striped table-vcenter js-dataTable-full" id="tabledata">
                         <colgroup><col style="width:38px"><col style="width:44px"><col style="width:125px"><col style="width:310px"><col style="width:105px"><col style="width:110px"><col style="width:105px"><col style="width:110px"><col style="width:110px"><col style="width:140px"><col style="width:100px"></colgroup>
                         <thead class="border-top">
                             <tr>

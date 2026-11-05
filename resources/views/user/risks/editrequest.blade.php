@@ -1,5 +1,9 @@
 @extends('layouts.backend')
 @section('content')
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
+@endonce
+
 <!doctype html>
 <html lang="en">
    <body>
@@ -58,7 +62,7 @@
 
 
                     @if(count($data)>0)
-                    <table class="table table-responsive table-bordered table-striped table-vcenter " id="dynamicTable">
+                    <table class="risk-module-table table table-responsive table-bordered table-striped table-vcenter " id="dynamicTable">
 
                         <thead style="background-color:#FFFFFF">
                             <tr>

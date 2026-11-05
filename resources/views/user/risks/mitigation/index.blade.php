@@ -9,7 +9,7 @@
 </div>
 <div class="input-group input-group-sm">
     <button type="button" class=" btn-sm btn-dual btn btn-default dropdown-toggle mr-0 mb-0"
-            style="margin-left:8px; " data-toggle="dropdown">
+            style="margin-left:8px; " data-toggle="dropdown" data-display="static">
         <i class="fa fa-file-export fa-1x" style="color:grey;"></i>
     </button>
     <ul class="dropdown-menu" role="menu" style="min-width:10px;text-align:center;">
@@ -39,6 +39,7 @@
 @endsection
 @section('content')
 @include('shared.forms.assets')
+<script defer src="{{ asset('js/risk-workflow.js') }}?v={{ filemtime(public_path('js/risk-workflow.js')) }}"></script>
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/risk-workflow.css') }}?v={{ filemtime(public_path('css/risk-workflow.css')) }}">
 
@@ -164,7 +165,6 @@
     ?>
     <div class="content risk-register-page risk-workflow-page workflow-mitigation" style="width:100%">
         @include('user.risks.register-header', ['registerPage' => 'mitigation', 'registerTitle' => 'Mitigation actions', 'registerDescription' => 'Turn risk decisions into owned actions, track progress, and verify completion.'])
-        @include('user.risks.workflow-guide', ['workflowStep' => 'mitigation'])
         <div class="workflow-toolbar"><div><h2>Action tracker <span class="workflow-count">{{ $mitigations->count() }}</span></h2><p>Open a risk from the register to add its mitigation actions. Update progress here, then request closure review.</p></div>@if($riskId)<a class="btn btn-outline-primary" href="{{ route('mitigations.index') }}">Show all actions</a>@endif</div>
         @if($riskId)<div class="workflow-scope" role="status">Showing actions for the selected risk. <a href="{{ route('risk.detail', $riskId) }}">Open risk details</a> to review the assessment and manage its actions.</div>@endif
         <div class="block">
@@ -185,7 +185,7 @@
                     @endif
                     <input type="hidden" value="a1" id="tabselected">
                     <table class="table table-striped table-vcenter js-dataTable-full" id="tabledata">
-                        <colgroup><col style="width:38px"><col style="width:46px"><col style="width:100px"><col style="width:260px"><col style="width:150px"><col style="width:60px"><col style="width:150px"><col style="width:100px"><col style="width:110px"><col style="width:160px"><col style="width:120px"></colgroup>
+                        <colgroup><col style="width:38px"><col style="width:44px"><col style="width:100px"><col style="width:300px"><col style="width:180px"><col style="width:145px"><col style="width:95px"><col style="width:110px"><col style="width:160px"><col style="width:120px"></colgroup>
                         <thead>
                             <tr>
                                 <td style="position:sticky;top:-1px; width: 5%"></td>
@@ -199,11 +199,6 @@
                                     tabindex="0" aria-controls="tabledata" rowspan="1" colspan="1"
                                     aria-label="Risk&nbspID: activate to sort column ascending">Action Name</td>
                                 <td id="ownerselectdata" data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;"></td>
-                                <td class="text-center titleheading sorting" style="width:10%;"
-                                    tabindex="0" aria-controls="tabledata" rowspan="1" colspan="1"
-                                    aria-label="Risk&nbspID: activate to sort column ascending">
-                                    <i class="far fa-user" style="font-size:14px;"></i>
-                                </td>
                                 <td id="deptselectdata" data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;"></td>
                                 <td id="priorityselectdata" data-orderable="false" style="width:5%;text-transform:capitalize;position:sticky;"></td>
                                 <td id="duedateselectdata" data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;"></td>
@@ -232,23 +227,15 @@
                                         {{ $mitigation->action_name }}
                                     </a>
                                 </td>
-                                <td class="text-center" style="font-size:10px;">
-                                    @if($mitigation->user)
-                                        {{ $mitigation->user->name  }}
-                                    @else
-                                        <span data-toggle-second="tooltip" title="Owner doesn't exist">--</span>
-                                    @endif
-                                </td>
-                                <td class="text-center" style="font-size:10px;">
-                                    @if($mitigation->user)
-                                        <img src="{{ $mitigation->user->avatar_path }}"
-                                             class="avatar"
-                                             alt="{{ $mitigation->user->name }}">
-                                    @else
-                                        <img src="{{ asset('/images/avatar10.jpg') }}"
-                                             class="avatar"
-                                            alt="No-avatar">
-                                    @endif
+                                <td class="text-left" style="font-size:12px;">
+                                    <div class="workflow-owner">
+                                        @if($mitigation->user)
+                                        <img src="{{ $mitigation->user->avatar_path }}" class="avatar" alt="">
+                                        <span title="{{ $mitigation->user->name }}">{{ $mitigation->user->name }}</span>
+                                        @else
+                                        <span>Unassigned</span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="text-center" style="font-size:10px;">
                                     {{ $mitigation->department ? $mitigation->department->departmentname : '-'}}
@@ -277,13 +264,13 @@
                                 <td class="text-center" style="font-size:10px;">
                                     <div class="btn-group m-auto d-flex justify-content-center">
                                         <!-- Action: Edit/Delete/Closure review/Reopen  -->
-                                        <div>
-                                            <a href="#" class="btn btn-sm btn-alt-primary" data-toggle="dropdown"
+                                        <div class="dropdown">
+                                            <a href="#" class="btn btn-sm btn-alt-primary" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false"
                                                style="border-radius: 0;"
                                                data-placement="top" title="Actions" id="drop{{ $mitigation->id }}">
                                                 <i class="fa fa-fw fa-ellipsis-v" style="font-size:10px;cursor:pointer"></i>
                                             </a>
-                                            <div class="dropdown-menu font-size-sm" aria-labelledby="dropdown-dropleft-outline-dark"
+                                            <div class="dropdown-menu font-size-sm" aria-labelledby="drop{{ $mitigation->id }}"
                                                  id="dropdownMenu{{ $mitigation->id }}">
                                                 @if(in_array($currentUserId, [$mitigation->created_by, $mitigation->owner])
                                                     || in_array($currentUserId, $reviewerIds)
@@ -356,8 +343,8 @@
                                             </div>
                                         </div>
                                         <!-- Action: Change status -->
-                                        <div>
-                                            <a href="#" class="btn btn-sm btn-alt-primary {{ $mitigation->progress == 100 ? 'disabled' : '' }}" data-toggle="dropdown"
+                                        <div class="dropdown">
+                                            <a href="#" class="btn btn-sm btn-alt-primary {{ $mitigation->progress == 100 ? 'disabled' : '' }}" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false"
                                                style="border-radius: 0;"
                                                data-placement="top"
                                                data-toggle-second="tooltip" title="Click here to update status"
@@ -366,8 +353,8 @@
                                             </a>
                                             @if($mitigation->progress != 100)
                                                 <div class="dropdown-menu font-size-sm"
-                                                     aria-labelledby="dropdown-dropleft-outline-dark"
-                                                     id="dropdownChangeStatus{{ $mitigation->id }}">
+                                                     aria-labelledby="dropdownChangeStatus{{ $mitigation->id }}"
+                                                     id="progressMenu{{ $mitigation->id }}">
                                                     @foreach(config('constants.risk_management.mitigation.progresses') as $key => $progress)
                                                         <a href="javascript:void(0)" class="dropdown-item change-status"
                                                            data-route="{{ route('mitigations.change.progress', $mitigation->id) }}"
@@ -477,19 +464,19 @@
 
                 // Department
                 const departmentNames = @json($allDeptNames);
-                createHeadingSelect('Department', 'deptselectdata', departmentNames, 'dept_dropdown', 6);
+                createHeadingSelect('Department', 'deptselectdata', departmentNames, 'dept_dropdown', 5);
 
                 // Priority
                 const priorityNames = @json($allPriorityLevel);
-                createHeadingSelect('Priority Level', 'priorityselectdata', priorityNames, 'priority_dropdown', 7);
+                createHeadingSelect('Priority Level', 'priorityselectdata', priorityNames, 'priority_dropdown', 6);
 
                 // Year
                 const dueDateYears = @json($allYears);
-                createHeadingSelect('Due date', 'duedateselectdata', dueDateYears, 'duedate_dropdown', 8);
+                createHeadingSelect('Due date', 'duedateselectdata', dueDateYears, 'duedate_dropdown', 7);
 
                 // Status
                 const statusNames = @json($allStatus);
-                createHeadingSelect('Status', 'statusselectdata', statusNames, 'status_dropdown', 9);
+                createHeadingSelect('Status', 'statusselectdata', statusNames, 'status_dropdown', 8);
 
                 $(".alert-success").fadeTo(2000, 500).slideUp(500, function(){
                     $(".alert-success").slideUp(500);

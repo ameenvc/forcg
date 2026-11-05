@@ -6,7 +6,7 @@
         </a>
     </div>
     <div class="input-group input-group-sm">
-        <button type="button" class=" btn-sm btn-dual btn btn-default dropdown-toggle mr-0 mb-0" style="margin-left:8px; " data-toggle="dropdown">
+        <button type="button" class=" btn-sm btn-dual btn btn-default dropdown-toggle mr-0 mb-0" style="margin-left:8px; " data-toggle="dropdown" data-display="static">
             <i class="fa fa-file-export fa-1x" style="color:grey;"></i>
         </button>
         <ul class="dropdown-menu" role="menu" style="min-width:10px;text-align:center;">
@@ -28,6 +28,7 @@
 
 @section('content')
 @include('shared.forms.assets')
+<script defer src="{{ asset('js/risk-workflow.js') }}?v={{ filemtime(public_path('js/risk-workflow.js')) }}"></script>
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/risk-workflow.css') }}?v={{ filemtime(public_path('css/risk-workflow.css')) }}">
 
@@ -285,14 +286,13 @@
     @endif
     <div class="content risk-register-page risk-workflow-page workflow-racm" style="width:100%;">
         @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Agree on what low, moderate, and high mean before assessing a risk.'])
-        @include('user.risks.workflow-guide', ['workflowStep' => 'criteria'])
         <div class="workflow-toolbar"><div><h2>Criteria library <span class="workflow-count">{{ $riskAcms->count() }}</span></h2><p>Select criteria below to request review and approval.</p></div><button type="button" class="btn btn-outline-primary" id="request-review-approve"><i class="fa fa-user-edit mr-2" aria-hidden="true"></i>Request review & approval</button></div>
         <div class="block block-rounded">
             <div class="block-content block-content-full">
                 <div class="table-responsive" id="content">
                     <!-- approved documents listing starts -->
                     <table class="table table-borderless table-striped table-vcenter js-dataTable-full" id="tabledata">
-                        <colgroup><col style="width:38px"><col style="width:46px"><col style="width:130px"><col style="width:190px"><col style="width:230px"><col style="width:100px"><col style="width:110px"><col style="width:100px"><col style="width:100px"><col style="width:100px"><col style="width:140px"><col style="width:100px"></colgroup>
+                        <colgroup><col style="width:38px"><col style="width:44px"><col style="width:125px"><col style="width:310px"><col style="width:105px"><col style="width:110px"><col style="width:105px"><col style="width:110px"><col style="width:110px"><col style="width:140px"><col style="width:100px"></colgroup>
                         <thead class="border-top">
                             <tr>
                                 <th class="text-center" style="width: 1%;position:sticky;" id="firstColumn"></th>
@@ -302,8 +302,6 @@
                                 {{--Process name</th>--}}
                                 <th class="text-center" data-orderable="false" style="width:18%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
                                     Risk factor title</th>
-                                <th class="text-center" data-orderable="false" style="width:18%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
-                                    Risk factor description</th>
                                 <th class="text-center" data-orderable="false" style="width: 6%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
                                     <span class="p-2" style="background: #ff686a; color: white">High</span>
                                 </th>
@@ -359,8 +357,6 @@
                                 </td>
                                 <td style="font-size: 11px;" class="text-center">
                                     <span class="workflow-name" title="{{ $riskAcm->risk_factor_title }}">{{ $riskAcm->risk_factor_title }}</span>
-                                </td>
-                                <td style="font-size: 11px;" class="text-left">
                                     <span class="workflow-description" title="{{ $riskAcm->risk_factor_description }}">{{ $riskAcm->risk_factor_description }}</span>
                                 </td>
                                 <td style="font-size: 11px;" class="text-center">
@@ -378,57 +374,23 @@
                                         {{ $riskAcm->low . $unit }}
                                     @endif
                                 </td>
-                                <td class="text-center" style="font-size:10px;">
-                                    <div class="main-img-aud-container">
+                                <td>
+                                    @php
+                                        $reviewerNames = collect([$first_reviewer])->filter()->merge($reviewers_details)->pluck('name')->implode(', ');
+                                    @endphp
+                                    <div class="workflow-owner" title="{{ $reviewerNames ?: 'Unassigned' }}">
                                         @if($first_reviewer)
-                                            <img src="{{($first_reviewer->profile_picture && File::exists(public_path('/storage/profile/'.$first_reviewer->profile_picture))) ? asset('storage/profile/'.$first_reviewer->profile_picture) : asset('/images/avatar10.jpg')}}" class="avatar" title="{{$first_reviewer->name}}"/>
-                                            
-                                            @if(count($reviewers_details) > 0)
-                                            <div class="top-right">
-                                                <div class="avatar-dropdown">
-                                                    <div style="top:2px;" class="avatar-dot text-center">+{{count($reviewers_details)}} </div>
-                                                    <div class="avatar-dropdown-content">
-                                                        @foreach($reviewers_details as $reviewer_arr)
-                                                            @if($reviewer_arr)
-                                                                <a href="#">
-                                                                    <div class="row">
-                                                                        <div class="col-md-3">
-                                                                            <img style="margin-bottom:5px;" src="{{($reviewer_arr->profile_picture && File::exists(public_path('/storage/profile/'.$reviewer_arr->profile_picture))) ? asset('storage/profile/'.$reviewer_arr->profile_picture) : asset('/images/avatar10.jpg')}}" class="avatar" title="{{$reviewer_arr->name}}"/>
-                                                                        </div>
-                                                                        <div class="col-md-9 text-left">
-                                                                            <span style="top: 50%;position: absolute;vertical-align:middle;margin-top:-1em;">{{ucfirst($reviewer_arr->name)}}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </a>
-                                                                
-                                                            @endif
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endif
+                                            <span>{{ $first_reviewer->name }}</span>
+                                            @if($reviewers_details->count())<small class="workflow-more">+{{ $reviewers_details->count() }}</small>@endif
                                         @else
-                                        <img src="{{ asset('/images/avatar10.jpg') }}"
-                                                class="avatar"
-                                                data-toggle="tooltip" data-placement="top" title="--"
-                                                alt="No-avatar">
+                                            <span class="workflow-unassigned">Unassigned</span>
                                         @endif
                                     </div>
                                 </td>
-                                <td class="text-center" style="font-size:10px;">
-                                    @if($riskAcm->approver)
-                                        <img src="{{ $riskAcm->approver->avatar_path??'' }}"
-                                             class="avatar"
-                                             data-toggle="tooltip" data-placement="top" title="{{ $riskAcm->approver->name??'' }}"
-                                             alt="{{ $riskAcm->approver->name??'' }}">
-                                    @else
-                                        <img src="{{ asset('/images/avatar10.jpg') }}"
-                                             class="avatar"
-                                             data-toggle="tooltip" data-placement="top" title="--"
-                                             alt="No-avatar">
-                                    @endif
+                                <td>
+                                    <span class="workflow-person-name" title="{{ $riskAcm->approver->name ?? 'Unassigned' }}">{{ $riskAcm->approver->name ?? 'Unassigned' }}</span>
                                 </td>
-                                
+
                                 <td class="text-center" style="font-size:10px;">
                                     @if(($riskAcm->status=='Review Awaiting'))
                                     <span style="color:#fe9c05;font-weight:500;">{{$riskAcm->status}}</span>
@@ -451,13 +413,13 @@
                                 <td class="text-center">
                                     <div class="btn-group m-auto d-flex justify-content-center">
                                         <!-- Action: Edit/Delete  -->
-                                        <div>
-                                            <a href="#" class="btn btn-sm btn-alt-primary" data-toggle="dropdown"
+                                        <div class="dropdown">
+                                            <a href="#" class="btn btn-sm btn-alt-primary" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false"
                                                style="border-radius: 0;"
                                                data-placement="top" title="Actions" id="drop{{ $riskAcm->id }}">
                                                 <i class="fa fa-fw fa-ellipsis-v" style="font-size:10px;cursor:pointer"></i>
                                             </a>
-                                            <div class="dropdown-menu font-size-sm" aria-labelledby="dropdown-dropleft-outline-dark"
+                                            <div class="dropdown-menu font-size-sm" aria-labelledby="drop{{ $riskAcm->id }}"
                                                  id="dropdownMenu{{ $riskAcm->id }}">
                                                 <a href="javascript:void(0)" class="dropdown-item btn-edit-racm"
                                                    style="font-size:10px;"

@@ -20,7 +20,7 @@ class RiskRegisterWorkflowTest extends TestCase
         $this->assertStringContainsString('id="save-request"', $criteria);
         $this->assertStringContainsString('window.location.reload();', $criteria);
         $this->assertStringNotContainsString('window.table', $criteria);
-        $this->assertStringContainsString('aria-current="step"', $criteria);
+        $this->assertStringNotContainsString('workflow-guide', $criteria);
         $this->assertStringContainsString("departmentNames, 'dept_dropdown', 2", $criteria);
         $this->assertStringContainsString('risk-workflow.css', $criteria);
         $vars = ['mitigations' => collect(), 'riskId' => null, 'allOwnerNames' => '', 'allDeptNames' => '', 'allPriorityLevel' => '', 'allYears' => '', 'allStatus' => '', 'allResourceRequired' => '', 'model' => null, 'currentUserId' => null, 'reviewerIds' => []];
@@ -34,7 +34,8 @@ class RiskRegisterWorkflowTest extends TestCase
         foreach ([$criteria, $actions] as $html) {
             $this->assertStringContainsString(route('racm.index'), $html);
             $this->assertStringContainsString(route('mitigations.index'), $html);
-            $this->assertStringContainsString('Use the approved 3 × 3 matrix', $html);
+            $this->assertStringNotContainsString('workflow-guide', $html);
+            $this->assertStringContainsString('js/risk-workflow.js', $html);
         }
         $scoped = view('user.risks.mitigation.index', array_merge($vars, ['riskId' => 42]))->render();
         $this->assertStringContainsString(route('risk.detail', 42), $scoped);

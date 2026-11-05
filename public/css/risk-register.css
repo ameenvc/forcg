@@ -70,82 +70,108 @@
     padding:12px 0;
     cursor:pointer;
 }
-.register-summary-caption {
-    font-size:12px;
-    font-weight:600;
-    margin:25px 0 12px;
+.register-insights {
+    background:white;
+    border:1px solid var(--cgbod-border);
+    border-radius:12px;
+    margin:0 0 20px;
+    overflow:hidden;
 }
-.register-summary-caption span {
+.register-insights-heading {
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 18px 0;
+}
+.register-insights-heading strong {
     font-size:11px;
-    font-weight:400;
-    color:var(--cgbod-muted);
-    margin-left:10px;
+    font-weight:600;
+    color:#54667e;
+}
+.register-insights-heading>span {
+    font-size:10px;
+    color:#8190a3;
 }
 .register-summary {
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:14px;
-    margin-bottom:24px;
+    gap:0;
+    padding:10px 8px 12px;
+    margin:0;
 }
 .register-summary-card {
-    text-align:left;
-    border:1px solid var(--cgbod-border);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+    padding:10px 12px;
+    margin:0 6px;
+    border:1px solid transparent;
+    border-radius:7px;
     background:white;
-    border-radius:12px;
-    padding:17px 20px;
     cursor:pointer;
-    position:relative;
-    overflow:hidden;
+    text-align:left;
 }
-.register-summary-card:before {
-    content:'';
-    position:absolute;
-    left:0;
-    top:18px;
-    bottom:18px;
-    width:3px;
-    border-radius:0 4px 4px 0;
-    background:var(--cgbod-primary);
-}
-.register-summary-card span {
+.register-summary-label {
     font-size:12px;
-    color:var(--cgbod-muted);
+    color:#61728c;
+    white-space:nowrap;
 }
 .register-summary-card strong {
-    display:block;
-    font-size:28px;
-    color:var(--cgbod-ink);
-    margin:6px 0;
-    line-height:1.2;
+    font-size:22px;
+    font-weight:650;
+    color:#2c3e5b;
+    margin-left:auto;
+    font-variant-numeric:tabular-nums;
 }
 .register-summary-card small {
     font-size:10px;
-    color:#7a89a2;
+    color:#7b8ba2;
+    min-width:29px;
+    text-align:right;
 }
-.register-summary-card small i {
-    margin-left:5px;
+.register-rating-dot {
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--cgbod-primary);
+    flex-shrink:0;
 }
-.register-summary-card[aria-pressed=true] {
-    border-color:#a8bced;
-    box-shadow:0 0 0 2px #3563db09;
-}
-.register-summary-card[data-tone=High]:before {
+.register-summary-card[data-tone=High] .register-rating-dot {
     background:var(--cgbod-danger);
 }
-.register-summary-card[data-tone=High] strong {
-    color:var(--cgbod-danger);
-}
-.register-summary-card[data-tone=Moderate]:before {
+.register-summary-card[data-tone=Moderate] .register-rating-dot {
     background:var(--cgbod-warning);
 }
-.register-summary-card[data-tone=Moderate] strong {
-    color:var(--cgbod-warning);
-}
-.register-summary-card[data-tone=Low]:before {
+.register-summary-card[data-tone=Low] .register-rating-dot {
     background:var(--cgbod-success);
 }
-.register-summary-card[data-tone=Low] strong {
-    color:var(--cgbod-success);
+.register-summary-card:hover {
+    background:#f7f9fd;
+}
+.register-summary-card[aria-pressed=true] {
+    border-color:#d6e1fb;
+    background:#f0f4ff;
+}
+.register-summary-card[aria-pressed=true] .register-summary-label,.register-summary-card[aria-pressed=true] strong {
+    color:var(--cgbod-primary);
+}
+.register-distribution-track {
+    height:3px;
+    background:#eef1f6;
+    display:flex;
+}
+.register-distribution-track span {
+    height:100%;
+}
+.register-distribution-track [data-register-distribution=High] {
+    background:#c96b79;
+}
+.register-distribution-track [data-register-distribution=Moderate] {
+    background:#d6ae61;
+}
+.register-distribution-track [data-register-distribution=Low] {
+    background:#64a58b;
 }
 .risk-register .risk-register-card {
     border:1px solid var(--cgbod-border);
@@ -368,92 +394,129 @@
 }
 .risk-table-scroll {
     overflow:auto;
-    max-height:660px;
-    border-top:1px solid var(--cgbod-border);
+    max-height:min(68vh,720px);
+    border-top:1px solid #e5eaf2;
     margin:0 -22px;
     position:relative;
 }
 .risk-register #tabledata {
-    min-width:1120px;
+    min-width:1300px;
     width:100%!important;
+    table-layout:fixed;
     border-collapse:separate!important;
     border-spacing:0;
     margin:0!important;
-    color:#445973;
+    color:#536781;
 }
 .risk-register #tabledata th {
     position:sticky;
     top:0;
-    background:#f7f9fd;
-    color:#71839d;
-    font-size:10px!important;
-    font-weight:650;
-    text-transform:uppercase;
-    letter-spacing:.5px;
-    border:0;
-    border-bottom:1px solid var(--cgbod-border);
-    padding:17px 15px!important;
-    white-space:nowrap;
     z-index:2;
+    background:#f2f5f9;
+    color:#4c607b;
+    font-size:11px!important;
+    font-weight:600;
+    text-transform:none;
+    letter-spacing:0;
+    border:0;
+    border-bottom:1px solid #dfe6ef;
+    padding:12px 14px!important;
+    white-space:nowrap;
 }
 .risk-register #tabledata td {
+    height:64px;
+    box-sizing:border-box;
     border:0;
-    border-bottom:1px solid #edf1f7;
+    border-bottom:1px solid #edf0f5;
     font-size:12px!important;
-    padding:17px 15px;
+    padding:10px 14px;
     vertical-align:middle;
     background:white;
-    line-height:1.6;
+    line-height:18px;
+    overflow:visible;
 }
 .risk-register #tabledata tbody tr:last-child td {
     border-bottom:0;
 }
 .risk-register #tabledata tbody tr:hover td {
-    background:#f8faff;
+    background:#f7f9fe;
 }
 .risk-register #tabledata tr.is-selected td {
-    background:#f0f4ff;
+    background:#eef3ff;
 }
 .risk-register #tabledata .register-risk-name {
-    min-width:245px;
-    max-width:310px;
     text-align:left!important;
 }
 .register-risk-name a {
+    display:block;
+    color:#304c76;
+    font-size:13px;
     font-weight:600;
-    color:#365caa;
-    line-height:1.7;
+    line-height:18px;
 }
 .register-risk-name a:hover {
     color:var(--cgbod-primary);
 }
-.register-risk-group em,.register-risk-area em {
-    font-style:normal;
-    color:#6f819b!important;
+.register-name-text,.register-cell-text {
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    overflow:hidden;
+    overflow-wrap:anywhere;
+    line-height:18px;
+    max-height:36px;
 }
-.risk-register .register-owner {
+.register-cell-text {
+    color:#63768f;
+    font-size:12px;
+    font-weight:400;
+}
+.register-id-text {
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#7b6ca2;
+    font-size:11px;
+    font-weight:600;
+    font-variant-numeric:tabular-nums;
+}
+.register-owner-wrap {
     display:flex;
     align-items:center;
-    gap:9px;
-    min-width:150px;
+    gap:7px;
+    min-width:0;
+}
+.register-owner {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+    flex:1;
+    margin:0;
     text-align:left;
-    margin-bottom:5px;
 }
-.register-owner:last-child {
-    margin-bottom:0;
-}
-.register-owner>span:last-child {
-    font-size:11px;
-    color:#4b607d;
-}
-.register-owner small {
+.register-owner-label {
     display:block;
-    color:#8292a8;
+    min-width:0;
+    font-size:11px;
+    color:#475f7d;
+}
+.register-owner-label>span,.register-owner-label small {
+    display:block;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    line-height:17px;
+}
+.register-owner-label small {
+    color:#8795a8;
     font-size:10px;
+    line-height:14px;
 }
 .register-avatar {
-    width:31px;
-    height:31px;
+    width:28px;
+    height:28px;
     border-radius:50%;
     object-fit:cover;
     flex-shrink:0;
@@ -463,22 +526,84 @@
     place-items:center;
     background:var(--cgbod-accent-soft);
     color:var(--cgbod-accent);
-    font-size:12px;
+    font-size:11px;
     font-weight:600;
 }
+.register-owner-more {
+    flex-shrink:0;
+}
+.register-owner-more summary {
+    display:grid;
+    place-items:center;
+    min-width:25px;
+    height:25px;
+    padding:0 4px;
+    border:1px solid #dce5f6;
+    border-radius:6px;
+    background:#f5f8ff;
+    color:#617eaf;
+    font-size:10px;
+    cursor:pointer;
+    list-style:none;
+}
+.register-owner-more summary::-webkit-details-marker {
+    display:none;
+}
+.register-owner-popover {
+    position:fixed;
+    z-index:30;
+    width:250px;
+    max-width:calc(100vw - 16px);
+    max-height:280px;
+    overflow:auto;
+    background:white;
+    border:1px solid #dce4f0;
+    border-radius:10px;
+    box-shadow:0 12px 35px #22375424;
+    padding:16px;
+    white-space:normal;
+}
+.register-owner-popover>strong {
+    font-size:11px;
+    color:#60738f;
+}
+.register-owner-popover ul {
+    list-style:none;
+    padding:0;
+    margin:8px 0 0;
+}
+.register-owner-popover li {
+    padding:8px 0;
+    border-top:1px solid #eff2f7;
+}
+.register-owner-popover li span {
+    display:block;
+    overflow-wrap:anywhere;
+    font-size:12px;
+    line-height:18px;
+    color:#3b5270;
+}
+.register-owner-popover small {
+    display:block;
+    font-size:10px;
+    color:#8493a8;
+}
 .register-muted {
-    color:#8694a8;
+    color:#8997a9;
     font-size:11px;
 }
 .risk-register .status {
-    display:inline-flex;
-    align-items:center;
-    border-radius:6px;
-    padding:5px 8px;
+    display:inline-block;
+    border-radius:5px;
+    padding:4px 7px;
     font-size:10px!important;
     font-weight:600;
     white-space:nowrap;
-    line-height:1.4;
+    max-width:100%;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    line-height:16px;
+    vertical-align:middle;
 }
 .risk-register .status-red {
     color:var(--cgbod-danger);
@@ -497,8 +622,8 @@
     background:var(--cgbod-primary-soft);
 }
 .risk-register .status-secondary {
-    color:#6d7486;
-    background:#f0f1f5;
+    color:#697487;
+    background:#f0f2f6;
 }
 .risk-register #tabledata th:last-child,.risk-register #tabledata .register-row-actions {
     position:sticky;
@@ -509,19 +634,26 @@
     z-index:3;
 }
 .register-row-actions .btn-group {
-    gap:5px;
+    gap:4px;
 }
 .risk-register .register-action-menu,.risk-register .register-view-button {
     font-size:11px;
-    min-height:32px;
-    padding:6px 9px;
-    border:1px solid #e0e7f5;
-    border-radius:6px!important;
-    color:#5a73a2;
-    background:#f7f9ff;
+    min-height:30px;
+    padding:5px 7px;
+    border:1px solid transparent;
+    border-radius:5px!important;
+    color:#6a7f9d;
+    background:transparent;
     display:inline-flex;
     align-items:center;
-    gap:5px;
+    gap:4px;
+}
+.risk-register .register-view-button {
+    color:var(--cgbod-primary);
+}
+.risk-register .register-action-menu:hover,.risk-register .register-view-button:hover {
+    background:#eaf0fc;
+    border-color:#dbe5f8;
 }
 .register-row-actions .dropdown-menu {
     font-size:12px;
@@ -536,6 +668,37 @@
 }
 .register-row-actions .dropdown-item i {
     font-size:12px!important;
+}
+.risk-register[data-density=compact] #tabledata td {
+    height:48px;
+    padding-top:6px;
+    padding-bottom:6px;
+}
+.risk-register[data-density=compact] .register-name-text,.risk-register[data-density=compact] .register-cell-text {
+    -webkit-line-clamp:1;
+    max-height:18px;
+}
+.risk-register[data-density=compact] .register-risk-name a {
+    font-size:12px;
+}
+.risk-register[data-density=compact] .register-avatar {
+    width:24px;
+    height:24px;
+}
+.risk-register[data-density=full] #tabledata td {
+    height:auto;
+    padding-top:14px;
+    padding-bottom:14px;
+}
+.risk-register[data-density=full] .register-name-text,.risk-register[data-density=full] .register-cell-text {
+    display:block;
+    -webkit-line-clamp:unset;
+    max-height:none;
+    overflow:visible;
+}
+.risk-register[data-density=full] .register-owner-label>span {
+    white-space:normal;
+    overflow-wrap:anywhere;
 }
 .register-table-footer {
     display:flex;
@@ -622,10 +785,6 @@
     .register-navigation button {
         font-size:10px;
     }
-    .register-summary-caption span {
-        display:block;
-        margin:4px 0 0;
-    }
     .register-summary {
         grid-template-columns:repeat(2,minmax(0,1fr));
         gap:10px;
@@ -674,9 +833,6 @@
         flex-direction:column;
         align-items:flex-start;
     }
-    .register-summary-caption {
-        margin-top:20px;
-    }
     .register-selection-bar {
         gap:10px;
     }
@@ -719,4 +875,181 @@
 }
 .risk-register[data-empty=true] .risk-table-scroll,.risk-register[data-empty=true] #risk-table-footer {
     display:none;
+}
+.register-header {
+    background:transparent;
+    border:0;
+    border-radius:0;
+    padding:4px 0 22px;
+}
+.register-header h1 {
+    font-size:28px;
+    margin:7px 0;
+}
+.register-header p {
+    font-size:12px;
+}
+.register-eyebrow {
+    font-size:9px;
+    color:#8795ab;
+    letter-spacing:1.4px;
+}
+.register-navigation {
+    padding:0;
+    border:0;
+    border-bottom:1px solid #dfe5ef;
+    background:transparent;
+    border-radius:0;
+    margin-bottom:20px;
+}
+.register-navigation a {
+    padding:12px 0;
+}
+.risk-register .risk-register-card {
+    box-shadow:none;
+    border-radius:12px;
+}
+.register-toolbar {
+    padding:1px 0 2px;
+}
+.register-search {
+    background:#f9fafc;
+    border-radius:7px;
+}
+.register-view-options .register-layout {
+    margin-left:auto;
+}
+.register-view-options .register-sort {
+    margin-left:0;
+}
+.register-table-footer {
+    font-size:11px;
+}
+.register-owner-more summary:focus-visible {
+    outline:3px solid #b7c8f6;
+    outline-offset:2px;
+}
+@media(max-width:767px) {
+    .register-header {
+        padding:5px 2px 18px;
+    }
+    .register-header h1 {
+        font-size:24px;
+    }
+    .register-navigation {
+        padding:0 2px;
+        gap:16px;
+        margin-bottom:16px;
+    }
+    .register-insights-heading {
+        padding:12px 14px 0;
+    }
+    .register-summary {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        padding:8px 4px;
+        gap:3px;
+    }
+    .register-summary-card {
+        padding:8px 9px;
+        margin:0 3px;
+    }
+    .register-summary-card strong {
+        font-size:20px;
+    }
+    .register-summary-label {
+        font-size:11px;
+    }
+    .register-summary-card small {
+        min-width:24px;
+        font-size:9px;
+    }
+    .register-view-options .register-layout {
+        margin-left:0;
+    }
+    .risk-table-scroll {
+        margin:0 -14px;
+        max-height:65vh;
+    }
+}
+.risk-register[data-density=full] .register-id-text {
+    white-space:normal;
+    overflow-wrap:anywhere;
+    overflow:visible;
+}
+.risk-register[data-density=full] .register-stage .status {
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+}
+@media(max-width:767px) {
+    .register-summary-card {
+        display:grid;
+        grid-template-columns:7px minmax(0,1fr) auto;
+        column-gap:7px;
+        row-gap:2px;
+        align-content:center;
+    }
+    .register-summary-card .register-rating-dot {
+        grid-column:1;
+        grid-row:1;
+    }
+    .register-summary-card .register-summary-label {
+        grid-column:2;
+        grid-row:1;
+    }
+    .register-summary-card strong {
+        grid-column:3;
+        grid-row:1;
+        margin-left:0;
+    }
+    .register-summary-card small {
+        grid-column:2/4;
+        grid-row:2;
+        text-align:left;
+    }
+}
+/* Widths include padding, so the last data columns are not pushed off desktop. */
+.risk-register #tabledata th {
+    box-sizing:border-box!important;
+}
+.risk-register #tabledata th:first-child,.risk-register #tabledata td:first-child {
+    padding-left:10px!important;
+    padding-right:10px!important;
+}
+.register-table-hint {
+    display:none;
+}
+@media(max-width:767px) {
+    .risk-register #tabledata th:last-child,.risk-register #tabledata .register-row-actions {
+        width:68px!important;
+        padding-left:4px!important;
+        padding-right:4px!important;
+    }
+    .risk-register .register-view-button span {
+        display:none;
+    }
+    .risk-register .register-action-menu,.risk-register .register-view-button {
+        padding:5px 6px;
+    }
+    .risk-register #tabledata th:first-child,.risk-register #tabledata td:first-child {
+        width:32px!important;
+        padding-left:8px!important;
+        padding-right:8px!important;
+    }
+    .risk-register #tabledata th.register-col-id {
+        width:72px!important;
+    }
+    .register-table-hint {
+        display:block;
+        font-size:10px;
+        color:#7b8ba1;
+        padding:0 0 10px;
+    }
+    .register-table-hint i {
+        color:var(--cgbod-primary);
+        margin-right:5px;
+    }
+    .risk-register[data-empty=true] .register-table-hint {
+        display:none;
+    }
 }

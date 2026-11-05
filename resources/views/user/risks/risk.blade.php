@@ -3,7 +3,7 @@
 @include('shared.forms.assets')
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <script src="{{ asset('js/risk-register.js') }}?v={{ filemtime(public_path('js/risk-register.js')) }}" defer></script>
-<div class="content cgbod-form risk-register" id="risk-register"
+<div class="content cgbod-form risk-register" id="risk-register" data-density="standard"
      data-edit-url="{{ route('risk.editrisk') }}" data-delete-url="{{ route('risk.deleterisk') }}">
     @include('user.risks.register-header')
     <div class="block block-rounded risk-register-card">
@@ -28,6 +28,7 @@
                 <i class="fa fa-search" aria-hidden="true"></i><strong id="risk-empty-title">No risks in this view</strong>
                 <p id="risk-empty-description">Add a risk or clear any page filters to see more records.</p>
             </div>
+            <div class="register-table-hint" aria-hidden="true"><i class="fa fa-arrows-alt-h"></i>Swipe the table to see more columns</div>
             <div id="content" class="risk-table-scroll" role="region" aria-label="Risk register table; scroll horizontally for more columns" tabindex="0">
                 <table class="table table-vcenter risk-register-table" id="tabledata">
                     <thead>
@@ -35,7 +36,7 @@
                         <th data-orderable="false" data-searchable="false"><input type="checkbox" id="risk-select-page" aria-label="Select risks on this page"></th>
                         <th data-searchable="false">S.No</th>
                         <th class="d-none" data-searchable="false">Internal ID</th>
-                        <th>Risk ID</th>
+                        <th class="register-col-id">Risk ID</th>
                         <th>Risk name</th>
                         <th>Risk group</th>
                         <th>Risk area</th>
@@ -54,23 +55,27 @@
                             $rr = $value->Rid;
                             $riskowners = explode(',', (string) $value->risk_owner);
                             $ownerSearch = [];
+                            $rowOwners = [];
                             foreach ($riskowners as $ownerEmail) {
-                                if (isset($riskOwnerData[$ownerEmail])) $ownerSearch[] = $riskOwnerData[$ownerEmail]['name'].' '.$riskOwnerData[$ownerEmail]['employeeid'];
+                                if (isset($riskOwnerData[$ownerEmail])) {
+                                    $ownerSearch[] = $riskOwnerData[$ownerEmail]['name'].' '.$riskOwnerData[$ownerEmail]['employeeid'];
+                                    $rowOwners[] = $riskOwnerData[$ownerEmail];
+                                }
                             }
                         @endphp
                         <tr data-risk-id="{{ $value->Rid }}" data-risk-rank="{{ $value->rank }}">
                             <td><input class="risk-row-select" type="checkbox" id="risk-select-{{ $value->Rid }}" value="{{ $value->Rid }}" name="id[]" aria-label="Select risk {{ $value->grp_id }}"></td>
                             <td class="text-center " style="font-size:10px;">{{$no=$no+1}}</td>
                             <td class="d-none">{{ $value->Rid }}</td>
-                            <td class="text-center " style="font-size:10px;">{{$value->grp_id}}</td>
+                            <td class="text-center " style="font-size:10px;"><span class="register-id-text" title="{{ $value->grp_id }}">{{ $value->grp_id }}</span></td>
                             <td class="register-risk-name" style="font-size:10px;">
-                                <a href="{{ route('risk.detail', $value->Rid) }}">{{$value->riskname}}</a>
+                                <a href="{{ route('risk.detail', $value->Rid) }}" title="{{ $value->riskname }}"><span class="register-name-text">{{ $value->riskname }}</span></a>
                             </td>
                             <td class="register-risk-group" data-search="{{ $value->riskgroup }}" style="font-size:10px;">
-                                <em class="text-muted">{{$value->riskgroup}}</em>
+                                <span class="register-cell-text" title="{{ $value->riskgroup }}">{{ $value->riskgroup }}</span>
                             </td>
                             <td class="register-risk-area" data-search="{{ $value->department ? $value->department->departmentname : '-' }}" style="font-size:10px;">
-                                <em class="text-muted">{{$value->department ? $value->department->departmentname : '-'}}</em>
+                                <span class="register-cell-text" title="{{ $value->department ? $value->department->departmentname : '-' }}">{{ $value->department ? $value->department->departmentname : '—' }}</span>
                             </td>
                             <td class="register-risk-rating" data-search="{{ $value->rank }}" data-order="{{ $value->rank === 'High' ? 3 : ($value->rank === 'Moderate' ? 2 : 1) }}">
                                 @if($value->rank=="High")
@@ -83,23 +88,28 @@
                             </td>
                             <td class="d-none"></td>
                             <td class="register-risk-owner" data-search="{{ implode(' ', $ownerSearch) }}">
-                                @foreach($riskowners as $riskowner)
-                                    @if(isset($riskOwnerData[$riskowner]))
-                                        @php $riskOwnerItem = $riskOwnerData[$riskowner]; @endphp
+                                @if(count($rowOwners))
+                                    @php $riskOwnerItem = $rowOwners[0]; @endphp
+                                    <div class="register-owner-wrap">
                                         <div class="register-owner">
                                             @if($riskOwnerItem['profile_picture'] && file_exists(public_path('/storage/profile/'.$riskOwnerItem['profile_picture'])))
                                                 <img src="{{ asset('storage/profile/'.$riskOwnerItem['profile_picture']) }}" alt="" class="register-avatar">
                                             @else
                                                 <span class="register-avatar register-avatar-initial" aria-hidden="true">{{ mb_substr($riskOwnerItem['name'], 0, 1) }}</span>
                                             @endif
-                                            <span>{{ $riskOwnerItem['name'] }} <small>{{ $riskOwnerItem['employeeid'] }}</small></span>
+                                            <span class="register-owner-label"><span title="{{ $riskOwnerItem['name'] }}">{{ $riskOwnerItem['name'] }}</span><small title="{{ $riskOwnerItem['employeeid'] }}">{{ $riskOwnerItem['employeeid'] }}</small></span>
                                         </div>
-                                    @endif
-                                @endforeach
+                                        @if(count($rowOwners) > 1)
+                                        <details class="register-owner-more"><summary aria-label="Show {{ count($rowOwners) - 1 }} additional owners">+{{ count($rowOwners) - 1 }}</summary>
+                                            <div class="register-owner-popover"><strong>Additional owners</strong><ul>@foreach(array_slice($rowOwners, 1) as $extraOwner)<li><span>{{ $extraOwner['name'] }}</span><small>{{ $extraOwner['employeeid'] }}</small></li>@endforeach</ul></div>
+                                        </details>
+                                        @endif
+                                    </div>
+                                @endif
                                 @if(!count($ownerSearch))<span class="register-muted">{{ trim((string) $value->risk_owner) === '' ? 'Unassigned' : 'Owner unavailable' }}</span>@endif
                             </td>
-                            <td data-search="{{ $value->risk_response }}">{{ $value->risk_response ?: '—' }}</td>
-                            <td data-search="{{ $value->action_status }}">
+                            <td data-search="{{ $value->risk_response }}"><span class="register-cell-text" title="{{ $value->risk_response }}">{{ $value->risk_response ?: '—' }}</span></td>
+                            <td class="register-stage" data-search="{{ $value->action_status }}" title="{{ $value->action_status }}">
                                 @if($value->action_status=='Active Risk')
                                     <span class="status status-success" style="font-size:10px;">{{$value->action_status}}</span>
                                 @elseif($value->action_status=='Action under review')

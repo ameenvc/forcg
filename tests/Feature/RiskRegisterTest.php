@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class RiskRegisterTest extends TestCase
 {
-    private function renderRegister($canManage = true, $empty = false)
+    private function renderRegister($canManage = true, $empty = false, $stress = false)
     {
         view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));
         // Isolate the real register view from the unrelated global composer,
@@ -35,12 +35,22 @@ class RiskRegisterTest extends TestCase
                 'postedby' => 'TEST1', 'riskreviewer_id' => 1, 'riskreviewer' => (object) ['email' => 'reviewer@example.test'],
             ]);
         }
+        if ($stress && !$empty) {
+            $rows[0]->riskname = 'Production interruption caused by prolonged unavailability of specialized critical spare parts from geographically concentrated suppliers during concurrent logistics and cross-border disruption';
+            $rows[0]->riskgroup = 'Operational resilience and business continuity across critical production processes';
+            $rows[0]->department->departmentname = 'Central engineering, maintenance and production support department';
+            $rows[0]->risk_owner = 'reviewer@example.test,owner@example.test,second@example.test,third@example.test';
+            $rows[0]->risk_response = 'Mitigate through supplier diversification, continuity planning and contingency inventory';
+            $rows[1]->riskname = str_repeat('UnbrokenRiskIdentifier', 8);
+        }
         return view('user.risks.risk', [
             'data' => $rows, 'email' => collect(['reviewer@example.test']),
-            'riskOwnerData' => [
+            'riskOwnerData' => array_filter([
                 'owner@example.test' => ['name' => 'Alice Walker', 'employeeid' => 'E02', 'profile_picture' => null],
-                'reviewer@example.test' => ['name' => 'Morgan Reed', 'employeeid' => 'TEST1', 'profile_picture' => null],
-            ],
+                'reviewer@example.test' => ['name' => $stress ? 'Morgan Alexandra Catherine Reed-Montgomery, regional engineering and continuity coordinator' : 'Morgan Reed', 'employeeid' => 'TEST1', 'profile_picture' => null],
+                'second@example.test' => ['name' => 'Alexandra Catherine Montgomery-Williams', 'employeeid' => 'E03', 'profile_picture' => null],
+                'third@example.test' => ['name' => 'Christopher James Anderson', 'employeeid' => 'E04', 'profile_picture' => null],
+            ], function ($owner, $email) use ($stress) { return $stress || !in_array($email, ['second@example.test', 'third@example.test']); }, ARRAY_FILTER_USE_BOTH),
         ])->render();
     }
 
@@ -60,6 +70,18 @@ class RiskRegisterTest extends TestCase
         $this->assertStringContainsString('Resubmit Risk', $html);
         $this->assertStringContainsString('Risk History', $html);
         if (getenv('RISK_REGISTER_PREVIEW_PATH')) file_put_contents(getenv('RISK_REGISTER_PREVIEW_PATH'), $html);
+    }
+
+    public function testLongTextAndMultipleOwnersRemainAvailableWithoutForcingTallRows()
+    {
+        $html = $this->renderRegister(true, false, true);
+        $this->assertStringContainsString('prolonged unavailability of specialized critical spare parts', $html);
+        $this->assertStringContainsString('register-name-text', $html);
+        $this->assertStringContainsString('Show 3 additional owners', $html);
+        $this->assertStringContainsString('Alexandra Catherine Montgomery-Williams', $html);
+        $this->assertStringContainsString('value="full"', $html);
+        $this->assertStringContainsString('data-density="standard"', $html);
+        if (getenv('RISK_REGISTER_STRESS_PREVIEW_PATH')) file_put_contents(getenv('RISK_REGISTER_STRESS_PREVIEW_PATH'), $html);
     }
 
     public function testBulkActionsStayHiddenWithoutExistingPermissions()

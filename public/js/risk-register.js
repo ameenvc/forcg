@@ -8,7 +8,13 @@
         if (!$ || !$.fn.DataTable) { get('risk-register-feedback').textContent = 'Table controls could not load. Refresh the page to try again.'; return; }
         const table = $('#tabledata').DataTable({
             responsive: false, autoWidth: false, order: [], pageLength: 25, lengthChange: false,
-            columnDefs: [{targets: [1, 2, 8], visible: false}, {targets: [0, 12], orderable: false}, {targets: [0, 1, 2, 8, 12], searchable: false}],
+            columnDefs: [
+                {targets: [1, 2, 8], visible: false}, {targets: [0, 12], orderable: false}, {targets: [0, 1, 2, 8, 12], searchable: false},
+                {targets: 0, width: '40px'}, {targets: 1, width: '52px'}, {targets: 3, width: '90px'},
+                {targets: 4, width: '280px'}, {targets: 5, width: '110px'}, {targets: 6, width: '120px'},
+                {targets: 7, width: '90px'}, {targets: 9, width: '190px'}, {targets: 10, width: '100px'},
+                {targets: 11, width: '170px'}, {targets: 12, width: '110px'}
+            ],
             dom: 't<"register-table-footer"ip>',
             language: {emptyTable: 'No risks have been added to this view.', zeroRecords: 'No matching risks. Try a different search or clear the filters.', info: 'Showing _START_–_END_ of _TOTAL_ risks', infoEmpty: 'No risks to show', infoFiltered: '(from _MAX_ in this view)', paginate: {previous: 'Previous', next: 'Next'}}
         });
@@ -20,9 +26,26 @@
             menu.style.top = `${rect.bottom + height + 8 < innerHeight ? rect.bottom + 5 : Math.max(8, rect.top - height - 5)}px`;
             this.closest('td').style.zIndex = '12';
         }).on('hidden.bs.dropdown', '.btn-group', function () { this.closest('td').style.zIndex = ''; });
-        const closeRowMenus = () => $('#tabledata [data-toggle="dropdown"]').dropdown('hide');
+        const closeOwnerMenus = except => table.rows().nodes().toArray().forEach(row => row.querySelectorAll('.register-owner-more[open]').forEach(menu => { if (menu !== except) menu.open = false; }));
+        const closeRowMenus = () => { $(table.rows().nodes().toArray()).find('[data-toggle="dropdown"]').dropdown('hide'); closeOwnerMenus(); };
         get('content').addEventListener('scroll', closeRowMenus);
         window.addEventListener('resize', closeRowMenus);
+        root.addEventListener('toggle', event => {
+            const menu = event.target;
+            if (!menu.matches('.register-owner-more')) return;
+            if (!menu.open) { menu.closest('td').style.zIndex = ''; return; }
+            closeOwnerMenus(menu);
+            const popup = menu.querySelector('.register-owner-popover'), rect = menu.querySelector('summary').getBoundingClientRect();
+            const width = popup.offsetWidth, height = popup.offsetHeight;
+            popup.style.left = `${Math.max(8, Math.min(innerWidth - width - 8, rect.right - width))}px`;
+            popup.style.top = `${rect.bottom + height + 8 < innerHeight ? rect.bottom + 5 : Math.max(8, rect.top - height - 5)}px`;
+            menu.closest('td').style.zIndex = '11';
+        }, true);
+        root.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && event.target.closest('.register-owner-more')) {
+                const menu = event.target.closest('.register-owner-more'); menu.open = false; menu.querySelector('summary').focus();
+            }
+        });
         root.querySelectorAll('.register-table-footer').forEach(footer => get('risk-table-footer').append(footer));
         const selected = new Set(), filters = [...root.querySelectorAll('[data-filter-column]')];
         const search = get('risk-register-search'), selectPage = get('risk-select-page');
@@ -60,6 +83,8 @@
             const counts = {High: 0, Moderate: 0, Low: 0};
             table.rows().nodes().toArray().forEach(row => { if (row.dataset.riskRank in counts) counts[row.dataset.riskRank]++; });
             root.querySelectorAll('[data-register-count]').forEach(node => { node.textContent = node.dataset.registerCount ? counts[node.dataset.registerCount] : total; });
+            root.querySelectorAll('[data-register-share]').forEach(node => { node.textContent = `${total ? Math.round(100 * counts[node.dataset.registerShare] / total) : 0}%`; });
+            root.querySelectorAll('[data-register-distribution]').forEach(node => { node.style.width = `${total ? 100 * counts[node.dataset.registerDistribution] / total : 0}%`; });
             const ids = table.rows({search: 'applied'}).data().toArray().map(row => String(row[2]).trim());
             root.querySelectorAll('.export-link').forEach(link => {
                 const url = new URL(link.dataset.exportBase, window.location.href);
@@ -79,6 +104,11 @@
             table.search(search.value).draw();
         }
         table.on('draw.dt', refreshView);
+        table.on('preDraw.dt', closeRowMenus);
+        get('risk-row-layout').addEventListener('change', event => {
+            if (busy) return;
+            closeRowMenus(); root.dataset.density = event.target.value; table.columns.adjust();
+        });
         search.addEventListener('input', applyFilters);
         filters.forEach(field => field.addEventListener('change', applyFilters));
         get('risk-toggle-filters').addEventListener('click', () => {
@@ -130,7 +160,7 @@
             table.draw(false);
             get('risk-register-feedback').textContent = `Deleted ${deleted.length} risk(s).${failed.length ? ` ${failed.length} could not be deleted and remain selected. Please check your access or try again.` : ''}`;
         });
-        document.addEventListener('click', event => { root.querySelectorAll('.register-menu[open]').forEach(menu => { if (!menu.contains(event.target)) menu.open = false; }); });
+        document.addEventListener('click', event => { root.querySelectorAll('.register-menu[open], .register-owner-more[open]').forEach(menu => { if (!menu.contains(event.target)) menu.open = false; }); });
         refreshView();
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();

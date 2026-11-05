@@ -39,6 +39,16 @@ Blade escapes filter values and row metadata. Owner filters match employee IDs w
 
 ## Validation
 
-`bash tools/risk-ai-dev.sh test` passes 27 tests / 170 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
+`bash tools/risk-ai-dev.sh test` passes 28 tests / 176 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
 
 Browser checks with the real local DataTables assets and 31 synthetic rows passed search, rating/group/owner filtering, filtered export IDs, no-result display, numeric severity sorting, filtering hidden columns, pagination selection, clear-on-filter behavior, delete cancellation, partial failures with mocked requests, visible row menus, and desktop/mobile overflow checks. No real risks were deleted and no customer exports were generated during tests. These checks do not establish production deployment or resolve the separate fresh-database migration blocker.
+
+## Content-aware row layouts
+
+The overview is a compact distribution strip with counts, percentages and a proportional rating bar, rather than separate large dashboard cards. It summarizes the loaded register view before table filters.
+
+Standard rows are 64 px high and clamp risk names, group, area and response to two lines. Compact rows are 48 px high with a one-line preview. Full text deliberately removes the clamp and allows automatic height. Full strings remain in the DOM/search data, native title text and the existing detail view; nothing is shortened in storage or exports. Row widths include padding to avoid pushing the final data columns off the desktop view.
+
+One owner is shown in the row; additional owners open in a keyboard-accessible native details popup. All owner names and employee IDs remain in filtering/search metadata. Opening the popup does not increase row height. It closes on scrolling, paging, outside clicks or Escape.
+
+Stress validation uses long and unbroken risk names, long groups/areas/responses, a long primary owner name and four owners. Browser measurements confirmed all standard rows at 64 px and compact rows at 48 px on desktop and mobile; variable heights appeared only after explicitly selecting Full text. Tests also checked that additional owners are visible and searchable, that the popup is not clipped, and that summary labels/counts fit on mobile.

@@ -45,7 +45,7 @@ Browser checks with the real local DataTables assets and 31 synthetic rows passe
 
 ## Content-aware row layouts
 
-The overview is a compact distribution strip with counts, percentages and a proportional rating bar, rather than separate large dashboard cards. It summarizes the loaded register view before table filters.
+Rating counts are inline tabs inside the table toolbar: All risks, High, Moderate and Low. There is no separate summary panel, percentage display or distribution bar. Counts summarize the loaded register view before table filters, and selecting a tab applies that rating filter.
 
 Standard rows are 64 px high and clamp risk names, group, area and response to two lines. Compact rows are 48 px high with a one-line preview. Full text deliberately removes the clamp and allows automatic height. Full strings remain in the DOM/search data, native title text and the existing detail view; nothing is shortened in storage or exports. Row widths include padding to avoid pushing the final data columns off the desktop view.
 

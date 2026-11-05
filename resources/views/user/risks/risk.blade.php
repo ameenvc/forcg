@@ -21,6 +21,7 @@
                     {!!Session::get('msg')!!}
                 </div>
             @endif
+            @include('user.risks.register-rating-tabs')
             @include('user.risks.register-toolbar')
             <div id="risk-register-feedback" role="status" aria-live="polite"></div>
             <input type="hidden" value="a1" id="tabselected">

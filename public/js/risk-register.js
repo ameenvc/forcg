@@ -83,8 +83,6 @@
             const counts = {High: 0, Moderate: 0, Low: 0};
             table.rows().nodes().toArray().forEach(row => { if (row.dataset.riskRank in counts) counts[row.dataset.riskRank]++; });
             root.querySelectorAll('[data-register-count]').forEach(node => { node.textContent = node.dataset.registerCount ? counts[node.dataset.registerCount] : total; });
-            root.querySelectorAll('[data-register-share]').forEach(node => { node.textContent = `${total ? Math.round(100 * counts[node.dataset.registerShare] / total) : 0}%`; });
-            root.querySelectorAll('[data-register-distribution]').forEach(node => { node.style.width = `${total ? 100 * counts[node.dataset.registerDistribution] / total : 0}%`; });
             const ids = table.rows({search: 'applied'}).data().toArray().map(row => String(row[2]).trim());
             root.querySelectorAll('.export-link').forEach(link => {
                 const url = new URL(link.dataset.exportBase, window.location.href);

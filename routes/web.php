@@ -753,6 +753,12 @@ Route::post('/public/nearmiss/report/employeeid-verification','ApprovalControlle
  */
 Route::middleware(['track.activity'])->group(function () {
     //risk
+    Route::get('/user/risks/ai/organization', 'RiskAiOrganizationController@index')->name('risk.ai.organization');
+    Route::post('/user/risks/ai/organization/profile', 'RiskAiOrganizationController@saveProfile')->name('risk.ai.organization.profile');
+    Route::post('/user/risks/ai/organization/notes', 'RiskAiOrganizationController@addNote')->name('risk.ai.organization.notes');
+    Route::post('/user/risks/ai/organization/notes/{id}/withdraw', 'RiskAiOrganizationController@withdrawNote')->name('risk.ai.organization.withdraw');
+    Route::post('/user/risks/ai/feedback', 'RiskAiOrganizationController@feedback')->name('risk.ai.feedback');
+    Route::post('/user/risks/ai/feedback/{id}/review', 'RiskAiOrganizationController@reviewFeedback')->name('risk.ai.feedback.review');
     Route::post('/user/risks/ai/draft', 'RiskAiController@draft')->name('risk.ai.draft');
     Route::get('/user/riskmgmt', 'RiskController@regrisk')->name('risk.index');
     Route::get('/user/riskmgmt/{id}/detail', 'RiskController@regriskDetail')->name('risk.detail');

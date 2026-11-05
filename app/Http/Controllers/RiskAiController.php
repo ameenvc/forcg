@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\RiskAiService;
+use App\Services\RiskOrganizationKnowledge;
 use Illuminate\Http\Request;
 
 class RiskAiController extends Controller
@@ -12,7 +13,7 @@ class RiskAiController extends Controller
         $this->middleware(['auth:web,admin', 'mfa', 'throttle:10,1']);
     }
 
-    public function draft(Request $request, RiskAiService $service)
+    public function draft(Request $request, RiskAiService $service, RiskOrganizationKnowledge $knowledge)
     {
         abort_unless(config('risk_ai.enabled'), 404);
         $context = $request->validate([
@@ -38,16 +39,16 @@ class RiskAiController extends Controller
             'impact' => 'nullable|integer|between:1,3|required_with:likelihood',
             'likelihood' => 'nullable|integer|between:1,3|required_with:impact',
         ]);
-        // Draft only from supplied form text: no database reads or record writes.
+        // Organization context is resolved server-side; browser-supplied organization data is ignored.
         try {
-            if (($context['action'] ?? '') === 'register_review') {
-                return response()->json($service->registerReview($context))->header('Cache-Control', 'no-store');
-            }
-            if (($context['action'] ?? '') === 'review') {
-                return response()->json($service->review($context))->header('Cache-Control', 'no-store');
-            }
-            $result = ($context['action'] ?? 'draft') === 'suggest' ? $service->suggestions($context) : $service->draft($context);
-            return response()->json($result)->header('Cache-Control', 'no-store');
+            $organization = $knowledge->context($context);
+            if ($organization) $context['organization'] = $organization;
+            $action = $context['action'] ?? 'draft';
+            if ($action === 'register_review') $result = $service->registerReview($context);
+            elseif ($action === 'review') $result = $service->review($context);
+            elseif ($action === 'suggest') $result = $service->suggestions($context);
+            else $result = $service->draft($context);
+            return response()->json($knowledge->complete($context, $result))->header('Cache-Control', 'no-store');
         } catch (\Exception $exception) {
             // Never return upstream responses or credentials to the browser.
             return response()->json(['message' => 'Risk assistance is temporarily unavailable. Please try again or contact your administrator.'], 502);

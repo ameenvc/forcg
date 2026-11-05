@@ -55,6 +55,10 @@ class AppServiceProvider extends ServiceProvider
         DB::listen(function ($query) {
             // Check if the SQL query is of type INSERT, UPDATE, or DELETE
             if (preg_match('/^(insert|update|delete|replace)/i', $query->sql)) {
+                if (preg_match('/risk_ai_(profiles|knowledge_notes|runs|feedback)/i', $query->sql)) {
+                    Log::info('Organization AI data write', ['operation' => strtolower(strtok(ltrim($query->sql), ' '))]);
+                    return; // Do not duplicate organization knowledge or answer/feedback contents in debug logs.
+                }
                 Log::info('SQL Query: ' . $query->sql);
                 Log::info('Bindings: ' . json_encode($query->bindings));
                 $currentUrl = request()->fullUrl();
@@ -96,6 +100,7 @@ class AppServiceProvider extends ServiceProvider
             'user.risks.mitigation._mitigation_detail',
             'user.risks.mitigation._mitigation_attachment',
             'user.risks._analysis_group_item',
+            'user.risks.organization-ai-answer',
             'exporting.forcorrective'
         ];
 

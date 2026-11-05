@@ -108,5 +108,10 @@ class AuthServiceProvider extends ServiceProvider
                 });
             }
         //}
+        Gate::define('manage-risk-ai-knowledge', function ($user) {
+            if ($user instanceof \App\Admin) return true;
+            return $user instanceof User && \Illuminate\Support\Facades\Schema::hasTable('user_gates')
+                && $user->gates()->where('key', 'manage-risk-ai-knowledge')->exists();
+        });
     }
 }

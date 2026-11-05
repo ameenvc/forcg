@@ -39,6 +39,7 @@
         <details class="risk-ai-support"><summary>Suggested actions &amp; questions to consider</summary><div id="risk-ai-results"></div></details>
         <p class="risk-ai-note">Only the name, description and drivers will be filled. Your existing controls, ratings and reviewer stay as entered.</p>
         <button type="button" class="btn btn-primary" id="risk-ai-apply-all" hidden>Use this draft in the form <i class="fa fa-check ml-1" aria-hidden="true"></i></button>
+        <div id="risk-ai-answer-feedback"></div>
     </div>
     @else
     <p class="mb-0 mt-2">AI assistance is not available yet. Contact your administrator to enable it.</p>

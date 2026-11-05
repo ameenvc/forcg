@@ -24,7 +24,7 @@
     panel.addEventListener('keydown', event => {
         if (event.key === 'Escape') { event.preventDefault(); openPanel(false); }
         if (event.key === 'Tab') {
-            const focusable = [...panel.querySelectorAll('button, input, textarea, summary')].filter(el => !el.disabled && el.getClientRects().length);
+            const focusable = [...panel.querySelectorAll('button, input, textarea, select, a[href], summary')].filter(el => !el.disabled && el.getClientRects().length);
             const first = focusable[0], last = focusable[focusable.length - 1];
             if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
             else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
@@ -42,12 +42,12 @@
         message.textContent = text;
         message.classList.toggle('text-danger', error);
     }
-    function resetDraft() { editor.hidden = true; apply.hidden = true; hasDraft = false; topicArea.hidden = false; ideas.hidden = false; }
+    function resetDraft() { get('risk-ai-answer-feedback')?.replaceChildren(); editor.hidden = true; apply.hidden = true; hasDraft = false; topicArea.hidden = false; ideas.hidden = false; }
     get('risk-ai-back').addEventListener('click', () => { resetDraft(); status('Choose another risk, or refine your topic.'); (ideas.querySelector('button[aria-pressed="true"]') || concern).focus(); });
     function setBusy(active) {
         busy = active; find.disabled = active; concern.disabled = active;
         topicButtons.forEach(button => { button.disabled = active; });
-        ideas.querySelectorAll('button').forEach(button => { button.disabled = active; });
+        ideas.querySelectorAll('.risk-ai-choice').forEach(button => { button.disabled = active; });
         panel.setAttribute('aria-busy', String(active));
     }
     async function request(action, selected) {
@@ -79,8 +79,9 @@
                 items.forEach(item => { const li = document.createElement('li'); li.textContent = item; list.append(li); });
                 support.append(heading, list);
             });
-            ideas.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.riskName === name)));
+            ideas.querySelectorAll('.risk-ai-choice').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.riskName === name)));
             hasDraft = true; topicArea.hidden = true; ideas.hidden = true; editor.hidden = false; apply.hidden = false; status(data.notice);
+            window.CgbodRiskAiFeedback?.mount(get('risk-ai-answer-feedback'), data);
             get('risk-ai-draft-name').focus();
         } catch (error) { status(error.message, true); }
         finally { setBusy(false); }
@@ -101,6 +102,7 @@
                 const reason = document.createElement('span'); reason.textContent = item.reason;
                 button.append(title, reason); button.addEventListener('click', () => chooseRisk(item.risk_name)); ideas.append(button);
             });
+            window.CgbodRiskAiFeedback?.mount(ideas, data);
         } catch (error) { status(error.message, true); }
         finally { setBusy(false); }
     }

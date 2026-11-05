@@ -227,6 +227,12 @@
                                     </td>
                                 </tr>
 
+                                <tr style="background-color:white" class="sub-tr d-none">
+                                    <td><span style="font-size:12px">Organization AI knowledge</span></td>
+                                    <td><span style="font-size:11px">Approve organization context and review AI feedback</span></td>
+                                    <td><div class="custom-control custom-switch custom-control-success mb-1"><input type="checkbox" name="risk_ai_knowledge" value="1" id="risk-ai-knowledge-permission" class="custom-control-input" @if(count($ids) && \App\UserGate::whereIn('users_id', $ids)->where('key', 'manage-risk-ai-knowledge')->count() === count($ids)) checked @endif><label class="custom-control-label" for="risk-ai-knowledge-permission"></label></div></td>
+                                </tr>
+
                                 <tr style="background-color:#ededed" class="sub-tr d-none">
 
 

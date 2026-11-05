@@ -39,7 +39,7 @@ Blade escapes filter values and row metadata. Owner filters match employee IDs w
 
 ## Validation
 
-`bash tools/risk-ai-dev.sh test` passes 36 tests / 261 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
+`bash tools/risk-ai-dev.sh test` passes 44 tests / 328 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
 
 Browser checks with the real local DataTables assets and 31 synthetic rows passed search, rating/group/owner filtering, filtered export IDs, no-result display, numeric severity sorting, filtering hidden columns, pagination selection, clear-on-filter behavior, delete cancellation, partial failures with mocked requests, visible row menus, and desktop/mobile overflow checks. No real risks were deleted and no customer exports were generated during tests. These checks do not establish production deployment or resolve the separate fresh-database migration blocker.
 
@@ -74,3 +74,5 @@ The existing authenticated analysis GET route also returns JSON with no-store ca
 The risk navigation (and form section bar) includes System/Light/Dark. The browser preference is saved under cgbod-risk-theme; System follows prefers-color-scheme. The shared theme covers risk registers, analysis, Add Risk, full detail and AI/detail dialogs, with a blue-grey light canvas and dark slate surfaces. The register uses subtle vertical separators, horizontal row lines, alternating shading and hover/selection emphasis.
 
 Additional checks cover date boundaries, creation timestamp precedence, legacy fallback, missing/invalid dates, current/closed scopes, no-store JSON refreshes, polling visibility and applied-filter behavior, failure retention, theme persistence/system overrides, primary/table text contrast and desktop/mobile fit. Live hosting has not been verified.
+
+Organization AI is available from the risk navigation. Its approved profile/notes guide live form and review requests, and answer-level feedback can become shared knowledge only through an authorized, sourced review. See [organization-ai.md](organization-ai.md) for the one-time migration, permissions, organization namespace and persistence details.

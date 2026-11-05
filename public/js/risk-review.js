@@ -24,6 +24,7 @@
                 (items.length ? items : ['No specific gaps identified; verify the supporting evidence.']).forEach(text => { const item = document.createElement('li'); item.textContent = text; list.append(item); });
                 section.append(list); results.append(section);
             });
+            window.CgbodRiskAiFeedback?.mount(results, data);
             status.textContent = data.notice; results.hidden = false;
         } catch (error) {
             status.textContent = 'Review could not be completed. Please try again. If this continues, ask your administrator to check AI configuration.';

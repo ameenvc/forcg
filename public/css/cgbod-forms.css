@@ -98,3 +98,16 @@
 
 /* Alternate section accents in the brand sequence: blue, purple, blue. */
 .cgbod-form-section:nth-of-type(odd) .cgbod-section-number { background:var(--cgbod-primary-soft); color:var(--cgbod-primary); border-color:#dbe5fc; }
+/* Shared organization context and answer feedback in risk assistants. */
+.risk-ai-feedback,.risk-ai-org-comments {grid-column:1/-1;border:1px solid var(--cgbod-border,#dfe5f1);border-radius:9px;padding:16px;margin-top:12px;background:var(--cgbod-surface,#fff);color:var(--cgbod-ink,#334766);}
+.risk-ai-feedback p,.risk-ai-org-comments p {font-size:12px;line-height:1.7;margin:0 0 10px;}
+.risk-ai-feedback summary {font-size:11px;cursor:pointer;color:var(--cgbod-primary,#3563db);padding:6px 0;}
+.risk-ai-feedback>a {display:inline-block;font-size:11px;margin:8px 0;color:var(--cgbod-primary,#3563db);}
+.risk-ai-feedback ul {font-size:11px;line-height:1.7;padding-left:18px;}
+.risk-ai-feedback fieldset {border:0;padding:12px 0 0;min-width:0;}
+.risk-ai-feedback legend {font-size:13px;font-weight:600;}
+.risk-ai-feedback label {display:flex;flex-direction:column;gap:7px;font-size:12px;margin:12px 0;}
+.risk-ai-feedback select,.risk-ai-feedback textarea {width:100%;border:1px solid var(--cgbod-border,#dfe5f1);border-radius:7px;padding:10px;background:var(--cgbod-canvas,#f5f7fc);color:inherit;font-size:12px;}
+.risk-ai-feedback small {display:block;font-size:11px;line-height:1.7;color:var(--cgbod-muted,#657893);}
+.risk-ai-feedback .btn {font-size:11px;margin:12px 0;}
+.risk-ai-org-comments h4 {font-size:13px;font-weight:650;margin:0 0 10px;}

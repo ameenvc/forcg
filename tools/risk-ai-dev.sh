@@ -20,9 +20,12 @@ case "${1:-test}" in
     test)
         docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit --filter 'RiskAi|RiskSubmission|RiskRegister'
         ;;
+    migrate-learning)
+        docker run "${common[@]}" --entrypoint php "$image" artisan migrate --path=database/migrations/2026_11_05_200000_create_risk_ai_organization_learning_tables.php --force
+        ;;
     serve)
         docker run "${common[@]}" -p 127.0.0.1:8080:8080 --entrypoint php "$image" \
             -d curl.cainfo=/run/ca.pem -d openssl.cafile=/run/ca.pem -S 0.0.0.0:8080 -t public server.php
         ;;
-    *) echo 'Usage: bash tools/risk-ai-dev.sh {install|test|serve}' >&2; exit 2 ;;
+    *) echo 'Usage: bash tools/risk-ai-dev.sh {install|test|migrate-learning|serve}' >&2; exit 2 ;;
 esac

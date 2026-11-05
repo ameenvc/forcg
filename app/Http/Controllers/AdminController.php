@@ -422,6 +422,7 @@ class AdminController extends Controller
         $this->insertToUserGate($emergency_all, $ids, 'emergency-all-pages');
         $this->insertToUserGate($risk_all, $ids, 'risk-all-pages');
         $this->insertToUserGate($risk_analysis, $ids, 'risk-analysis-page');
+        $this->insertToUserGate($request->input('risk_ai_knowledge'), $ids, 'manage-risk-ai-knowledge');
         $this->insertToUserGate($objective_all, $ids, 'objective-all-pages');
         $this->insertToUserGate($envi_all, $ids, 'envi-all-pages');
         $this->insertToUserGate($envi_analysis, $ids, 'envi-analysis-page');

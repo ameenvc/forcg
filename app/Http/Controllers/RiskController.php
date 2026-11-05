@@ -653,7 +653,7 @@ class RiskController extends Controller
         $users = User::orderBy('name')->get();
         //------------------closed--------
 
-        $data2 = Risk::where('action_status', '=', 'Closed')->orderby('date', 'DESC')->get();
+        $data2 = Risk::with('department')->where('action_status', '=', 'Closed')->orderby('date', 'DESC')->get();
         return view('user.risks.closedrisks')->with('data2', $data2)->withDepartments($departments)->withMr($mr)->with('email', $email)->with('model', $models)->with('users', $users);
     }
 
@@ -1192,343 +1192,39 @@ class RiskController extends Controller
 
     public function analysis()
     {
-        //------------Analysis-------------
-
-        //------strategic    - High / Moderate / Low
-        $chart = new RiskAnalysis;
-        $chart->title("Strategic");
-        $chart->labels(['High', 'Moderate', 'Low']);
-        $str_high = DB::select("select COUNT(r.rank)AS number
-                        FROM  risks AS r
-                        right JOIN risknames AS s
-                        ON r.riskgroup= 'Strategic' and s.riskgroups='Strategic'
-                         and  r.rank='High' and r.status='yes' and r.action_status!='Closed'
-                        ");
-        // dd($str_high);
-        $str_moderate = DB::select("select COUNT(r.rank)AS number
-                            FROM  risks AS r
-                            right JOIN risknames AS s
-                            ON r.riskgroup= 'Strategic' and s.riskgroups='Strategic'
-                            and  r.rank='Moderate' and r.status='YES' and r.action_status!='Closed'
-                            ");
-        $str_low = DB::select("select COUNT(r.rank)AS number
-                        FROM  risks AS r
-                        right JOIN risknames AS s
-                        ON r.riskgroup= 'Strategic' and s.riskgroups='Strategic'
-                        and  r.rank='Low' and r.status='YES' and r.action_status!='Closed'
-                        ");
-        $total = DB::select("select COUNT(r.rank)AS number
-                            FROM   risks AS r
-                            right JOIN risknames AS s
-                            ON r.riskgroup= s.riskgroups
-                            and  r.status='YES' and r.action_status!='Closed'
-                            ");
-
-        $highstr = [];
-        foreach ($str_high as $key) {
-            array_push($highstr, $key->number);
+        $emptyCounts = ['total' => 0, 'High' => 0, 'Moderate' => 0, 'Low' => 0, 'Unassessed' => 0];
+        $analysisData = ['totals' => $emptyCounts, 'groups' => [], 'departments' => []];
+        // Use the same soft-delete scope for every summary and breakdown.
+        $groupRows = Risk::select('riskgroup', 'rank', DB::raw('COUNT(*) as total'))->groupBy('riskgroup', 'rank')->get();
+        foreach ($groupRows as $row) {
+            $group = trim((string) $row->riskgroup) ?: 'Unspecified';
+            $rating = in_array($row->rank, ['High', 'Moderate', 'Low'], true) ? $row->rank : 'Unassessed';
+            if (!isset($analysisData['groups'][$group])) $analysisData['groups'][$group] = ['counts' => $emptyCounts, 'departments' => []];
+            $count = (int) $row->total;
+            $analysisData['totals']['total'] += $count;
+            $analysisData['totals'][$rating] += $count;
+            $analysisData['groups'][$group]['counts']['total'] += $count;
+            $analysisData['groups'][$group]['counts'][$rating] += $count;
         }
-        $moderatestr = [];
-        foreach ($str_moderate as $key) {
-            array_push($moderatestr, $key->number);
+        $departmentRows = Risk::leftJoin('departments', 'risks.riskarea', '=', 'departments.id')
+            ->select('risks.riskgroup', 'departments.code', 'risks.rank', DB::raw('COUNT(*) as total'))
+            ->groupBy('risks.riskgroup', 'departments.code', 'risks.rank')->get();
+        foreach ($departmentRows as $row) {
+            $group = trim((string) $row->riskgroup) ?: 'Unspecified';
+            $department = trim((string) $row->code) ?: 'Unassigned';
+            $rating = in_array($row->rank, ['High', 'Moderate', 'Low'], true) ? $row->rank : 'Unassessed';
+            if (!isset($analysisData['departments'][$department])) $analysisData['departments'][$department] = $emptyCounts;
+            if (!isset($analysisData['groups'][$group]['departments'][$department])) $analysisData['groups'][$group]['departments'][$department] = $emptyCounts;
+            $count = (int) $row->total;
+            $analysisData['departments'][$department]['total'] += $count;
+            $analysisData['departments'][$department][$rating] += $count;
+            $analysisData['groups'][$group]['departments'][$department]['total'] += $count;
+            $analysisData['groups'][$group]['departments'][$department][$rating] += $count;
         }
-        $lowstr = [];
-        foreach ($str_low as $key) {
-            array_push($lowstr, $key->number);
-        }
-        $totalstr = [];
-        foreach ($total as $key) {
-            array_push($totalstr, $key->number);
-        }
-        // $highper= floor( $highstr[0] / $totalstr[0] *100) ;
-        // $medper= floor( $moderatestr[0] / $totalstr[0] *100 ) ;
-        // $lowper= floor( $lowstr[0] / $totalstr[0] *100 ) ;
-        $chart->dataset('', 'doughnut', [$highstr, $moderatestr, $lowstr])
-        // ->color(['#f7533e','#FFD700','#a6ff00'])
-            ->backgroundcolor(['#f7533e', '#FFD700', '#a6ff00']);
-        $chart->displayAxes(false);
-
-        //------operational    - High / Moderate / Low
-        $charto = new RiskAnalysis;
-        $charto->title("Operational");
-        $charto->labels(['High', 'Moderate', 'Low']);
-        $opr_high = DB::select("select COUNT(r.rank)AS number
-                         FROM  risks AS r
-                         right JOIN risknames AS s
-                         ON r.riskgroup= 'Operational' and s.riskgroups='Operational'
-                          and  r.rank='High' and r.status='yes'and r.action_status!='Closed'
-                         ");
-        // dd($str_high);
-        $opr_moderate = DB::select("select COUNT(r.rank)AS number
-                             FROM  risks AS r
-                             right JOIN risknames AS s
-                             ON r.riskgroup= 'Operational' and s.riskgroups='Operational'
-                             and  r.rank='Moderate' and r.status='YES' and r.action_status!='Closed'
-                             ");
-        $opr_low = DB::select("select COUNT(r.rank)AS number
-                         FROM  risks AS r
-                         right JOIN risknames AS s
-                         ON r.riskgroup= 'Operational' and s.riskgroups='Operational'
-                         and  r.rank='Low' and r.status='YES' and r.action_status!='Closed'
-                         ");
-        $total = DB::select("select COUNT(r.rank)AS number
-                             FROM   risks AS r
-                             right JOIN risknames AS s
-                             ON r.riskgroup= s.riskgroups
-                             and  r.status='YES' and r.action_status!='Closed'
-                             ");
-
-        $highopr = [];
-        foreach ($opr_high as $key) {
-            array_push($highopr, $key->number);
-        }
-        $moderateopr = [];
-        foreach ($opr_moderate as $key) {
-            array_push($moderateopr, $key->number);
-        }
-        $lowopr = [];
-        foreach ($opr_low as $key) {
-            array_push($lowopr, $key->number);
-        }
-        $totalopr = [];
-        foreach ($total as $key) {
-            array_push($totalopr, $key->number);
-        }
-        //  $highper= floor( $highopr[0] / $totalopr[0] *100) ;
-        //  $medper= floor( $moderateopr[0] / $totalopr[0] *100 ) ;
-        //  $lowper= floor( $lowopr[0] / $totalopr[0] *100 ) ;
-        $charto->dataset('', 'doughnut', [$highopr, $moderateopr, $lowopr])
-        //  ->color(['#f7533e','#FFD700','#a6ff00'])
-            ->backgroundcolor(['#f7533e', '#FFD700', '#a6ff00']);
-        $charto->displayAxes(false);
-
-        //------Financial    - High / Moderate / Low
-        $chartf = new RiskAnalysis;
-        $chartf->title("Financial");
-        $chartf->labels(['High', 'Moderate', 'Low']);
-        $f_high = DB::select("select COUNT(r.rank)AS number
-                    FROM  risks AS r
-                    right JOIN risknames AS s
-                    ON r.riskgroup= 'Financial' and s.riskgroups='Financial'
-                     and  r.rank='High' and r.status='yes' and r.action_status!='Closed'
-                    ");
-
-        $f_moderate = DB::select("select COUNT(r.rank)AS number
-                        FROM  risks AS r
-                        right JOIN risknames AS s
-                        ON r.riskgroup= 'Financial' and s.riskgroups='Financial'
-                        and  r.rank='Moderate' and r.status='YES' and r.action_status!='Closed'
-                        ");
-        $f_low = DB::select("select COUNT(r.rank)AS number
-                    FROM  risks AS r
-                    right JOIN risknames AS s
-                    ON r.riskgroup= 'Financial' and s.riskgroups='Financial'
-                    and  r.rank='Low' and r.status='YES' and r.action_status!='Closed'
-                    ");
-        $total = DB::select("select COUNT(r.rank)AS number
-                        FROM   risks AS r
-                        right JOIN risknames AS s
-                        ON r.riskgroup= s.riskgroups
-                        and  r.status='YES' and r.action_status!='Closed'
-                        ");
-
-        $highf = [];
-        foreach ($f_high as $key) {
-            array_push($highf, $key->number);
-        }
-        $moderatef = [];
-        foreach ($f_moderate as $key) {
-            array_push($moderatef, $key->number);
-        }
-        $lowf = [];
-        foreach ($f_low as $key) {
-            array_push($lowf, $key->number);
-        }
-        $totalf = [];
-        foreach ($total as $key) {
-            array_push($totalf, $key->number);
-        }
-        // $highper= floor( $highf[0] / $totalf[0] *100) ;
-        // $medper= floor( $moderatef[0] / $totalf[0] *100 ) ;
-        // $lowper= floor( $lowf[0] / $totalf[0] *100 ) ;
-        $chartf->dataset('', 'doughnut', [$highf, $moderatef, $lowf])
-        // ->color(['#f7533e','#FFD700','#a6ff00'])
-            ->backgroundcolor(['#f7533e', '#FFD700', '#a6ff00']);
-        $chartf->displayAxes(false);
-
-        //------Compliance    - High / Moderate / Low
-        $chartc = new RiskAnalysis;
-        $chartc->title("Compliance");
-        $chartc->labels(['High', 'Moderate', 'Low']);
-        $c_high = DB::select("select COUNT(r.rank)AS number
-                    FROM  risks AS r
-                    right JOIN risknames AS s
-                    ON r.riskgroup= 'Compliance' and s.riskgroups='Compliance'
-                     and  r.rank='High' and r.status='yes' and r.action_status!='Closed'
-                    ");
-
-        $c_moderate = DB::select("select COUNT(r.rank)AS number
-                        FROM  risks AS r
-                        right JOIN risknames AS s
-                        ON r.riskgroup= 'Compliance' and s.riskgroups='Compliance'
-                        and  r.rank='Moderate' and r.status='YES' and r.action_status!='Closed'
-                        ");
-        $c_low = DB::select("select COUNT(r.rank)AS number
-                    FROM  risks AS r
-                    right JOIN risknames AS s
-                    ON r.riskgroup= 'Compliance' and s.riskgroups='Compliance'
-                    and  r.rank='Low' and r.status='YES' and r.action_status!='Closed'
-                    ");
-        $total = DB::select("select COUNT(r.rank)AS number
-                        FROM   risks AS r
-                        right JOIN risknames AS s
-                        ON r.riskgroup= s.riskgroups
-                        and  r.status='YES' and r.action_status!='Closed'
-                        ");
-
-        $highc = [];
-        foreach ($c_high as $key) {
-            array_push($highc, $key->number);
-        }
-        $moderatec = [];
-        foreach ($c_moderate as $key) {
-            array_push($moderatec, $key->number);
-        }
-        $lowc = [];
-        foreach ($c_low as $key) {
-            array_push($lowc, $key->number);
-        }
-        $totalc = [];
-        foreach ($total as $key) {
-            array_push($totalc, $key->number);
-        }
-        // $highper= floor( $highc[0] / $totalc[0] *100) ;
-        // $medper= floor( $moderatec[0] / $totalc[0] *100 ) ;
-        // $lowper= floor( $lowc[0] / $totalc[0] *100 ) ;
-        $chartc->dataset('', 'doughnut', [$highc, $moderatec, $lowc])
-        // ->color(['#f7533e','#FFD700','#a6ff00'])
-            ->backgroundcolor(['#f7533e', '#FFD700', '#a6ff00']);
-        $chartc->displayAxes(false);
-
-        $chart1 = new RiskAnalysis;
-        $chart1->title("Total Risks-Department Wise");
-        $processes = DB::select("select departmentname, code from departments order by departmentname ASC");
-        $process = [];
-        foreach ($processes as $key) {
-            array_push($process, $key->code);
-        }
-        $chart1->labels($process);
-        $departmentCodes = Departments::select('code')->orderBy('code')->pluck('code');
-
-        $phigh = DB::select("select s.code,COUNT(r.rank)AS number
-                            FROM  risks AS r
-                            right JOIN departments AS s
-                            ON r.riskarea= s.id
-                            and  r.rank='high' and r.status='yes' and r.action_status!='Closed'
-                            group by s.code
-                            order by s.code ASC
-                           ");
-        $pmoderate = DB::select("select s.code,COUNT(r.rank)AS number
-                            FROM  risks AS r
-                            right JOIN departments AS s
-                            ON r.riskarea= s.id
-                            and  r.rank='moderate' and r.status='yes' and r.action_status!='Closed'
-                            group by s.code
-                            order by s.code ASC
-                           ");
-        $plow = DB::select("select s.code,COUNT(r.rank)AS number
-                            FROM  risks AS r
-                            right JOIN departments AS s
-                            ON r.riskarea= s.id
-                            and  r.rank='low' and r.status='yes' and r.action_status!='Closed'
-                            group by s.code
-                            order by s.code ASC
-                           ");
-
-        $highp = [];
-        foreach ($phigh as $key) {
-            array_push($highp, $key->number);
-        }
-        $moderatep = [];
-        foreach ($pmoderate as $key) {
-            array_push($moderatep, $key->number);
-        }
-        $lowp = [];
-        foreach ($plow as $key) {
-            array_push($lowp, $key->number);
-        }
-        $riskInfoByGroup = $this->countRiskByGroup();
-        $riskInfoByDepartment = $this->countRiskByDepartment();
-        $riskInfoByDepartmentDataset = [];
-        $riskInfoByDepartmentData = [];
-        foreach ($riskInfoByDepartment as $item) {
-            if (isset($riskInfoByDepartmentDataset[$item->rank])) {
-                $riskInfoByDepartmentDataset[$item->rank][$item->code] = $item->number;
-            } else {
-                $riskInfoByDepartmentDataset[$item->rank] = [$item->code => $item->number];
-            }
-            $riskInfoByDepartmentData[] = $item->code;
-        }
-
-        $chartDataByDepartment = $this->makeChartOfRiskAnalysis($riskInfoByDepartmentData, "", $riskInfoByDepartmentDataset);
-        $riskDataChart = [];
-        $riskDataChartOfDepartment = [];
-        foreach ($riskInfoByGroup as $item) {
-            if ($item->riskgroup) {
-                if (isset($riskDataChart[$item->riskgroup])
-                && isset($riskDataChart[$item->riskgroup][$item->rank])
-            ) {
-                    $riskDataChart[$item->riskgroup][$item->rank][$item->code] = $item->number;
-                } else {
-                    $riskDataChart[$item->riskgroup][$item->rank] = [
-                        $item->code => $item->number
-                    ];
-                }
-            }
-
-            if (isset($riskDataChartOfDepartment[$item->riskgroup])) {
-                $riskDataChartOfDepartment[$item->riskgroup][] = $item->code;
-            } else {
-                $riskDataChartOfDepartment[$item->riskgroup] = [$item->code];
-            }
-        }
-
-        $chartData = [];
-        foreach (RiskAnalysis::RISK_GROUP as $item) {
-            if (isset($riskDataChartOfDepartment[$item])) {
-                $chartData[$item] = $this->makeChartOfRiskAnalysis($riskDataChartOfDepartment[$item], $item, $riskDataChart[$item]);
-            }
-        }
-
-        $models = DB::table('modenadisable')->First();
-        $totalRisk = Risk::count('Rid');
-        $totalHighRisk = Risk::where('rank', 'High')->count('Rid');
-        $totalModerateRisk = Risk::where('rank', 'Moderate')->count('Rid');
-        $totalLowRisk = Risk::where('rank', 'Low')->count('Rid');
-        $totalRiskByGroups = Risk::select('riskgroup', 'rank', DB::raw('COUNT(Rid) as total'))
-            ->groupBy('riskgroup', 'rank')
-            ->get();
-        $totalRiskByGroupData = [];
-        foreach ($totalRiskByGroups as $item) {
-            if (!isset($totalRiskByGroupData[$item->riskgroup])) {
-                $totalRiskByGroupData[$item->riskgroup] = [
-                    $item->rank => $item->total
-                ];
-            } else {
-                $totalRiskByGroupData[$item->riskgroup][$item->rank] = $item->total;
-            }
-        }
-
-        return view('user.risks.analysis', compact(
-            'chart', 'chart1', 'chartData',
-            'totalRisk', 'totalHighRisk', 'totalModerateRisk',
-            'totalLowRisk', 'totalRiskByGroupData', 'chartDataByDepartment'
-            )
-        )
-            ->with('charto', $charto)
-            ->with('chartf', $chartf)
-            ->with('chartc', $chartc)
-            ->with('model', $models);
+        ksort($analysisData['groups']);
+        ksort($analysisData['departments']);
+        $models = DB::table('modenadisable')->first();
+        return view('user.risks.analysis', compact('analysisData'))->with('model', $models);
     }
 
     protected function countRiskByGroup()

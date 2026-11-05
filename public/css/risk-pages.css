@@ -1,0 +1,89 @@
+.closed-risk-register .risk-register-card {margin-top:20px;}
+.closed-risk-register .closed-risk-actions {white-space:nowrap;}
+.closed-risk-reopen {font-size:11px;color:#6e55bd;padding:5px 6px;border-radius:5px;}
+.closed-risk-reopen:hover {background:#f3efff;}
+.closed-risk-register #tabledata {min-width:1500px;}
+.closed-risk-register #tabledata th:last-child {width:145px!important;}
+.closed-risk-register #tabledata .register-id-text {color:#6d5bb3;}
+.closed-risk-register .register-table-footer {padding:18px 0;}
+.risk-analysis {padding-bottom:30px;}
+.analysis-context {display:flex;justify-content:space-between;gap:24px;align-items:center;margin:26px 0 20px;}
+.analysis-eyebrow {color:#7d83a7;font-size:10px;font-weight:700;letter-spacing:1.3px;}
+.analysis-context p {font-size:12px;color:#73819b;line-height:1.7;margin:7px 0 0;}
+.analysis-context label,.analysis-chart-controls label {font-size:11px;color:#657793;font-weight:600;margin:0;}
+.risk-analysis select,.risk-analysis input {border:1px solid #dfe5f2;background:white;color:#405579;border-radius:7px;padding:9px 12px;font-size:12px;}
+.analysis-context select {display:block;margin-top:6px;min-width:180px;max-width:100%;}
+.analysis-rating-strip {display:flex;gap:30px;flex-wrap:wrap;padding:17px 22px;border:1px solid #e1e7f3;border-radius:11px;background:white;margin-bottom:20px;}
+.analysis-rating-strip>div {display:flex;gap:10px;align-items:center;font-size:12px;color:#7a88a0;}
+.analysis-rating-strip strong {font-size:17px;color:#344b71;font-variant-numeric:tabular-nums;}
+.analysis-rating-strip [data-tone=High] strong {color:#c74c62;}
+.analysis-rating-strip [data-tone=Moderate] strong {color:#aa7b21;}
+.analysis-rating-strip [data-tone=Low] strong {color:#298870;}
+.analysis-overview {display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.25fr);gap:20px;margin-bottom:20px;}
+.analysis-card {min-width:0;background:white;border:1px solid #e1e7f3;border-radius:13px;padding:24px;}
+.analysis-card-heading {display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:22px;}
+.analysis-card h2 {font-size:16px;color:#2e4367;font-weight:650;margin:0 0 7px;}
+.analysis-card-heading p {font-size:12px;color:#8490a7;margin:0;line-height:1.6;}
+.analysis-current {font-size:10px;color:#7a66b7;border-radius:5px;background:#f4f0ff;padding:5px 7px;white-space:nowrap;}
+.analysis-distribution {display:flex;align-items:center;justify-content:space-around;gap:24px;min-height:205px;}
+.analysis-donut {width:176px;height:176px;border-radius:50%;background:#edf0f6;display:grid;place-items:center;flex-shrink:0;}
+.analysis-donut>div {width:130px;height:130px;border-radius:50%;background:white;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;}
+.analysis-donut strong {font-size:30px;font-weight:650;color:#30476c;}
+.analysis-donut span {font-size:10px;color:#8a96ab;}
+.analysis-legend {min-width:155px;}
+.analysis-legend>div {display:flex;align-items:center;gap:12px;margin:13px 0;font-size:11px;}
+.analysis-legend>div>span {flex:1;white-space:nowrap;color:#657995;}
+.analysis-legend strong {color:#364d70;}
+.analysis-legend small {width:28px;text-align:right;color:#8d9aaf;font-size:10px;}
+.risk-analysis i[data-rating] {display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:7px;background:#a2acc0;}
+.risk-analysis i[data-rating=High] {background:#eb6476;}
+.risk-analysis i[data-rating=Moderate] {background:#e8b453;}
+.risk-analysis i[data-rating=Low] {background:#48a991;}
+.analysis-note {font-size:11px;color:#8390a7;line-height:1.7;margin:16px 0 0;}
+.analysis-reset {background:none;border:0;color:#5271bf;cursor:pointer;font-size:11px;white-space:nowrap;}
+.analysis-group-scroll {overflow:auto;}
+.analysis-group-hint {display:none;}
+.analysis-group-table {width:100%;font-size:12px;min-width:460px;}
+.analysis-group-table thead th {font-size:10px;color:#8996ac;font-weight:500;border-bottom:1px solid #edf0f6;padding:10px 8px;text-align:right;}
+.analysis-group-table thead th:first-child {text-align:left;}
+.analysis-group-table td,.analysis-group-table tbody th {padding:14px 8px;border-bottom:1px solid #f0f2f7;text-align:right;color:#617594;font-weight:500;}
+.analysis-group-table tbody th {text-align:left;}
+.analysis-group-table button {text-align:left;background:none;border:0;padding:0;color:#536db0;font-size:12px;font-weight:600;cursor:pointer;}
+.analysis-group-table .is-active {background:#f4f6ff;}
+.analysis-group-table button[aria-pressed=true] {color:#754fba;}
+.analysis-chart-controls {display:flex;gap:10px;flex-wrap:wrap;}
+.analysis-chart-controls input {width:180px;}
+.analysis-chart-legend {display:flex;gap:18px;flex-wrap:wrap;font-size:10px;color:#7b8aa3;}
+.analysis-department-chart {margin-top:16px;max-height:540px;overflow:auto;scrollbar-width:thin;padding-right:8px;}
+.analysis-department-row {display:grid;grid-template-columns:105px minmax(0,1fr) 40px;gap:8px 20px;padding:14px 0;border-bottom:1px solid #f0f3f8;align-items:center;}
+.analysis-department-row>strong {font-size:12px;font-weight:600;color:#546887;overflow-wrap:anywhere;}
+.analysis-department-row>b {font-size:13px;text-align:right;color:#4b6284;}
+.analysis-department-row>small {grid-column:2/4;font-size:10px;color:#8a98ad;}
+.analysis-bar-track {height:12px;border-radius:4px;background:#f0f3f8;display:flex;overflow:hidden;}
+.analysis-bar-track>span {height:100%;}
+.analysis-footer {display:flex;justify-content:space-between;gap:24px;border-top:1px solid #edf0f6;padding-top:18px;margin-top:20px;align-items:center;}
+.analysis-footer span {font-size:11px;color:#8492a9;line-height:1.7;max-width:70%;}
+.analysis-footer a {font-size:11px;color:#4c6cb6;white-space:nowrap;}
+.analysis-empty {font-size:13px;color:#8190a9;text-align:center;padding:40px 12px;}
+.risk-analysis button:focus-visible,.risk-analysis input:focus-visible,.risk-analysis select:focus-visible,.register-ai-close:focus-visible {outline:3px solid #b7c8f6;outline-offset:3px;}
+@media(max-width:1100px) {.analysis-overview {grid-template-columns:1fr;}.analysis-distribution {justify-content:center;gap:60px;}}
+@media(max-width:767px) {
+ .closed-risk-register #tabledata th:last-child,.closed-risk-register #tabledata .register-row-actions {width:105px!important;}
+ .closed-risk-register .closed-risk-reopen {font-size:10px;}
+ .analysis-group-hint {display:block;font-size:10px;color:#8a97ad;margin:0 0 10px;}
+ .analysis-context {align-items:stretch;flex-direction:column;gap:14px;}
+ .analysis-context select {width:100%;}
+ .analysis-rating-strip {gap:14px 20px;padding:16px;}
+ .analysis-rating-strip>div {font-size:11px;gap:8px;}
+ .analysis-card {padding:18px;}
+ .analysis-card-heading {flex-direction:column;gap:12px;}
+ .analysis-overview {gap:16px;margin-bottom:16px;}
+ .analysis-distribution {gap:20px;flex-wrap:wrap;}
+ .analysis-donut {width:155px;height:155px;}.analysis-donut>div {width:113px;height:113px;}
+ .analysis-chart-controls {width:100%;}.analysis-chart-controls label {flex:1;min-width:120px;}
+ .analysis-chart-controls input,.analysis-chart-controls select {width:100%;}
+ .analysis-department-row {grid-template-columns:70px minmax(0,1fr) 26px;gap:8px 10px;}
+ .analysis-department-row>small {font-size:9px;line-height:1.8;}
+ .analysis-footer {flex-direction:column;align-items:flex-start;gap:12px;}.analysis-footer span {max-width:100%;}
+}
+@media print {.analysis-context select,.analysis-chart-controls,.analysis-reset {display:none;}.analysis-department-chart {max-height:none;overflow:visible;}.analysis-overview {grid-template-columns:1fr;}}

@@ -1,265 +1,39 @@
 @extends('layouts.backend')
-
-
 @section('content')
-    <style>
-        .fa-arrow-circle-right:before {
-            color: gray;
-            opacity: .8;
-        }
-    </style>
-<div class="bg-body-light">
-    <div class="content content-full">
-        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center py-2 text-center text-sm-left">
-            <div class="flex-sm-fill">
-                <h1 class="h3 font-w700 mb-2">
-                    Risk Analysis
-                </h1>
-                <h2 class="h6 font-w500 text-muted mb-0">
-                    Welcome <a class="font-w600" href="javascript:void(0)">{{Auth::user()->name}}</a>, everything looks great.
-                </h2>
-            </div>
-        </div>
+@include('shared.forms.assets')
+<link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
+<link rel="stylesheet" href="{{ asset('css/risk-pages.css') }}?v={{ filemtime(public_path('css/risk-pages.css')) }}">
+<script src="{{ asset('js/risk-analysis.js') }}?v={{ filemtime(public_path('js/risk-analysis.js')) }}" defer></script>
+@php
+    $counts = $analysisData['totals'];
+    $highShare = $counts['total'] ? round(100 * $counts['High'] / $counts['total']) : 0;
+@endphp
+<div class="content cgbod-form risk-register risk-analysis" id="risk-analysis" data-analysis="{{ json_encode($analysisData) }}">
+    @include('user.risks.register-header', ['registerPage' => 'analysis', 'registerTitle' => 'Risk analysis', 'registerDescription' => 'Understand your risk profile, spot concentration, and focus the next review.'])
+    <div class="analysis-context"><div><span class="analysis-eyebrow">CURRENT PORTFOLIO</span><p>All recorded risks, including closed records. Deleted records are excluded. Counts reflect stored ratings.</p></div><label>Risk group<select id="analysis-group"><option value="">All groups</option>@foreach($analysisData['groups'] as $group => $groupData)<option>{{ $group }}</option>@endforeach</select></label></div>
+    <div class="analysis-rating-strip" aria-label="Risk counts for the selected group">
+        @foreach(['total' => 'Total risks', 'High' => 'High', 'Moderate' => 'Moderate', 'Low' => 'Low', 'Unassessed' => 'Unassessed'] as $rating => $label)
+        <div data-tone="{{ $rating }}"><span>{{ $label }}</span><strong data-analysis-count="{{ $rating }}">{{ $counts[$rating] }}</strong></div>
+        @endforeach
     </div>
+    <div class="analysis-overview">
+        <section class="analysis-card"><div class="analysis-card-heading"><div><h2>Rating distribution</h2><p id="analysis-selected-scope">All groups</p></div><span class="analysis-current">Current snapshot</span></div>
+            <div class="analysis-distribution"><div class="analysis-donut" id="analysis-donut" role="img" aria-label="Risk distribution"><div><strong id="analysis-donut-total">{{ $counts['total'] }}</strong><span>recorded risks</span></div></div><div class="analysis-legend">
+                @foreach(['High', 'Moderate', 'Low', 'Unassessed'] as $rating)<div><span><i data-rating="{{ $rating }}" aria-hidden="true"></i>{{ $rating }}</span><strong data-analysis-legend="{{ $rating }}">{{ $counts[$rating] }}</strong><small data-analysis-percent="{{ $rating }}">{{ $counts['total'] ? round(100 * $counts[$rating] / $counts['total']) : 0 }}%</small></div>@endforeach
+            </div></div><p class="analysis-note" id="analysis-rating-note">{{ $highShare }}% of recorded risks are rated High. Ratings use the approved 3 × 3 matrix.</p>
+        </section>
+        <section class="analysis-card"><div class="analysis-card-heading"><div><h2>Risk groups</h2><p>Select a group to explore its profile.</p></div><button type="button" class="analysis-reset" id="analysis-reset">Reset view</button></div>
+            <p class="analysis-group-hint">Swipe to see all ratings</p><div class="analysis-group-scroll" role="region" aria-label="Risk group ratings; scroll for more columns" tabindex="0"><table class="analysis-group-table"><thead><tr><th scope="col">Group</th><th scope="col">Total</th><th scope="col">High</th><th scope="col">Moderate</th><th scope="col">Low</th><th scope="col">Unassessed</th></tr></thead><tbody>
+                @forelse($analysisData['groups'] as $group => $groupData)<tr data-analysis-group-row="{{ $group }}"><th scope="row"><button type="button" data-analysis-group="{{ $group }}" aria-pressed="false">{{ $group }}</button></th>@foreach(['total', 'High', 'Moderate', 'Low', 'Unassessed'] as $rating)<td>{{ $groupData['counts'][$rating] }}</td>@endforeach</tr>@empty<tr><td colspan="6">No risk groups to display yet.</td></tr>@endforelse
+            </tbody></table></div>
+        </section>
+    </div>
+    <section class="analysis-card analysis-departments"><div class="analysis-card-heading"><div><h2>Department comparison</h2><p>Compare the volume and rating mix. Department codes follow your existing setup.</p></div><div class="analysis-chart-controls"><label><span class="sr-only">Search departments</span><input type="search" id="analysis-department-search" placeholder="Find a department…"></label><label><span class="sr-only">Sort departments</span><select id="analysis-department-sort"><option value="total">Most risks</option><option value="high">Most high risks</option><option value="name">Department A–Z</option></select></label></div></div>
+        <div class="analysis-chart-legend" aria-hidden="true">@foreach(['High', 'Moderate', 'Low', 'Unassessed'] as $rating)<span><i data-rating="{{ $rating }}"></i>{{ $rating }}</span>@endforeach</div>
+        <p id="analysis-department-count" class="analysis-note" role="status" aria-live="polite"></p>
+        <div id="analysis-department-chart" class="analysis-department-chart" role="list" aria-label="Department risk counts"></div>
+        <noscript><p>Enable JavaScript to explore the department comparison.</p></noscript>
+        <div class="analysis-footer"><span>Unassigned includes risks without a matching department code. This snapshot does not measure changes over time.</span><a href="{{ route('risk.index') }}">Open current register <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i></a></div>
+    </section>
 </div>
-
-<!-- Page Content -->
-<div class="content" style="padding-top:30px;width:98%;margin-left:25px;">
-    <!-- All risk -->
-    <div class="row row-deck">
-        <div class="col-sm-6 col-xl-3">
-            <!-- Messages -->
-            <div class="block block-rounded d-flex flex-column">
-                <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
-                    <dl class="mb-0">
-                        <a href="{{ route('risk.index') }}" target="_blank">
-                            <dt class="font-size-h2 font-w700">{{ $totalRisk }}</dt>
-                        </a>
-                        <dd class="mb-0 font-weight-bold text-primary">Total</dd>
-                    </dl>
-                    <div class="item item-rounded bg-body">
-                        <i class="fa fa-inbox font-size-h3 text-primary"></i>
-                    </div>
-                </div>
-                <div style="background: #f8f9fa; padding: 0.5rem 1.5rem; display: flex; justify-content: space-between;">
-                    <span style="font-weight: 600; opacity: .5;" class="text-primary">
-                        View all risks
-                    </span>
-                    <span>
-                        <a href="{{ route('risk.index') }}" target="_blank">
-                            <i class="fa fa-arrow-circle-right"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-            <div class="block block-rounded d-flex flex-column">
-                <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
-                    <dl class="mb-0">
-                        <a href="{{route('risk.index', [ 'rank' => 'High']) }}" target="_blank">
-                            <dt class="font-size-h2 font-w700 text-primary">{{ $totalHighRisk }}</dt>
-                        </a>
-                        <dd class="mb-0 font-weight-bold text-primary">High</dd>
-                    </dl>
-                    <div class="item item-rounded bg-body">
-                        <i class="fa fa-chart-line font-size-h3 text-primary"></i>
-                    </div>
-                </div>
-                <div style="background: #f8f9fa; padding: 0.5rem 1.5rem; display: flex; justify-content: space-between;">
-                    <span style="font-weight: 600; opacity: .5;" class="text-primary">
-                        View high risks
-                    </span>
-                    <span>
-                        <a href="{{route('risk.index', [ 'rank' => 'High']) }}" target="_blank">
-                            <i class="fa fa-arrow-circle-right"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-            <div class="block block-rounded d-flex flex-column">
-                <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
-                    <dl class="mb-0">
-                        <a href="{{route('risk.index', [ 'rank' => 'Moderate']) }}" target="_blank">
-                            <dt class="font-size-h2 font-w700 text-primary">{{ $totalModerateRisk }}</dt>
-                        </a>
-                        <dd class="mb-0 font-weight-bold text-primary">Moderate</dd>
-                    </dl>
-                    <div class="item item-rounded bg-body">
-                        <i class="fa fa-chart-line font-size-h3 text-primary"></i>
-                    </div>
-                </div>
-                <div style="background: #f8f9fa; padding: 0.5rem 1.5rem; display: flex; justify-content: space-between;">
-                    <span style="font-weight: 600; opacity: .5;" class="text-primary">
-                        View moderate risks
-                    </span>
-                    <span>
-                        <a href="{{route('risk.index', [ 'rank' => 'Moderate']) }}" target="_blank">
-                            <i class="fa fa-arrow-circle-right"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-            <div class="block block-rounded d-flex flex-column">
-                <div class="block-content block-content-full flex-grow-1 d-flex justify-content-between align-items-center">
-                    <dl class="mb-0">
-                        <a href="{{route('risk.index', [ 'rank' => 'Low']) }}" target="_blank">
-                            <dt class="font-size-h2 font-w700 text-primary">{{ $totalLowRisk }}</dt>
-                        </a>
-                        <dd class="mb-0 font-weight-bold text-primary">Low</dd>
-                    </dl>
-                    <div class="item item-rounded bg-body">
-                        <i class="fa fa-chart-line font-size-h3 text-primary"></i>
-                    </div>
-                </div>
-                <div style="background: #f8f9fa; padding: 0.5rem 1.5rem; display: flex; justify-content: space-between;">
-                    <span style="font-weight: 600; opacity: .5;" class="text-primary">
-                        View low risks
-                    </span>
-                    <span>
-                        <a href="{{route('risk.index', [ 'rank' => 'Moderate']) }}" target="_blank">
-                            <i class="fa fa-arrow-circle-right"></i>
-                        </a>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="block block-rounded">
-        <div class="block-content block-content-full">
-            <div id="content-all">
-                <div class="block-content block-content-full" style="width:100%; background-color:#ffff">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm-12" style="height:400px">
-                                {!! $chartDataByDepartment->container() !!}
-                            </div>
-                        </div>
-                    </div>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
-                    {!! $chartDataByDepartment->script() !!}
-                    <script>
-                        function autoResizeDiv(height) {
-                            document.getElementById('content-all').style.height = (height) + 'px';
-                        }
-                        window.onresize = autoResizeDiv;
-                        autoResizeDiv(window.innerHeight - 270);
-                    </script>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Strategic risk -->
-    @include('user.risks._analysis_group_item', [
-        'title' => 'Strategic Risk',
-        'description' => 'Strategic risk refers to potential threats and uncertainties that arise from the strategic decisions and actions taken by your organization, impacting its long-term objectives and competitive positioning. It encompasses the possibility of adverse outcomes stemming from shifts in market dynamics, technological advancements, regulatory changes, or other factors.',
-        'riskGroup' => 'Strategic',
-        'riskColor' => '#4A6092',
-        'riskBgColor' => '#F0F2F7'
-    ])
-
-    <!-- Operational risk -->
-    @include('user.risks._analysis_group_item', [
-        'title' => 'Operational Risk',
-        'description' => 'Operational risk pertains to potential disruptions or losses resulting from inadequate internal processes, systems, people, or external events, affecting the smooth functioning of an organization. It encompasses the risk of errors, inefficiencies, and unexpected events that can impact day-to-day operations and financial performance.',
-        'riskGroup' => 'Operational',
-        'riskColor' => '#6F954C',
-        'riskBgColor' => '#F3F6F0'
-    ])
-
-    <!-- Compliance risk -->
-    @include('user.risks._analysis_group_item', [
-        'title' => 'Compliance Risk',
-        'description' => 'Compliance risk refers to the potential for an organization to face legal or regulatory consequences due to failure in adhering to applicable laws, regulations, or industry standards. It encompasses the risk of financial penalties, reputational damage, and operational disruptions resulting from non-compliance with established rules and requirements.',
-        'riskGroup' => 'Compliance',
-        'riskColor' => '#C88C60',
-        'riskBgColor' => '#F9F3EF'
-    ])
-
-    <!-- Financial risk -->
-    @include('user.risks._analysis_group_item', [
-        'title' => 'Financial Risk',
-        'description' => "Financial risk involves exposure to potential losses or adverse impacts on an organization's financial stability due to fluctuations in market conditions, interest rates, currency exchange rates, credit, or liquidity. Managing financial risk is essential for safeguarding the firm's fiscal health and ensuring its ability to meet financial obligations.",
-        'riskGroup' => 'Financial',
-        'riskColor' => '#D0A642',
-        'riskBgColor' => '#FBF8EE'
-    ])
-</div>
-
-<!-- Apps Modal -->
-<!-- Opens from the modal toggle button in the header -->
-<div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="block block-rounded block-themed block-transparent mb-0">
-                <div class="block-header bg-primary-dark">
-                    <h3 class="block-title">Options</h3>
-                    <div class="block-options">
-                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-                            <i class="si si-close"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="block-content block-content-full">
-                    <div class="row gutters-tiny">
-                        {{-- <div class="col-6">
-                                        <!-- CRM -->
-                                        <a class="block block-rounded block-link-shadow bg-body" href="/user/risks/addrisk">
-                                            <div class="block-content text-center">
-                                                <i class="fas fa-plus-circle fa-2x text-primary"></i>
-                                                <p class="font-w600 font-size-sm mt-2 mb-3">
-                                                Add Risk
-                                                </p>
-                                            </div>
-                                        </a>
-                                        <!-- END CRM -->
-                                    </div> --}}
-                        <div class="col-6">
-                            <!-- Products -->
-                            <a class="block block-rounded block-link-shadow bg-body" href="/user/riskmgmt">
-                                <div class="block-content text-center" style="height:130px">
-                                    <i class="far fa-list-alt fa-2x text-primary"></i>
-                                    <p class="font-w600 font-size-sm mt-2 mb-3">
-                                        Register
-                                    </p>
-                                </div>
-                            </a>
-                            <!-- END Products -->
-                        </div>
-                        <div class="col-6">
-                            <!-- Sales -->
-                            <a class="block block-rounded block-link-shadow bg-body mb-0" href="/user/risks/closedrisks">
-                                <div class="block-content text-center" style="height:130px">
-                                    <i class="fas fa-check-circle fa-2x text-primary"></i>
-                                    <p class="font-w600 font-size-sm mt-2 mb-3">
-                                        Closed Risks
-                                    </p>
-                                </div>
-                            </a>
-                            <!-- END Sales -->
-                        </div>
-                        <div class="col-6">
-                            <!-- Payments -->
-                            <a class="block block-rounded block-link-shadow bg-body mb-0" href="/user/risks/analysis">
-                                <div class="block-content text-center" style="height:130px">
-                                    <i class="fas fa-chart-bar fa-2x text-primary"></i>
-                                    <p class="font-w600 font-size-sm mt-2 mb-3">
-                                        Analysis
-                                    </p>
-                                </div>
-                            </a>
-                            <!-- END Payments -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- END Apps Modal -->
 @endsection

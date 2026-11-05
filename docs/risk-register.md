@@ -39,7 +39,7 @@ Blade escapes filter values and row metadata. Owner filters match employee IDs w
 
 ## Validation
 
-`bash tools/risk-ai-dev.sh test` passes 34 tests / 227 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
+`bash tools/risk-ai-dev.sh test` passes 36 tests / 250 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
 
 Browser checks with the real local DataTables assets and 31 synthetic rows passed search, rating/group/owner filtering, filtered export IDs, no-result display, numeric severity sorting, filtering hidden columns, pagination selection, clear-on-filter behavior, delete cancellation, partial failures with mocked requests, visible row menus, and desktop/mobile overflow checks. No real risks were deleted and no customer exports were generated during tests. These checks do not establish production deployment or resolve the separate fresh-database migration blocker.
 
@@ -55,4 +55,12 @@ Browser checks confirm compact 48 px rows, visible serial numbers continuing acr
 
 The register now uses compact 48 px rows only, with serial numbers visible by default and sequential numbering on filtered pages. The layout selector has been removed. Full content remains available through View and the full record. View uses a responsive detail dialog and a read-only review assistant for information gaps, proposed controls and reviewer questions. Demo mode uses a labelled checklist; live mode uses the configured provider.
 
-AI review in the toolbar opens an optional inline panel for filtered-register analysis. Review scope is limited to the first 50 matching records in current sort order across all pages. Hidden columns remain available to the review context. Changing filters/sort/page clears old findings and prevents stale responses from displaying. Browser checks cover filtered payloads, cross-page scope, hidden fields, sample limits, request retry and empty matches.
+AI review in the toolbar opens a modal for filtered-register analysis. It locks background scrolling, traps keyboard focus, closes with Escape/backdrop/Close, and restores focus to its trigger without changing the register height. Review scope is limited to the first 50 matching records in current sort order across all pages. Hidden columns remain available to the review context. Changing filters/sort/page clears old findings and prevents stale responses from displaying. Browser checks cover filtered payloads, cross-page scope, hidden fields, sample limits, request retry and empty matches.
+
+## Closed risks and analysis
+
+Closed risks uses the shared branded header and compact table with sequential numbers, search, exact group/area/rating filters, sort and page-size controls. PDF/Excel/Word exports include matching closed IDs across all pages, never the default current-register export. Empty matches disable exports. Multi-owner names remain searchable; View uses the existing detail endpoint and modal; Reopen keeps its existing route. Department relationships are eager-loaded.
+
+Analysis now uses two scoped aggregate queries for group/rating and department/group/rating, replacing the former repeated chart queries. The snapshot includes closed records and excludes soft-deleted records consistently. Missing department references/codes are counted as Unassigned and unknown/missing ratings as Unassessed. Counts reconcile across summaries and breakdowns. Interactive group selection updates the distribution and department bars; department search and count/name sorting work locally. The native charts include text counts and accessible descriptions, require no external chart library, and handle empty data. They show current stored ratings, not historical trends.
+
+Validation covers the aggregate scope (including closed records, excluding deleted records, and retaining unassigned/unassessed records), empty pages, and retained closed-register routes/exports. Browser checks cover modal keyboard/scroll behavior, closed pagination and serial numbers, filters/exports, multi-owner search, View/Reopen, analysis group/search/sort behavior, empty data and desktop/mobile layout. Tests use synthetic records; live deployment was not verified.

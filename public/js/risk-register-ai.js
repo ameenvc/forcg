@@ -15,9 +15,27 @@
             scope.textContent = count ? `Review scope: first ${Math.min(count, 50)} of ${count} matching risks, across all pages, in the current sort order.` : 'No matching risks to review. Adjust your search or filters.';
             if (run) { run.disabled = count === 0; run.textContent = 'Review matching risks'; }
         }
-        toggle.addEventListener('click', () => {
-            panel.hidden = !panel.hidden; toggle.setAttribute('aria-expanded', String(!panel.hidden));
-            if (!panel.hidden) refresh();
+        const close = document.getElementById('risk-register-ai-close');
+        let previousOverflow = '';
+        function openModal(open) {
+            if (open === !panel.hidden) return;
+            if (open) { previousOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; }
+            else { document.body.style.overflow = previousOverflow; }
+            panel.hidden = !open; toggle.setAttribute('aria-expanded', String(open));
+            if (open) { refresh(); (run && !run.disabled ? run : close).focus(); }
+            else { refresh(); toggle.focus(); }
+        }
+        toggle.addEventListener('click', () => openModal(panel.hidden));
+        close.addEventListener('click', () => openModal(false));
+        panel.addEventListener('click', event => { if (event.target === panel) openModal(false); });
+        panel.addEventListener('keydown', event => {
+            if (event.key === 'Escape') { event.preventDefault(); openModal(false); }
+            if (event.key === 'Tab') {
+                const items = [...panel.querySelectorAll('button, a[href], input, select, textarea, [tabindex="0"]')].filter(item => !item.disabled && item.getClientRects().length);
+                const first = items[0], last = items[items.length - 1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+            }
         });
         root.addEventListener('risk-register-viewchange', refresh);
         if (!run) return;
@@ -35,7 +53,7 @@
                 response: text(row, 10, 500).replace(/^—$/, ''),
                 stage: text(row, 11), owner_assigned: row.dataset.ownerAssigned === 'true'
             }));
-            run.disabled = true; run.textContent = 'Reviewing…'; results.hidden = true; status.textContent = 'Preparing a review of the matching risks…';
+            run.disabled = true; if (document.activeElement === run) close.focus(); run.textContent = 'Reviewing…'; results.hidden = true; status.textContent = 'Preparing a review of the matching risks…';
             const timer = setTimeout(() => requestController.abort(), 55000);
             try {
                 const response = await fetch(panel.dataset.url, {

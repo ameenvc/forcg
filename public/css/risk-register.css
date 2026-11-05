@@ -896,8 +896,12 @@
     .register-rating-tabs .register-summary-label { font-size:11px; }
     .register-rating-tabs strong { font-size:10px; min-width:20px; padding:0 4px; }
 }
-.register-ai-panel {margin:16px 0;}
-.register-ai-panel[hidden] {display:none;}
+ .register-ai-modal {position:fixed;inset:0;z-index:1060;display:flex;align-items:flex-start;justify-content:center;padding:28px 18px;overflow:auto;background:rgba(25,40,67,.44);}
+.register-ai-dialog {position:relative;width:100%;max-width:900px;padding:30px!important;border-radius:16px;box-shadow:0 24px 80px #1626423d;}
+.register-ai-dialog .risk-review-heading {padding-right:28px;}
+.register-ai-close {position:absolute;top:14px;right:18px;border:0;background:none;color:#627796;font-size:26px;line-height:1;cursor:pointer;}
+@media(max-width:767px) {.register-ai-modal {padding:12px;}.register-ai-dialog {padding:22px 18px!important;}.register-ai-dialog .risk-review-heading {padding-right:20px;}}
+@media print {.register-ai-modal {display:none!important;}}
 .register-ai-scope {font-size:12px;font-weight:600;margin:12px 0 0;color:#405b87;}
 .register-toolbar-actions>#risk-register-ai-toggle {background:#3563db;border-color:#3563db;color:white;font-size:12px;border-radius:8px;white-space:nowrap;}
 @media(max-width:767px) {.register-toolbar-actions {flex-wrap:wrap;}}

@@ -1,6 +1,7 @@
 <div class="register-toolbar">
     <label class="register-search"><i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">Search risk register</span><input type="search" id="risk-register-search" placeholder="Search risks, IDs, or owners…" autocomplete="off"></label>
     <div class="register-toolbar-actions">
+        <button type="button" id="risk-register-ai-toggle" class="btn btn-primary" aria-expanded="false" aria-controls="risk-register-ai"><i class="fa fa-magic mr-1" aria-hidden="true"></i>AI review</button>
         <button type="button" id="risk-toggle-filters" class="btn register-secondary" aria-controls="risk-register-filters" aria-expanded="false"><i class="fa fa-filter mr-1" aria-hidden="true"></i>Filters <span id="risk-filter-count" hidden></span></button>
         <details class="register-menu"><summary>Columns <i class="fa fa-chevron-down ml-1" aria-hidden="true"></i></summary><div class="register-menu-body">
             @foreach([1 => 'Row number', 5 => 'Risk group', 6 => 'Risk area', 9 => 'Risk owner', 10 => 'Response', 11 => 'Process stage'] as $column => $label)

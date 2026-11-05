@@ -3,6 +3,7 @@
 @include('shared.forms.assets')
 @include('user.risks.review-assets')
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
+<script src="{{ asset('js/risk-register-ai.js') }}?v={{ filemtime(public_path('js/risk-register-ai.js')) }}" defer></script>
 <script src="{{ asset('js/risk-register.js') }}?v={{ filemtime(public_path('js/risk-register.js')) }}" defer></script>
 <div class="content cgbod-form risk-register" id="risk-register" data-density="compact"
      data-edit-url="{{ route('risk.editrisk') }}" data-delete-url="{{ route('risk.deleterisk') }}">
@@ -24,6 +25,7 @@
             @endif
             @include('user.risks.register-rating-tabs')
             @include('user.risks.register-toolbar')
+            @include('user.risks.register-ai')
             <div id="risk-register-feedback" role="status" aria-live="polite"></div>
             <input type="hidden" value="a1" id="tabselected">
             <div id="risk-register-empty" class="register-empty-state" @if(count($data)) hidden @endif role="status">
@@ -65,7 +67,7 @@
                                 }
                             }
                         @endphp
-                        <tr data-risk-id="{{ $value->Rid }}" data-risk-rank="{{ $value->rank }}">
+                        <tr data-risk-id="{{ $value->Rid }}" data-risk-rank="{{ $value->rank }}" data-owner-assigned="{{ trim((string) $value->risk_owner) !== '' ? 'true' : 'false' }}">
                             <td><input class="risk-row-select" type="checkbox" id="risk-select-{{ $value->Rid }}" value="{{ $value->Rid }}" name="id[]" aria-label="Select risk {{ $value->grp_id }}"></td>
                             <td class="text-center " style="font-size:10px;">{{$no=$no+1}}</td>
                             <td class="d-none">{{ $value->Rid }}</td>

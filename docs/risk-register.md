@@ -39,7 +39,7 @@ Blade escapes filter values and row metadata. Owner filters match employee IDs w
 
 ## Validation
 
-`bash tools/risk-ai-dev.sh test` passes 32 tests / 190 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
+`bash tools/risk-ai-dev.sh test` passes 34 tests / 227 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
 
 Browser checks with the real local DataTables assets and 31 synthetic rows passed search, rating/group/owner filtering, filtered export IDs, no-result display, numeric severity sorting, filtering hidden columns, pagination selection, clear-on-filter behavior, delete cancellation, partial failures with mocked requests, visible row menus, and desktop/mobile overflow checks. No real risks were deleted and no customer exports were generated during tests. These checks do not establish production deployment or resolve the separate fresh-database migration blocker.
 
@@ -54,3 +54,5 @@ One owner is shown in the row; additional owners open in a keyboard-accessible n
 Browser checks confirm compact 48 px rows, visible serial numbers continuing across pages, responsive detail layout, and review results/retry handling with mocked requests.
 
 The register now uses compact 48 px rows only, with serial numbers visible by default and sequential numbering on filtered pages. The layout selector has been removed. Full content remains available through View and the full record. View uses a responsive detail dialog and a read-only review assistant for information gaps, proposed controls and reviewer questions. Demo mode uses a labelled checklist; live mode uses the configured provider.
+
+AI review in the toolbar opens an optional inline panel for filtered-register analysis. Review scope is limited to the first 50 matching records in current sort order across all pages. Hidden columns remain available to the review context. Changing filters/sort/page clears old findings and prevents stale responses from displaying. Browser checks cover filtered payloads, cross-page scope, hidden fields, sample limits, request retry and empty matches.

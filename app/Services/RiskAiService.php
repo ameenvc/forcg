@@ -70,6 +70,44 @@ class RiskAiService
         } else {
             $review = $this->generate($context, 'Review the supplied risk record. Return JSON with summary (string, max 2000 characters), gaps, proposed_controls, questions (arrays of strings). Identify missing information, propose specific practical controls, and ask evidence-based reviewer questions. Do not invent mitigation history, owners, dates, or change ratings. Distinguish missing information from proven control failures.');
         }
+        return $this->reviewResult($review, $mode);
+    }
+
+    public function registerReview(array $context)
+    {
+        $mode = config('risk_ai.mode');
+        $risks = $context['risks'];
+        // Explicitly scope all findings to the supplied sample, not unseen records.
+        $sampleSize = count($risks);
+        if ($mode === 'demo') {
+            $high = array_values(array_filter($risks, function ($risk) { return ($risk['rating'] ?? '') === 'High'; }));
+            $missingOwner = array_values(array_filter($risks, function ($risk) { return empty($risk['owner_assigned']); }));
+            $missingResponse = array_values(array_filter($risks, function ($risk) { return trim($risk['response'] ?? '') === ''; }));
+            $ids = function ($items) { return implode(', ', array_slice(array_column($items, 'id'), 0, 5)); };
+            $gaps = [];
+            if ($missingOwner) $gaps[] = count($missingOwner).' sampled risk(s) have no assigned owner. Examples: '.$ids($missingOwner).'.';
+            if ($missingResponse) $gaps[] = count($missingResponse).' sampled risk(s) have no recorded response. Examples: '.$ids($missingResponse).'.';
+            $review = [
+                'summary' => 'Reviewed '.$sampleSize.' of '.$context['total_matching'].' matching risks. '.$sampleSize.' sampled records include '.count($high).' high-rated risks. These are current register values, not reassessed ratings.',
+                'gaps' => $gaps,
+                'proposed_controls' => array_values(array_filter([
+                    $high ? 'Review the treatment plans and control evidence for high-rated records, including '.$ids($high).'.' : null,
+                    $missingOwner ? 'Confirm an accountable owner for each unassigned record.' : null,
+                    $missingResponse ? 'Agree and document a response strategy for records without one.' : null,
+                    'Check mitigation progress in each full record before setting follow-up priorities.',
+                ])),
+                'questions' => ['Which risks require escalation under your approved criteria?', 'Which controls have recent evidence of effectiveness?', 'Do any sampled risks share a cause or dependency that needs a coordinated response?'],
+            ];
+        } else {
+            $review = $this->generate($context, 'Review a risk register sample. Return JSON with summary (string, max 2000 characters), gaps, proposed_controls, questions (arrays of strings). Summarize themes, identify missing owners or response strategies, propose prioritized follow-up checks, and ask reviewer questions. Refer only to supplied risk IDs. Scope every finding to the supplied sample; total_matching is a count of matching records, not proof of coverage. Do not infer overdue actions, trends, ineffective controls, or missing mitigations from these fields. Do not change ratings or claim to have reviewed full records. proposed_controls here means recommended follow-up actions.');
+        }
+        $result = $this->reviewResult($review, $mode);
+        $result['scope'] = ['reviewed' => $sampleSize, 'total_matching' => (int) $context['total_matching']];
+        return $result;
+    }
+
+    private function reviewResult(array $review, $mode)
+    {
         if (!isset($review['summary']) || !is_string($review['summary']) || trim($review['summary']) === '' || mb_strlen($review['summary']) > 2000) {
             throw new RuntimeException('Invalid provider response.');
         }

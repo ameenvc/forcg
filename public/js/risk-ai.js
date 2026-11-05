@@ -10,7 +10,7 @@
         if (open && panel.hidden) { originalOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; }
         if (!open && !panel.hidden) document.body.style.overflow = originalOverflow;
         panel.hidden = !open;
-        if (toggle) toggle.setAttribute('aria-expanded', String(open));
+        document.querySelectorAll('#risk-ai-toggle, [data-risk-ai-open]').forEach(button => button.setAttribute('aria-expanded', String(open)));
         if (open && concern) {
             if (!concern.value) concern.value = ((get('riskdec') && get('riskdec').value) || (get('riskname') && get('riskname').value) || '').slice(0, 10000);
             const focusTarget = concern.getClientRects().length ? concern : get('risk-ai-draft-name');
@@ -18,7 +18,7 @@
         } else if (open && close) close.focus();
         else if (!open && toggle) toggle.focus();
     }
-    if (toggle) toggle.addEventListener('click', () => openPanel(panel.hidden));
+    document.querySelectorAll('#risk-ai-toggle, [data-risk-ai-open]').forEach(button => button.addEventListener('click', () => openPanel(panel.hidden)));
     if (close) close.addEventListener('click', () => openPanel(false));
     panel.addEventListener('click', event => { if (event.target === panel) openPanel(false); });
     panel.addEventListener('keydown', event => {

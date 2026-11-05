@@ -47,6 +47,18 @@ class RiskAiTest extends TestCase
         $this->actingAs($user);
     }
 
+    public function testRegisterReviewIsScopedAndRejectsOversizedSamples()
+    {
+        $this->signIn();
+        $risk = ['id' => 'OPE1', 'name' => 'Supply interruption', 'rating' => 'High', 'owner_assigned' => false, 'response' => ''];
+        $payload = ['action' => 'register_review', 'concern' => 'Review filtered register', 'total_matching' => 100, 'risks' => [$risk]];
+        $this->postJson(route('risk.ai.draft'), $payload)->assertOk()->assertJsonPath('scope.reviewed', 1)->assertJsonPath('scope.total_matching', 100)->assertJsonCount(2, 'review.gaps');
+        $payload['risks'] = array_fill(0, 51, $risk);
+        $this->postJson(route('risk.ai.draft'), $payload)->assertStatus(422)->assertJsonValidationErrors('risks');
+        $payload['risks'] = [['id' => 'OPE1']];
+        $this->postJson(route('risk.ai.draft'), $payload)->assertStatus(422)->assertJsonValidationErrors(['risks.0.name', 'risks.0.owner_assigned']);
+    }
+
     public function testQuickViewEscapesContentAndOffersReviewAndFullRecord()
     {
         $risk = new \App\Risk;
@@ -87,21 +99,31 @@ class RiskAiTest extends TestCase
     {
         view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));
         view()->share('errors', new \Illuminate\Support\ViewErrorBag);
-        $html = view('user.risks.addrisk', [
-            'rskgrp' => collect([(object) ['riskgroups' => 'Operational']]),
-            'departments' => collect([(object) ['id' => 1, 'departmentname' => 'Maintenance']]),
-            'strategy' => collect([(object) ['name' => 'Mitigate']]),
-            'hml' => collect(['Low', 'Moderate', 'High'])->map(function ($name) { return (object) ['name' => $name]; }),
-            'riskreviewers' => collect(),
-        ])->render();
-        foreach (['riskgroup', 'riskscr', 'riskarea', 'riskname', 'riskdec', 'riskdri', 'existing_controls', 'risk_response', 'impa', 'like', 'riskreviewer_id'] as $field) {
-            $this->assertStringContainsString('name="'.$field.'"', $html);
-        }
-        $this->assertStringContainsString('/user/risks/submit', $html);
-        $this->assertStringContainsString('id="risk-score-card"', $html);
-        $this->assertStringContainsString('id="risk-ai-apply-all"', $html);
-        if (getenv('RISK_FORM_PREVIEW_PATH')) {
-            file_put_contents(getenv('RISK_FORM_PREVIEW_PATH'), $html);
+        foreach (['demo', 'openai'] as $mode) {
+            config(['risk_ai.mode' => $mode]);
+            $html = view('user.risks.addrisk', [
+                'rskgrp' => collect([(object) ['riskgroups' => 'Operational']]),
+                'departments' => collect([(object) ['id' => 1, 'departmentname' => 'Maintenance']]),
+                'strategy' => collect([(object) ['name' => 'Mitigate']]),
+                'hml' => collect(['Low', 'Moderate', 'High'])->map(function ($name) { return (object) ['name' => $name]; }),
+                'riskreviewers' => collect(),
+            ])->render();
+            foreach (['riskgroup', 'riskscr', 'riskarea', 'riskname', 'riskdec', 'riskdri', 'existing_controls', 'risk_response', 'impa', 'like', 'riskreviewer_id'] as $field) {
+                $this->assertStringContainsString('name="'.$field.'"', $html);
+            }
+            $this->assertStringContainsString('/user/risks/submit', $html);
+            $this->assertStringContainsString('id="risk-score-card"', $html);
+            $this->assertStringContainsString('id="risk-ai-apply-all"', $html);
+            if ($mode === 'openai') {
+                $this->assertStringContainsString('Suggest risks with AI', $html);
+                $this->assertStringNotContainsString('function passvalue', $html);
+                $this->assertStringNotContainsString("$('#riskname').val('');", $html);
+            } else {
+                $this->assertStringContainsString('function passvalue', $html);
+            }
+            if (getenv('RISK_FORM_PREVIEW_PATH')) {
+                file_put_contents(getenv('RISK_FORM_PREVIEW_PATH'), $html);
+            }
         }
     }
 

@@ -58,6 +58,8 @@ class RiskRegisterTest extends TestCase
     {
         $html = $this->renderRegister();
         $this->assertStringContainsString('Add Risk', $html);
+        $this->assertStringContainsString('risk-register-ai-toggle', $html);
+        $this->assertStringContainsString('Review this register', $html);
         $this->assertStringContainsString(route('risk.addrisk'), $html);
         $this->assertStringContainsString('Search risk register', $html);
         foreach (['pdf', 'excel', 'word'] as $format) $this->assertStringContainsString(route('risk.exportData', $format), $html);

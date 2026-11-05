@@ -896,3 +896,8 @@
     .register-rating-tabs .register-summary-label { font-size:11px; }
     .register-rating-tabs strong { font-size:10px; min-width:20px; padding:0 4px; }
 }
+.register-ai-panel {margin:16px 0;}
+.register-ai-panel[hidden] {display:none;}
+.register-ai-scope {font-size:12px;font-weight:600;margin:12px 0 0;color:#405b87;}
+.register-toolbar-actions>#risk-register-ai-toggle {background:#3563db;border-color:#3563db;color:white;font-size:12px;border-radius:8px;white-space:nowrap;}
+@media(max-width:767px) {.register-toolbar-actions {flex-wrap:wrap;}}

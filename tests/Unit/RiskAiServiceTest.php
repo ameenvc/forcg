@@ -31,6 +31,20 @@ class RiskAiServiceTest extends TestCase
         parent::tearDown();
     }
 
+    public function testRegisterReviewDoesNotInferUnseenRecordsOrControlFailures()
+    {
+        $result = (new RiskAiService)->registerReview(['total_matching' => 100, 'risks' => [
+            ['id' => 'OPE1', 'rating' => 'High', 'owner_assigned' => false, 'response' => ''],
+            ['id' => 'OPE2', 'rating' => 'Low', 'owner_assigned' => true, 'response' => 'Accept'],
+        ]]);
+        $this->assertSame(['reviewed' => 2, 'total_matching' => 100], $result['scope']);
+        $this->assertStringContainsString('2 of 100', $result['review']['summary']);
+        $this->assertStringContainsString('1 high-rated', $result['review']['summary']);
+        $this->assertCount(2, $result['review']['gaps']);
+        $this->assertStringContainsString('OPE1', $result['review']['gaps'][0]);
+        $this->assertStringNotContainsString('OPE2', implode(' ', $result['review']['gaps']));
+    }
+
     public function testChecklistReviewIdentifiesOnlyMissingFields()
     {
         $result = (new RiskAiService)->review(['concern' => 'Supplier interruption', 'risk_description' => 'Delayed parts may stop production.', 'existing_controls' => 'Safety stock']);

@@ -16,7 +16,17 @@ class RiskAiController extends Controller
     {
         abort_unless(config('risk_ai.enabled'), 404);
         $context = $request->validate([
-            'action' => 'nullable|in:suggest,draft,review',
+            'action' => 'nullable|in:suggest,draft,review,register_review',
+            'total_matching' => 'required_if:action,register_review|integer|min:1|max:1000000',
+            'risks' => 'required_if:action,register_review|array|min:1|max:50',
+            'risks.*.id' => 'required|string|max:190',
+            'risks.*.name' => 'required|string|max:190',
+            'risks.*.rating' => 'nullable|in:High,Moderate,Low',
+            'risks.*.group' => 'nullable|string|max:190',
+            'risks.*.area' => 'nullable|string|max:190',
+            'risks.*.response' => 'nullable|string|max:500',
+            'risks.*.stage' => 'nullable|string|max:190',
+            'risks.*.owner_assigned' => 'required|boolean',
             'selected_risk_name' => 'nullable|string|max:190',
             'concern' => 'required|string|min:3|max:10000',
             'risk_description' => 'nullable|string|max:10000',
@@ -30,6 +40,9 @@ class RiskAiController extends Controller
         ]);
         // Draft only from supplied form text: no database reads or record writes.
         try {
+            if (($context['action'] ?? '') === 'register_review') {
+                return response()->json($service->registerReview($context))->header('Cache-Control', 'no-store');
+            }
             if (($context['action'] ?? '') === 'review') {
                 return response()->json($service->review($context))->header('Cache-Control', 'no-store');
             }

@@ -1,5 +1,6 @@
 @extends('layouts.multiselect')
 @section('content')
+@php $liveRiskAi = config('risk_ai.enabled') && config('risk_ai.mode') === 'openai'; @endphp
 @include('shared.forms.assets')
 <link rel="stylesheet" href="{{ asset('css/risk-form.css') }}?v={{ filemtime(public_path('css/risk-form.css')) }}">
 <script src="{{ asset('js/risk-form.js') }}" defer></script>
@@ -126,7 +127,10 @@
                         <div class="row">
                             <div class="form-group col-sm-12">
                                 <label class="col-sm-12 col-form-label text-sm" for="riskname">Risk Name<span class="text-danger">*</span></label>
-                                <div class="col-sm-12"  id="getrisknamedetails">
+                                @if($liveRiskAi)
+                                <div class="col-sm-12 mb-3"><button type="button" class="btn btn-sm btn-primary" data-risk-ai-open aria-controls="risk-ai-panel" aria-expanded="false"><i class="fa fa-magic mr-1" aria-hidden="true"></i>Suggest risks with AI</button><small class="d-block mt-2 text-muted">Get ideas based on your topic, group and department, then review a draft before using it.</small></div>
+                                @endif
+                                <div class="col-sm-12" id="getrisknamedetails">
 
                                 </div>
                                 <div class="col-sm-12">
@@ -499,15 +503,18 @@
     /**---risk group details starts here */
     function getriskdetails(group_name, category_name = '')
     {
+        @unless($liveRiskAi)
         $('#riskname').val('');
         $('#riskdec').val('');
         $('#riskdri').val('');
         $('#mitigating_action_value').val('');
+        @endunless
         if(group_name === 'Operational') {
             $('.risk-category-wrap').removeClass('d-none');
         } else {
             $('.risk-category-wrap').addClass('d-none');
         }
+        @unless($liveRiskAi)
         $.ajax({
             data: {
                 "risk_group_name": group_name,
@@ -537,8 +544,10 @@
 
             }
         });
+        @endunless
     }
 
+    @unless($liveRiskAi)
     function passvalue(details)
     {
         var modules = details;
@@ -572,6 +581,8 @@
 
         });
     }
+
+    @endunless
 
     function resetFormCustom() {
         const riskdecmax = $('#riskdec').attr('data-max-character')

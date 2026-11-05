@@ -67,6 +67,7 @@
             get('risk-selected-note').textContent = selected.size > currentSelected ? 'Includes selections from other pages' : '';
         }
         function refreshView() {
+            root.dispatchEvent(new CustomEvent('risk-register-viewchange'));
             syncSelection();
             const total = table.rows().count(), matching = table.rows({search: 'applied'}).count();
             root.dataset.empty = String(matching === 0);

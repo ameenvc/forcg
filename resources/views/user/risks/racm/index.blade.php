@@ -27,6 +27,10 @@
 @endsection
 
 @section('content')
+@include('shared.forms.assets')
+<link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
+<link rel="stylesheet" href="{{ asset('css/risk-workflow.css') }}?v={{ filemtime(public_path('css/risk-workflow.css')) }}">
+
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <style>
         .select2-results__options,
@@ -279,39 +283,13 @@
             {!!Session::get('error')!!}
         </div>
     @endif
-    <div class="content" style="width:100%;">
-        <!-- heading part starts -->
-        <div class="block-header block-header-default">
-            <div class="block-options" style="margin-left:-25px; font-size: 1rem;">
-                       <span style="text-transform: uppercase;font-weight:bold" class="font-w700">
-                          Risk Assessment Criteria Matrix</span> /
-                <span style="text-transform: capitalize;font-weight:normal;font-size:15px;">
-                        Enterprise Risk </span>
-            </div>
-            <div>
-                <table width="100%" style="padding-top:5px;padding-right:15px;">
-                    <tr>
-                        <td align="right">
-                            <button type="button"
-                                    class="btn btn-sm btn-alt-primary" id="request-review-approve">
-                               <span style="font-size:11px;" data-toggle="tooltip" title="Click here to Add Request Review & Approval"><i class="fa fa-1x fa-user-edit"></i>&nbsp;Request Review & Approval</span>
-                            </button>
-                            <button type="button"
-                                    class="btn btn-sm btn-alt-primary btn-add-racm">
-                               <span data-toggle="tooltip" title="Click here to Add New RACM">
-                                <i class="fa fa-plus mr-1"></i>&nbsp;Add</span>
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+    <div class="content risk-register-page risk-workflow-page" style="width:100%;">
+        @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Agree on what low, moderate, and high mean before assessing a risk.'])
+        @include('user.risks.workflow-guide', ['workflowStep' => 'criteria'])
+        <div class="workflow-toolbar"><div><h2>Criteria library <span class="workflow-count">{{ $riskAcms->count() }}</span></h2><p>Select criteria below to request review and approval.</p></div><button type="button" class="btn btn-outline-primary" id="request-review-approve"><i class="fa fa-user-edit mr-2" aria-hidden="true"></i>Request review & approval</button></div>
         <div class="block block-rounded">
             <div class="block-content block-content-full">
                 <div class="table-responsive" id="content">
-                    <p style="font-size: 12px;">
-                        <span>RACM, or Risk Assessment Criteria Matrix, refers to predefined criteria established by organizations prior to conducting risk assessments. It serves as a valuable reference for risk assessment processes, enabling organizations to decide what scenario will go as high/moderate/low for each factor in the risk assessment.</span>
-                    </p>
                     <!-- approved documents listing starts -->
                     <table class="table table-borderless table-striped table-vcenter js-dataTable-full" id="tabledata">
                         <thead class="border-top">
@@ -373,7 +351,7 @@
                                 $reviewers_details = App\User::whereIn('id',$reviewers)->get();
                             @endphp
                             <tr>
-                                <td><input class="text-center font-size-sm" type="checkbox" id="{{ $riskAcm->id}}" name="id[]"></td>
+                                <td><input class="text-center font-size-sm" type="checkbox" id="{{ $riskAcm->id}}" name="id[]" aria-label="Select criteria {{ $riskAcm->risk_factor_title }}"></td>
                                 <td class="text-center" style="font-size:11px;">{{$no}}</td>
                                 <td style="font-size: 11px;" class="text-center">
                                     <span>{{ $riskAcm->department ? $riskAcm->department->departmentname : '--' }}</span>
@@ -705,8 +683,8 @@
         $("#request-review-approve").click(function() {
             var dataArr = new Array();
             var all;
-            if ($('input:checkbox:checked').length > 0) {
-                $('input:checkbox:checked').each(function() {
+            if ($('#tabledata input[name="id[]"]:checked').length > 0) {
+                $('#tabledata input[name="id[]"]:checked').each(function() {
                     dataArr.push($(this).attr('id'));
                 });
                 all = dataArr.join(",");
@@ -950,15 +928,16 @@
                             $(this).addClass('text-primary');
                             $("#" + dropdownId +  "option").css('color', 'black');
                         } else {
-                            location.reload();
+                            table.columns(columnIndex).search('').draw();
+                            $(this).removeClass('text-primary');
                         }
                     });
                 });
             }
 
             // Department
-            const departmentNames = "{{ $allDeptNames }}";
-            createHeadingSelect('Process name', 'deptselectdata', departmentNames, 'dept_dropdown', 1);
+            const departmentNames = @json($allDeptNames);
+            createHeadingSelect('Process name', 'deptselectdata', departmentNames, 'dept_dropdown', 2);
         });
     </script>
 @endsection

@@ -1,14 +1,15 @@
-<div class="modal fade racm-popup" id="racmModal"
+<div class="modal fade racm-popup risk-workflow-modal" id="racmModal"
      aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">{{ isset($racm) ? 'Edit RACM' : 'Add New RACM' }}</h5>
+                <h5 class="modal-title" id="exampleModalLabel">{{ isset($racm) ? 'Edit assessment criteria' : 'Add assessment criteria' }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
+                <p class="workflow-form-hint">Define clear thresholds for this risk factor. Save your criteria, then request review and approval from the library.</p>
                 <!-- Risk factor title -->
                 <div class="form-group" id="doc_name_div">
                     <label for="risk_factor_title">Risk factor title<span style="color:red;">*</span></label><br>

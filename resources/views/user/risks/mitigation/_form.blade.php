@@ -22,7 +22,7 @@
 </style>
 
 <!-- Mitigating Modal -->
-<div class="modal new-mitigating-popup" id="modal-mitigating-{{ $riskId }}" tabindex="-1" role="dialog"
+<div class="modal new-mitigating-popup risk-workflow-modal" id="modal-mitigating-{{ $riskId }}" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog m-dialog" role="document">
         <div class="modal-content" style="text-align: left">
@@ -50,6 +50,7 @@
                 @endif
                 <input type="hidden" name="risk_id" value="{{ $riskId }}">
                 <div class="modal-body m-body p-4">
+                    <p class="workflow-form-hint">Describe the action, assign an owner, and set a realistic due date. Track progress and request closure review from Mitigation actions.</p>
                     <!-- Owner -->
                     <div class="form-group" style="display:inline-block;width:49%;">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="owner">Owner <span class="text-danger">*</span></label>

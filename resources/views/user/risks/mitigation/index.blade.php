@@ -38,14 +38,10 @@
 </div>
 @endsection
 @section('content')
-<!doctype html>
-<html lang="en">
+@include('shared.forms.assets')
+<link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
+<link rel="stylesheet" href="{{ asset('css/risk-workflow.css') }}?v={{ filemtime(public_path('css/risk-workflow.css')) }}">
 
-<head>
-    <title></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.js">
     <link rel="stylesheet" href="{{ asset('css/workflow.css') }}">
     <link rel="stylesheet" href="{{ asset('css/register_filter.css') }}">
     <style>
@@ -55,7 +51,7 @@
                 margin: 0;
                 padding: 0;
                 overflow-x: hidden;
-                overflow-y: hidden;
+                overflow-y: auto;
             }
 
             table {
@@ -161,24 +157,19 @@
             max-width: 250px;
         }
     </style>
-</head>
-<body>
+
     <?php
     $data1 = [];
     $data2 = [];
     ?>
-    <div class="content" style="width:100%">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item font-w700">Mitigating Actions</li>
-                <li class="breadcrumb-item" aria-current="page">
-                    Enterprise Risk
-                </li>
-            </ol>
-        </nav>
+    <div class="content risk-register-page risk-workflow-page" style="width:100%">
+        @include('user.risks.register-header', ['registerPage' => 'mitigation', 'registerTitle' => 'Mitigation actions', 'registerDescription' => 'Turn risk decisions into owned actions, track progress, and verify completion.'])
+        @include('user.risks.workflow-guide', ['workflowStep' => 'mitigation'])
+        <div class="workflow-toolbar"><div><h2>Action tracker <span class="workflow-count">{{ $mitigations->count() }}</span></h2><p>Open a risk from the register to add its mitigation actions. Update progress here, then request closure review.</p></div>@if($riskId)<a class="btn btn-outline-primary" href="{{ route('mitigations.index') }}">Show all actions</a>@endif</div>
+        @if($riskId)<div class="workflow-scope" role="status">Showing actions for the selected risk. <a href="{{ route('risk.detail', $riskId) }}">Open risk details</a> to review the assessment and manage its actions.</div>@endif
         <div class="block">
             <div class="block-content block-content-full">
-                <div class="scrollable" style="height:400px;overflow-x:hidden;" id="content">
+                <div class="table-responsive" id="content">
 
                     @if(Session::has('errmsg'))
                         <div class="alert alert-danger">
@@ -192,8 +183,8 @@
                             {!!Session::get('msg')!!}
                         </div>
                     @endif
-                    <table class="table table-bordered table-striped table-vcenter js-dataTable-full"  id="tabledata">
-                        <input type="hidden" value="a1" id="tabselected">
+                    <input type="hidden" value="a1" id="tabselected">
+                    <table class="table table-striped table-vcenter js-dataTable-full" id="tabledata">
                         <thead>
                             <tr>
                                 <td style="position:sticky;top:-1px; width: 5%"></td>
@@ -227,7 +218,7 @@
                             <tr>
                                 <td>
                                     <input class="text-center font-size-sm" type="checkbox"
-                                           id="{{ $mitigation->id }}" name="id[]">
+                                           id="{{ $mitigation->id }}" name="id[]" aria-label="Select action {{ $mitigation->action_name }}">
                                 </td>
                                 <td class="text-center " style="font-size:10px;">
                                     {{ $key + 1 }}
@@ -235,19 +226,19 @@
                                 <td class="text-center " style="font-size:10px;">
                                     {{ $mitigation->action_id }}
                                 </td>
-                                <td class="d-none d-sm-table-cell text-left" style="font-size:10px;">
+                                <td class="text-left" style="font-size:10px;">
                                     <a href="{{ route('mitigations.detail', $mitigation->id) }}">
                                         {{ $mitigation->action_name }}
                                     </a>
                                 </td>
-                                <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
+                                <td class="text-center" style="font-size:10px;">
                                     @if($mitigation->user)
                                         {{ $mitigation->user->name  }}
                                     @else
                                         <span data-toggle-second="tooltip" title="Owner doesn't exist">--</span>
                                     @endif
                                 </td>
-                                <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
+                                <td class="text-center" style="font-size:10px;">
                                     @if($mitigation->user)
                                         <img src="{{ $mitigation->user->avatar_path }}"
                                              class="avatar"
@@ -258,10 +249,10 @@
                                             alt="No-avatar">
                                     @endif
                                 </td>
-                                <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
+                                <td class="text-center" style="font-size:10px;">
                                     {{ $mitigation->department ? $mitigation->department->departmentname : '-'}}
                                 </td>
-                                <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
+                                <td class="text-center" style="font-size:10px;">
                                     @if($mitigation->priority_level == 'high')
                                         <span class="text-danger font-w700">High</span>
                                     @elseif($mitigation->priority_level == 'medium')
@@ -271,18 +262,18 @@
                                     @endif
                                 </td>
 
-                                <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
+                                <td class="text-center" style="font-size:10px;">
                                     {{ date("d/m/Y", strtotime($mitigation->due_date)) }}
                                 </td>
 
-                                <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
+                                <td class="text-center" style="font-size:10px;">
                                     @if($mitigation->status == config('constants.risk_management.mitigation.closed'))
                                         <span class="status status-success" style="font-size:10px;">{{ $mitigation->status  }}</span>
                                     @else
                                         @include('user.risks.mitigation._status')
                                     @endif
                                 </td>
-                                <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
+                                <td class="text-center" style="font-size:10px;">
                                     <div class="btn-group m-auto d-flex justify-content-center">
                                         <!-- Action: Edit/Delete/Closure review/Reopen  -->
                                         <div>
@@ -469,30 +460,31 @@
                                 $(this).addClass('text-primary');
                                 $("#" + dropdownId +  "option").css('color', 'black')
                             } else {
-                                location.reload();
+                                table.columns(columnIndex).search('').draw();
+                                $(this).removeClass('text-primary');
                             }
                         });
                     });
                 }
 
                 // Owner
-                const ownerNames = "{{ $allOwnerNames }}";
+                const ownerNames = @json($allOwnerNames);
                 createHeadingSelect('Owner', 'ownerselectdata', ownerNames, 'owner_dropdown', 4, false);
 
                 // Department
-                const departmentNames = "{{ $allDeptNames }}";
+                const departmentNames = @json($allDeptNames);
                 createHeadingSelect('Department', 'deptselectdata', departmentNames, 'dept_dropdown', 6);
 
                 // Priority
-                const priorityNames = "{{ $allPriorityLevel }}";
+                const priorityNames = @json($allPriorityLevel);
                 createHeadingSelect('Priority Level', 'priorityselectdata', priorityNames, 'priority_dropdown', 7);
 
                 // Year
-                const dueDateYears = "{{ $allYears }}";
+                const dueDateYears = @json($allYears);
                 createHeadingSelect('Due date', 'duedateselectdata', dueDateYears, 'duedate_dropdown', 8);
 
                 // Status
-                const statusNames = "{{ $allStatus }}";
+                const statusNames = @json($allStatus);
                 createHeadingSelect('Status', 'statusselectdata', statusNames, 'status_dropdown', 9);
 
                 $(".alert-success").fadeTo(2000, 500).slideUp(500, function(){
@@ -578,6 +570,5 @@
             })
         </script>
     </div>
-</body>
-</html>
+
 @endsection

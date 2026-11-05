@@ -85,7 +85,7 @@ class MitigationController extends Controller
         }
 
         return view('user.risks.mitigation.index', compact(
-             'mitigations', 'model',
+             'mitigations', 'model', 'riskId',
             'allOwnerNames', 'allDeptNames', 'allPriorityLevel', 'allYears', 'allStatus',
             'allStatus', 'allResourceRequired', 'currentUserId', 'reviewerIds'
         ));

@@ -763,34 +763,8 @@
 .risk-register[data-empty=true] .risk-table-scroll,.risk-register[data-empty=true] #risk-table-footer {
     display:none;
 }
-.register-header {
-    background:transparent;
-    border:0;
-    border-radius:0;
-    padding:4px 0 22px;
-}
-.register-header h1 {
-    font-size:28px;
-    margin:7px 0;
-}
-.register-header p {
-    font-size:12px;
-}
-.register-eyebrow {
-    font-size:9px;
-    color:#8795ab;
-    letter-spacing:1.4px;
-}
 .register-navigation {
-    padding:0;
-    border:0;
-    border-bottom:1px solid #dfe5ef;
-    background:transparent;
-    border-radius:0;
     margin-bottom:20px;
-}
-.register-navigation a {
-    padding:12px 0;
 }
 .risk-register .risk-register-card {
     box-shadow:none;
@@ -817,15 +791,7 @@
     outline-offset:2px;
 }
 @media(max-width:767px) {
-    .register-header {
-        padding:5px 2px 18px;
-    }
-    .register-header h1 {
-        font-size:24px;
-    }
     .register-navigation {
-        padding:0 2px;
-        gap:16px;
         margin-bottom:16px;
     }
     .register-view-options .register-layout {

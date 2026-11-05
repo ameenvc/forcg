@@ -64,6 +64,28 @@ class RiskAiTest extends TestCase
         }
     }
 
+    public function testModernRiskFormPreservesSubmissionFields()
+    {
+        view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));
+        view()->share('errors', new \Illuminate\Support\ViewErrorBag);
+        $html = view('user.risks.addrisk', [
+            'rskgrp' => collect([(object) ['riskgroups' => 'Operational']]),
+            'departments' => collect([(object) ['id' => 1, 'departmentname' => 'Maintenance']]),
+            'strategy' => collect([(object) ['name' => 'Mitigate']]),
+            'hml' => collect(['Low', 'Moderate', 'High'])->map(function ($name) { return (object) ['name' => $name]; }),
+            'riskreviewers' => collect(),
+        ])->render();
+        foreach (['riskgroup', 'riskscr', 'riskarea', 'riskname', 'riskdec', 'riskdri', 'existing_controls', 'risk_response', 'impa', 'like', 'riskreviewer_id'] as $field) {
+            $this->assertStringContainsString('name="'.$field.'"', $html);
+        }
+        $this->assertStringContainsString('/user/risks/submit', $html);
+        $this->assertStringContainsString('id="risk-score-card"', $html);
+        $this->assertStringContainsString('id="risk-ai-apply-all"', $html);
+        if (getenv('RISK_FORM_PREVIEW_PATH')) {
+            file_put_contents(getenv('RISK_FORM_PREVIEW_PATH'), $html);
+        }
+    }
+
     public function testGuestsCannotRequestDrafts()
     {
         $this->postJson('/user/risks/ai/draft', ['concern' => 'Single supplier for critical parts'])->assertStatus(401);

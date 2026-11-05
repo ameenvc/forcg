@@ -23,9 +23,31 @@
     if (!button) return;
     const message = document.getElementById('risk-ai-message');
     const results = document.getElementById('risk-ai-results');
+    const applyAll = document.getElementById('risk-ai-apply-all');
+    const fields = {risk_name: '#riskname', risk_description: '#riskdec', risk_drivers: '#riskdri'};
+    let latestDraft = null;
     const value = selector => { const field = document.querySelector(selector); return field ? field.value : ''; };
+    function applyField(key, content) {
+        const target = document.querySelector(fields[key]);
+        if (!target) return;
+        target.value = Array.isArray(content) ? content.join('\n') : content;
+        target.classList.remove('risk-ai-applied');
+        void target.offsetWidth;
+        target.classList.add('risk-ai-applied');
+        target.dispatchEvent(new Event('input', {bubbles: true}));
+        target.dispatchEvent(new Event('change', {bubbles: true}));
+    }
+    if (applyAll) applyAll.addEventListener('click', () => {
+        if (!latestDraft) return;
+        const keys = Object.keys(fields).filter(key => latestDraft[key] !== undefined);
+        if (keys.some(key => value(fields[key]).trim()) && !window.confirm('Replace the risk name, description and drivers with these suggestions? Existing controls and ratings will stay as entered.')) return;
+        keys.forEach(key => applyField(key, latestDraft[key]));
+        message.textContent = 'Suggested fields applied. Review the form before submitting.';
+    });
     button.addEventListener('click', async function () {
         results.replaceChildren();
+        latestDraft = null;
+        if (applyAll) applyAll.hidden = true;
         const concern = value('#risk-ai-concern').trim();
         if (concern.length < 10) { message.textContent = 'Please describe the concern in at least 10 characters.'; return; }
         button.disabled = true;
@@ -41,11 +63,13 @@
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || 'Unable to prepare draft.');
+            latestDraft = data.draft;
+            if (applyAll) applyAll.hidden = false;
             message.textContent = data.notice;
             if (data.assessment) message.textContent += ` Selected assessment: ${data.assessment.score} · ${data.assessment.rating} (your inputs).`;
-            const fields = {risk_name: '#riskname', risk_description: '#riskdec', risk_drivers: '#riskdri'};
             Object.entries(data.draft).forEach(([key, content]) => {
                 const block = document.createElement('div');
+                block.className = 'risk-ai-result';
                 const heading = document.createElement('strong'); heading.textContent = key.replace(/_/g, ' ');
                 const text = document.createElement('p');
                 text.style.whiteSpace = 'pre-wrap';
@@ -57,9 +81,8 @@
                     apply.addEventListener('click', function () {
                         const target = document.querySelector(fields[key]);
                         if (!target || (target.value && !window.confirm('Replace the current field text with this suggestion?'))) return;
-                        target.value = text.textContent;
-                        target.dispatchEvent(new Event('input', {bubbles: true}));
-                        target.dispatchEvent(new Event('change', {bubbles: true}));
+                        applyField(key, content);
+                        apply.textContent = 'Applied';
                     });
                     block.append(apply);
                 }

@@ -1,49 +1,24 @@
 @extends('layouts.multiselect')
 @section('content')
-<style>
-    .custom-control-label.label-risk-cat:after,
-    .custom-control-label.label-risk-cat:before {
-        top: 0;
-    }
-    .text-counter {
-        font-size: 12px;
-        float: right;
-        margin-top: 2px;
-        color: gray;
-    }
-    .border-red {
-        border-color: red;
-    }
-    .breadcrumb>li+li:before {
-        display: none !important;
-    }
-    .breadcrumb {
-        font-size: 15px;
-        padding: 0.75rem 1.25rem;
-        background: #F6F7F9;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-    .text-sm {
-            font-size: 13px;
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('css/risk-form.css') }}">
+<script src="{{ asset('js/risk-form.js') }}" defer></script>
 <!-- Page Content -->
-<div class="content">
+<div class="content risk-workspace">
     <!-- Horizontal -->
-    <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
-        <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item font-w700">
-                    <a class="link-fx" href="/user/riskmgmt" class="text-black">
-                        Enterprise Risk
-                    </a>
-                </li>
-                <li class="breadcrumb-item" aria-current="page">
-                    Add Risk
-                </li>
-            </ol>
+    <div class="block block-rounded risk-form-shell">
+        <header class="risk-page-header">
+            <div>
+                <a class="risk-back-link" href="{{ route('risk.index') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Enterprise risk register</a>
+                <h1>Add a new risk</h1>
+                <p>Capture the concern, assess its significance, and assign a reviewer.</p>
+            </div>
             @include('user.risks.ai-trigger')
+        </header>
+        <nav class="risk-step-nav" aria-label="Form sections">
+            <a href="#risk-context"><span>01</span> Context</a>
+            <a href="#risk-details"><span>02</span> Risk details</a>
+            <a href="#risk-assessment"><span>03</span> Assessment &amp; review</a>
+            <small><span aria-hidden="true">*</span> Required fields</small>
         </nav>
         <div class="block-content block-content-full">
             @if(Session::has('errmsg'))
@@ -62,9 +37,11 @@
 
                 <div class="col-lg-12">
                     <!-- Form Horizontal - Default Style -->
-                    <form class="mb-5" action="{{url('/user/risks/submit')}}" method="POST" onsubmit="return validateChips()">
+                    <form id="risk-entry-form" class="risk-entry-form" action="{{url('/user/risks/submit')}}" method="POST" onsubmit="return validateChips()">
                         {{csrf_field()}}
                         @include('user.risks.ai-assist')
+                        <section class="risk-form-section" id="risk-context" aria-labelledby="risk-context-title">
+                        <div class="risk-section-heading"><span class="risk-section-number">01</span><div><h2 id="risk-context-title">Set the context</h2><p>Choose where this risk belongs in your organization.</p></div></div>
                         <div class="row">
                             <div class="form-group col-sm-4">
                                 <label class="col-sm-12 col-form-label text-sm" for="riskgroup">Risk Group<span class="text-danger">*</span></label>
@@ -83,7 +60,7 @@
                                 </div>
                             </div>
                             <div class="form-group col-sm-4">
-                                <label class="col-sm-12 col-form-label text-sm" for="risksource">Risk Source</label>
+                                <label class="col-sm-12 col-form-label text-sm" for="riskscr">Risk Source</label>
                                 <div class="col-sm-12">
                                     <select class="form-control js-select2 text-sm" id="riskscr" name="riskscr" style="width:100%;" placeholder="Choose Risk Source">
                                         <option value="">Choose Risk Source</option>
@@ -94,9 +71,9 @@
                                 </div>
                             </div>
                             <div class="form-group col-sm-4">
-                                <label class="col-sm-12 col-form-label text-sm" for="riskdec">Risk Area<span class="text-danger">*</span></label>
+                                <label class="col-sm-12 col-form-label text-sm" for="riskarea">Risk Area<span class="text-danger">*</span></label>
                                 <div class="col-sm-12">
-                                    <select class="form-control js-select2 text-sm" name="riskarea" required="true" style="width:100%;" placeholder="Department" onchange="chooseDivision($(this).val())">
+                                    <select class="form-control js-select2 text-sm" name="riskarea" id="riskarea" required="true" style="width:100%;" placeholder="Department" onchange="chooseDivision($(this).val())">
                                         <option value="">Choose Department</option>
                                         @if(count($departments)> 0 )
                                             @foreach($departments as $value)
@@ -128,7 +105,7 @@
                                 </div>
                             </div>
                             <div class="form-group col-sm-12 risk-category-wrap d-none" style="margin-bottom:0;">
-                                <label class="col-sm-12 col-form-label text-sm" for="riskcategory">Is your operational risk lying in any of the following categories?</label>
+                                <label class="col-sm-12 col-form-label text-sm" for="riskcategory">Operational risk category</label>
                                 <div class="col-sm-12">
                                     @foreach(config('constants.risk_management.category') as $key => $item)
                                         <div class="custom-control custom-radio mb-1 mr-2  text-sm" style="display: inline-block;">
@@ -140,15 +117,20 @@
                                     @endforeach
                                 </div>
                             </div>
+                        </div>
+                        </section>
+                        <section class="risk-form-section" id="risk-details" aria-labelledby="risk-details-title">
+                        <div class="risk-section-heading"><span class="risk-section-number">02</span><div><h2 id="risk-details-title">Describe the risk</h2><p>Explain what could happen, why it could happen, and what is already in place.</p></div></div>
+                        <div class="row">
                             <div class="form-group col-sm-12">
                                 <label class="col-sm-12 col-form-label text-sm" for="riskname">Risk Name<span class="text-danger">*</span></label>
                                 <div class="col-sm-12"  id="getrisknamedetails">
 
                                 </div>
-                                <div class="col-sm-12 col-md-6">
+                                <div class="col-sm-12">
                                     <input type="text" class="form-control  text-sm"
                                             value="{{ old('riskname') }}" required="true" id="riskname"
-                                            name="riskname" placeholder="Enter risk name..">
+                                            name="riskname" maxlength="190" placeholder="e.g. Production disruption from critical spare-part shortages">
                                     @error('riskname')
                                         <div class="text-danger" style="font-size: 13px;">{{ $message }}</div>
                                     @enderror
@@ -161,27 +143,27 @@
                                         required="true"
                                         data-max-character="65435"
                                         class="form-control js-counter text-sm" id="riskdec" name="riskdec"
-                                        placeholder="Enter description" maxlength="65435">{{ old('riskdec') }}</textarea>
+                                        placeholder="Describe the event, its causes, and the potential impact on your objectives." maxlength="65435">{{ old('riskdec') }}</textarea>
                                     <span class="text-counter">0/65435</span>
                                     @error('riskdec')
                                         <div class="text-danger" style="font-size: 13px;">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-sm-12">
+                            <div class="form-group col-sm-12 col-md-6">
                                 <label class="col-sm-12 col-form-label text-sm" for="riskdri">Risk Drivers</label>
                                 <div class="col-sm-12">
                                     <textarea rows="5"
                                                 data-max-character="65435"
                                                 class="form-control js-counter text-sm" id="riskdri" name="riskdri"
-                                                placeholder="Enter" maxlength="65435">{{ old('riskdri') }}</textarea>
+                                                placeholder="e.g. Single-source dependency, long lead times, or limited safety stock" maxlength="65435">{{ old('riskdri') }}</textarea>
                                     <span class="text-counter">0/65435</span>
                                     @error('riskdri')
                                     <div class="text-danger" style="font-size: 13px;">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="form-group col-sm-12">
+                            <div class="form-group col-sm-12 col-md-6">
                                 <label class="col-sm-12 col-form-label text-sm" for="existing_controls">Existing Controls</label>
                                 <div class="col-sm-12">
                                     <textarea rows="5"
@@ -190,15 +172,20 @@
                                                 data-max-character="65435"
                                                 id="existing_controls"
                                                 maxlength="65435"
-                                                name="existing_controls" placeholder="Enter">{{ old('existing_controls') }}</textarea>
+                                                name="existing_controls" placeholder="List safeguards that are already implemented. Keep proposed actions separate.">{{ old('existing_controls') }}</textarea>
                                     <span class="text-counter">0/65435</span>
                                     @error('existing_controls')
                                     <div class="text-danger" style="font-size: 13px;">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
+                        </div>
+                        </section>
+                        <section class="risk-form-section" id="risk-assessment" aria-labelledby="risk-assessment-title">
+                        <div class="risk-section-heading"><span class="risk-section-number">03</span><div><h2 id="risk-assessment-title">Assess &amp; assign</h2><p>Select impact and likelihood using your approved criteria, then choose a reviewer.</p></div></div>
+                        <div class="row">
                             <div class="form-group col-sm-4">
-                                <label class="col-sm-12 col-form-label text-sm" for="riskgroup">Risk Response Strategy</label>
+                                <label class="col-sm-12 col-form-label text-sm" for="risk_response">Risk Response Strategy</label>
                                 <div class="col-sm-12">
                                     <select class="js-select2 form-select w-100 text-sm" id="risk_response" name="risk_response" style="width:100%;">
                                         <option selected="" disabled>Choose Strategy</option>
@@ -211,9 +198,9 @@
                                 </div>
                             </div>
                             <div class="form-group col-sm-4">
-                                <label class="col-sm-12 col-form-label" style="font-size:13px;" for="impact">Impact<span class="text-danger">*</span></label>
-                                <div class="col-sm-12">
-                                    <input type="hidden" name="impa" id="impact" value="">
+                                <label class="col-sm-12 col-form-label" style="font-size:13px;" id="risk-impact-label">Impact<span class="text-danger">*</span></label>
+                                <div class="col-sm-12" role="group" aria-labelledby="risk-impact-label">
+                                    <input type="hidden" name="impa" id="impact" value="{{ old('impa') }}">
                                     @if(count($hml)> 0 )
                                     @foreach($hml as $value)
                                         @php
@@ -229,13 +216,13 @@
                                         <input type="button" class="btn btn-sm {{$btn_class}} impactbtn" id="{{Str::slug($value->name.'i','_')}}" style="margin-right:2px;margin-bottom:10px;font-size:12px;" value="{{$value->name}}">
                                     @endforeach
                                     @endif
-                                    <div id="impact-error" class="text-danger" style="display:none;font-size:12px;">Please select an impact.</div>
+                                    <div id="impact-error" role="alert" class="text-danger" style="display:none;font-size:12px;">Please select an impact.</div>
                                 </div>
                             </div>
                             <div class="form-group col-sm-4">
-                                <label class="col-sm-12 col-form-label" style="font-size:13px;" for="likelihood">Likelihood<span class="text-danger">*</span></label>
-                                <div class="col-sm-12">
-                                    <input type="hidden" name="like" id="likelihood" value="">
+                                <label class="col-sm-12 col-form-label" style="font-size:13px;" id="risk-likelihood-label">Likelihood<span class="text-danger">*</span></label>
+                                <div class="col-sm-12" role="group" aria-labelledby="risk-likelihood-label">
+                                    <input type="hidden" name="like" id="likelihood" value="{{ old('like') }}">
                                     @if(count($hml)> 0 )
                                     @foreach($hml as $value)
                                         @php
@@ -251,33 +238,41 @@
                                         <input type="button" class="btn btn-sm {{$btn_class}} likelihoodbtn" id="{{Str::slug($value->name.'l','_')}}" style="margin-right:2px;margin-bottom:10px;font-size:12px;" value="{{$value->name}}">
                                     @endforeach
                                     @endif
-                                    <div id="likelihood-error" class="text-danger" style="display:none;font-size:12px;">Please select a likelihood.</div>
+                                    <div id="likelihood-error" role="alert" class="text-danger" style="display:none;font-size:12px;">Please select a likelihood.</div>
                                 </div>
 
                             </div>
                             <div class="form-group col-sm-4">
                                 <label class="col-sm-12 col-form-label text-sm" for="riskreviewer_id">Risk Reviewer<span class="text-danger">*</span></label>
                                 <div class="col-sm-12">
-                                    <select class="form-control js-select2 text-sm" name="riskreviewer_id" required="true" style="width:100%;" placeholder="Select Reviewer">
+                                    <select class="form-control js-select2 text-sm" name="riskreviewer_id" id="riskreviewer_id" required="true" style="width:100%;" placeholder="Select Reviewer">
                                         <option value="">Choose Reviewer</option>
                                         @if(count($riskreviewers)> 0 )
                                             @foreach($riskreviewers as $riskreviewer)
-                                                <option value="{{$riskreviewer->user->id}}" {{ old('riskreviewer') == $riskreviewer->id ? 'selected' : '' }}>
+                                                <option value="{{$riskreviewer->user->id}}" {{ old('riskreviewer_id') == $riskreviewer->user->id ? 'selected' : '' }}>
                                                     {{ $riskreviewer->name }}
                                                 </option>
                                             @endforeach
                                         @endif
                                     </select>
-                                    @error('riskreviewer')
+                                    @error('riskreviewer_id')
                                         <div class="text-danger" style="font-size: 13px;">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-sm-8">
+                                <div class="risk-score-card" id="risk-score-card" data-rating="unassessed" role="status" aria-live="polite">
+                                    <span class="risk-score-icon" aria-hidden="true"><i class="fa fa-th"></i></span>
+                                    <div><span class="risk-score-eyebrow">YOUR RISK ASSESSMENT</span><strong id="risk-score-value">Not assessed yet</strong><p id="risk-score-description">Choose impact and likelihood to see your 3 × 3 matrix result.</p></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-sm-12 text-right">
-                                <button for="reset" type="reset" class="btn btn-danger text-sm" onclick="resetFormCustom()" >Reset</button>
-                                <button type="submit" for="submit" class="btn btn-primary mr-3 text-sm" data-toggle="click-ripple" onclick="return confirm('Are you sure to submit the request?')">Submit</button>
+                        </section>
+                        <div class="risk-form-actions">
+                            <p><i class="fa fa-check-circle" aria-hidden="true"></i> Review your entries before submitting.</p>
+                            <div>
+                                <button type="reset" class="btn risk-reset-button" onclick="resetFormCustom()">Reset form</button>
+                                <button type="submit" class="btn btn-primary risk-submit-button" data-toggle="click-ripple" onclick="return confirm('Submit this risk for review?')">Submit risk <i class="fa fa-arrow-right ml-2" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </form>

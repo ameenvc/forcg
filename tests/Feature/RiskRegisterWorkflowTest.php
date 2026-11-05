@@ -26,7 +26,10 @@ class RiskRegisterWorkflowTest extends TestCase
         $vars = ['mitigations' => collect(), 'riskId' => null, 'allOwnerNames' => '', 'allDeptNames' => '', 'allPriorityLevel' => '', 'allYears' => '', 'allStatus' => '', 'allResourceRequired' => '', 'model' => null, 'currentUserId' => null, 'reviewerIds' => []];
         $actions = view('user.risks.mitigation.index', $vars)->render();
         $this->assertStringContainsString('Choose risk to add action', $actions);
-        $this->assertStringContainsString('Action tracker', $actions);
+        $this->assertStringNotContainsString('Action tracker', $actions);
+        $this->assertStringNotContainsString('Criteria library', $criteria);
+        preg_match('/<nav class="register-navigation".*?<\/nav>/s', $criteria, $navigation);
+        $this->assertGreaterThan(strpos($navigation[0], '>Closed risks</a>'), strpos($navigation[0], '>Assessment criteria</a>'));
         $this->assertStringNotContainsString('height:400px', $actions);
         $this->assertStringNotContainsString('dataTables.responsive.js', $actions);
         $this->assertSame(1, substr_count($actions, '<!doctype html>'));
@@ -47,4 +50,40 @@ class RiskRegisterWorkflowTest extends TestCase
             file_put_contents(getenv('RISK_WORKFLOW_PREVIEW_DIR').'/risk-mitigation-preview.html', $scoped);
         }
     }
+    public function testMitigationProgressHasAccurateAccessibleValuesAndSearchLabels()
+    {
+        foreach ([0, 25, 50, 75, 100, -10, 150] as $value) {
+            $progress = max(0, min(100, $value));
+            $html = view('user.risks.mitigation._status', ['mitigation' => (object) ['progress' => $value, 'status' => 'Active']])->render();
+            $this->assertStringContainsString('aria-valuenow="'.$progress.'"', $html);
+            $this->assertStringContainsString('width:'.$progress.'%', $html);
+            $this->assertStringContainsString('<strong>'.$progress.'%</strong>', $html);
+            $this->assertStringContainsString($progress === 0 ? 'Not started - 0%' : ($progress === 100 ? 'Completed - 100%' : 'In progress - 25%|50%|75%'), $html);
+        }
+        $closed = view('user.risks.mitigation._status', ['mitigation' => (object) ['progress' => 100, 'status' => config('constants.risk_management.mitigation.closed')]])->render();
+        $this->assertStringContainsString('Mitigation progress: Closed', $closed);
+        $this->assertStringContainsString('aria-valuenow="100"', $closed);
+    }
+
+    public function testModernCreateFormsPreserveExistingFieldsAndActions()
+    {
+        $criteria = view('user.risks.racm._form', ['departments' => collect(), 'users' => collect()])->render();
+        $this->assertStringContainsString('id="save_racm"', $criteria);
+        foreach (['risk_factor_title', 'process_id', 'risk_factor_description', 'high', 'moderate', 'low', 'unit'] as $name) {
+            $this->assertStringContainsString('name="'.$name.'"', $criteria);
+        }
+        $action = view('user.risks.mitigation._form', ['riskId' => 42, 'actionOwners' => [], 'departments' => collect()])->render();
+        foreach (['risk_id', 'owner', 'department_id', 'action_name', 'action_description', 'priority_level', 'due_date', 'attachment'] as $name) {
+            $this->assertStringContainsString('name="'.$name.'"', $action);
+        }
+        $this->assertStringContainsString('risk-action-grid', $action);
+        $this->assertStringNotContainsString('margin-left:79.5%', $action);
+        foreach ([$criteria, $action] as $html) $this->assertStringContainsString('css/risk-forms.css', $html);
+        if (getenv('RISK_WORKFLOW_PREVIEW_DIR')) {
+            foreach (['criteria-form' => $criteria, 'action-form' => $action] as $name => $form) {
+                file_put_contents(getenv('RISK_WORKFLOW_PREVIEW_DIR').'/risk-'.$name.'-preview.html', view('risk-form-workflow-preview', compact('form'))->render());
+            }
+        }
+    }
+
 }

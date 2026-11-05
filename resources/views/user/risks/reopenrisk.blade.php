@@ -1,7 +1,9 @@
 @extends('layouts.multiselect')
 @section('content')
-<!doctype html>
-<html lang="en">
+@include('shared.forms.risk-assets')
+
+
+
 
                 <!-- Hero -->
                 <div class="bg-body-light">
@@ -25,7 +27,7 @@
                 <!-- END Hero -->
 
                 <!-- Page Content -->
-                <div class="content">
+                <div class="content risk-form-page">
 
 
                    <!-- Horizontal -->
@@ -35,7 +37,7 @@
                             <div class="row">
                                 <div class="col-lg-10">
 
-					<form class="mb-5" action="{{url('/user/risks/reopenrisk')}}" enctype="multipart/form-data"  method="post" files="true">
+					<form class="risk-module-form mb-5" action="{{url('/user/risks/reopenrisk')}}" enctype="multipart/form-data"  method="post" files="true">
 					{{ csrf_field() }}
 					{{-- <div class="form-group">
 						<h1>REOPEN RISK<h1>
@@ -212,7 +214,7 @@
 
 <!-- Apps Modal -->
 <!-- Opens from the modal toggle button in the header -->
-<div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
+<div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
 <div class="modal-dialog modal-sm" role="document">
 <div class="modal-content">
 <div class="block block-rounded block-themed block-transparent mb-0">
@@ -281,7 +283,7 @@
 </div>
 </div>
 
-</body>
 
-</html>
+
+
 @endsection

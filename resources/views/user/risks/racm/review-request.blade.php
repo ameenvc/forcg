@@ -27,6 +27,8 @@
 @endsection
 
 @section('content')
+@include('shared.forms.risk-assets')
+
 @once
 <link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
 @endonce
@@ -158,7 +160,7 @@
         <!-- heading part starts -->
         <div class="block block-rounded">
             <div class="block-content block-content-full">
-                <form action="{{route('racm.reviewed')}}" method="post">
+                <form class="risk-module-form" action="{{route('racm.reviewed')}}" method="post">
                     @csrf
                     <div style="overflow-x:hidden;overflow-y:auto;" id="content">
                         <!-- approved documents listing starts -->
@@ -244,7 +246,7 @@
             </div>
         </div>
     </div>
-    <div id="rejection-reason" class="modal fadebd-example-modal-sm" aria-labelledby="exampleModalLabel" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="rejection-reason" class="risk-module-form modal fadebd-example-modal-sm" aria-labelledby="exampleModalLabel" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="block block-rounded block-transparent mb-0">
@@ -256,7 +258,7 @@
                         </button>
                       </div>
                     </div>
-                <form id="reason-form">
+                <form class="risk-module-form" id="reason-form">
                     <div class="block-content fs-sm">
                         <div class="row">
                             <div class="form-group col-sm-12">

@@ -1,5 +1,7 @@
 @extends('layouts.backend')
 @section('content')
+@include('shared.forms.risk-assets')
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -93,7 +95,7 @@
                                 {!!Session::get('msg')!!}
                             </div>
                         @endif
-                        <form action="#"
+                        <form class="risk-module-form" action="#"
                               enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="risk_id" value="{{ $riskId }}">
@@ -329,7 +331,7 @@
 
         <!-- Apps Modal -->
         <!-- Opens from the modal toggle button in the header -->
-        <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
+        <div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="block block-rounded block-themed block-transparent mb-0">

@@ -1,6 +1,8 @@
 @extends('layouts.multiselect')
 
 @section('content')
+@include('shared.forms.risk-assets')
+
 @once
 <link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
 @endonce
@@ -1159,7 +1161,7 @@
                             @endif
                         @endforeach
 
-                        <form id='comment_form' method="post" action="{{ route('riskcomment.store') }}"
+                        <form class="risk-module-form" id='comment_form' method="post" action="{{ route('riskcomment.store') }}"
                             enctype="multipart/form-data">
                             <div class="form-group mt-2" id="comment_div">
                                 <div class="input-group">
@@ -1190,7 +1192,7 @@
                                 });
                         </script>
                         <form id='reply_form' method="post" action="{{ route('riskcomment.store') }}"
-                            enctype="multipart/form-data" class="d-none">
+                            enctype="multipart/form-data" class="risk-module-form d-none">
                             <div class="form-group mt-2" id="reply_div">
                                 <div class="input-group">
                                     <input type="hidden" name="comment_id" id="comment_id" value="">
@@ -1222,7 +1224,7 @@
                                 });
                         </script>
                         <form id='editcomment_form' method="post"
-                            enctype="multipart/form-data" class="d-none">
+                            enctype="multipart/form-data" class="risk-module-form d-none">
                             <div class="form-group mt-2" id="editcomment_div">
                                 <div class="input-group">
                                     <input type="hidden" name="editcomment_id" id="editcomment_id" value="">

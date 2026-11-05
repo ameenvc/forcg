@@ -1,5 +1,6 @@
+@include('shared.forms.risk-assets')
 <!-- Not fully implemented Modal -->
-<div class="modal not-fully-implemented-popup"
+<div class="risk-module-form modal not-fully-implemented-popup"
      id="not-fully-implemented-{{ $mitigation->id }}" tabindex="-1" role="dialog"
      aria-hidden="true">
     <div class="modal-dialog m-dialog modal-xl" role="document">

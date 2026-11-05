@@ -1,7 +1,9 @@
 @extends('layouts.backend')
 @section('content')
-<!doctype html>
-<html lang="en">
+@include('shared.forms.risk-assets')
+
+
+
 
                 <div class="bg-body-light">
                     <div class="content content-full">
@@ -24,7 +26,7 @@
                 <!-- END Hero -->
 
                 <!-- Page Content -->
-                <div class="content">
+                <div class="content risk-form-page">
 
 
                    <!-- Horizontal -->
@@ -36,7 +38,7 @@
                                 <div class="col-lg-10">
 
 
-				<form class="mb-5" action="{{url('/user/risks/ownrespo')}}" enctype="multipart/form-data"  method="post" files="true">
+				<form class="risk-module-form mb-5" action="{{url('/user/risks/ownrespo')}}" enctype="multipart/form-data"  method="post" files="true">
          		{{ csrf_field() }}
 
 					@if(count($data)>0)
@@ -136,7 +138,7 @@
 
 <!-- Apps Modal -->
 <!-- Opens from the modal toggle button in the header -->
-<div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
+<div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
 <div class="modal-dialog modal-sm" role="document">
 <div class="modal-content">
 <div class="block block-rounded block-themed block-transparent mb-0">
@@ -206,7 +208,7 @@
 </div>
 <!-- END Apps Modal -->
 
-</body>
 
-</html>
+
+
 @endsection

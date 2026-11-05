@@ -1,3 +1,4 @@
+@include('shared.forms.risk-assets')
 <style>
     .text-sm {
         font-size: 13px;
@@ -22,7 +23,7 @@
 </style>
 
 <!-- Mitigating Modal -->
-<div class="modal new-mitigating-popup risk-workflow-modal" id="modal-mitigating-{{ $riskId }}" tabindex="-1" role="dialog"
+<div class="risk-module-form modal new-mitigating-popup risk-workflow-modal" id="modal-mitigating-{{ $riskId }}" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog m-dialog" role="document">
         <div class="modal-content" style="text-align: left">
@@ -41,7 +42,7 @@
                     $url = isset($mitigation) ? secure_url('/user/riskmgmt/mitigations/' . $mitigation->id) : secure_url('/user/riskmgmt/mitigations');
                 }
             @endphp
-            <form action="{{ $url }}"
+            <form class="risk-module-form" action="{{ $url }}"
                   method="POST"
                   enctype="multipart/form-data">
                 @csrf
@@ -49,10 +50,10 @@
                     @method('put')
                 @endif
                 <input type="hidden" name="risk_id" value="{{ $riskId }}">
-                <div class="modal-body m-body p-4">
+                <div class="modal-body m-body p-4 risk-action-grid">
                     <p class="workflow-form-hint">Describe the action, assign an owner, and set a realistic due date. Track progress and request closure review from Mitigation actions.</p>
                     <!-- Owner -->
-                    <div class="form-group" style="display:inline-block;width:49%;">
+                    <div class="form-group risk-action-field">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="owner">Owner <span class="text-danger">*</span></label>
                         <div class="col-sm-12">
                             <select class="form-control text-sm owner" id="owner" name="owner" required="true" style="font-size: 13px;" data-placeholder="Select owner" data-limit-selection="1">
@@ -66,7 +67,7 @@
                         </div>
                     </div>
                     <!-- Department -->
-                    <div class="form-group" style="display:inline-block;width:49%;">
+                    <div class="form-group risk-action-field">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="department_id">Department <span class="text-danger">*</span></label>
                         <div class="col-sm-12">
                             <select class="form-control text-sm" id="department_id" name="department_id" required="true"
@@ -84,7 +85,7 @@
                         </div>
                     </div>
                     <!-- Action name -->
-                    <div class="form-group" style="display:inline-block;width:49%;">
+                    <div class="form-group risk-action-field risk-action-wide">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="action_name">Action Name <span class="text-danger">*</span></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control" id="action_name" style="font-size: 13px;"
@@ -93,7 +94,7 @@
                         </div>
                     </div>
                     <!-- Action Description -->
-                    <div class="form-group" style="display:inline-block;width:98.5%;">
+                    <div class="form-group risk-action-field risk-action-wide">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="action_description">Action Description</label>
                         <div class="col-sm-12">
                             <textarea style="font-size: 13px;"
@@ -102,7 +103,7 @@
                         </div>
                     </div>
                     <!-- Priority Level -->
-                    <div class="form-group" style="display:inline-block;width:49%;">
+                    <div class="form-group risk-action-field">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="priority_level">Priority Level <span class="text-danger">*</span></label>
                         <div class="col-sm-12">
                             <select class="form-control" id="priority_level" name="priority_level" required="true"
@@ -117,8 +118,20 @@
                             </select>
                         </div>
                     </div>
+                    <!-- Due Date -->
+                    <div class="form-group risk-action-field">
+                        <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="due_date">Due Date <span class="text-danger">*</span></label>
+                        <div class="col-sm-12">
+                            <input type="date" class="js-datepicker form-control"
+                                   required="true"
+                                   style="font-size:13px;" id="due_date" name="due_date"
+                                   data-week-start="1" data-autoclose="true"
+                                   value="{{ isset($mitigation) ? $mitigation->due_date : '' }}"
+                                   data-today-highlight="true" data-date-format="dd/mm/yy" placeholder="dd/mm/yy">
+                        </div>
+                    </div>
                     <!-- Link other risks -->
-                    <div class="form-group " style="display:inline-block;width:49%;">
+                    <div class="form-group risk-action-field risk-action-wide">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="link_other_risk">Link other risks</label>
                         <div class="col-sm-12">
                             @if(isset($data))
@@ -150,20 +163,8 @@
                             @endif
                         </div>
                     </div>
-                    <!-- Due Date -->
-                    <div class="form-group" style="display:inline-block;width:49%;">
-                        <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="due_date">Due Date <span class="text-danger">*</span></label>
-                        <div class="col-sm-12">
-                            <input type="date" class="js-datepicker form-control"
-                                   required="true"
-                                   style="font-size:13px;" id="due_date" name="due_date"
-                                   data-week-start="1" data-autoclose="true"
-                                   value="{{ isset($mitigation) ? $mitigation->due_date : '' }}"
-                                   data-today-highlight="true" data-date-format="dd/mm/yy" placeholder="dd/mm/yy">
-                        </div>
-                    </div>
                     <!-- Resources Required -->
-                    <div class="form-group" style="display:inline-block;width:98.5%;">
+                    <div class="form-group risk-action-field risk-action-wide">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="resource_required">Resources Required</label>
                         <div class="col-sm-12">
                             @foreach(config('constants.risk_management.mitigation.resources') as $value => $name)
@@ -179,7 +180,7 @@
                         </div>
                     </div>
                     <!-- Cost Estimate -->
-                    <div class="form-group" style="display:inline-block;width:49%;">
+                    <div class="form-group risk-action-field">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="cost_estimate">Cost Estimate</label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control" id="cost_estimate" style="font-size: 13px;"
@@ -198,7 +199,7 @@
                         </button>
                     @endif
                     <!-- Attachments -->
-                    <div class="form-group" style="display:inline-block;width:49%;">
+                    <div class="form-group risk-action-field">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="attachment">Attachments</label>
                         <div class="col-sm-12">
                             <input type="file" class="form-control" id="attachment" style="font-size: 13px;"
@@ -206,9 +207,9 @@
                         </div>
                     </div>
                     <!-- Save button -->
-                    <div style="text-align:center;">
+                    <div class="risk-form-actions">
                         <button type="submit" class="btn btn-primary"
-                                style="font-size:13px;margin-left:79.5%;">Submit</button>
+                                style="font-size:13px;">Submit</button>
                     </div>
                 </div>
             </form>

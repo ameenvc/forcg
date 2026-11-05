@@ -27,6 +27,8 @@
 @endsection
 
 @section('content')
+@include('shared.forms.risk-assets')
+
 @once
 <link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
 @endonce
@@ -290,7 +292,6 @@
     @endif
     <div class="content risk-register-page risk-workflow-page workflow-racm" style="width:100%;">
         @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Agree on what low, moderate, and high mean before assessing a risk.'])
-        <div class="workflow-toolbar"><div><h2>Criteria library <span class="workflow-count">{{ $riskAcms->count() }}</span></h2><p>Select criteria below to request review and approval.</p></div><button type="button" class="btn btn-outline-primary" id="request-review-approve"><i class="fa fa-user-edit mr-2" aria-hidden="true"></i>Request review & approval</button></div>
         <div class="block block-rounded">
             <div class="block-content block-content-full">
                 <div class="table-responsive" id="content">
@@ -446,7 +447,7 @@
                                         </a>
                                     </div>
                                     <div id="viewModal{{$riskAcm->id}}"
-                                         class="modal fadebd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="false">
+                                         class="risk-module-form modal fadebd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="false">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -589,7 +590,7 @@
         </div>
     </div>
     <div class="racm-area"></div>
-    <div id="add-request-review-approve" class="modal fadebd-example-modal-sm" aria-labelledby="exampleModalLabel" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="add-request-review-approve" class="risk-module-form modal fadebd-example-modal-sm" aria-labelledby="exampleModalLabel" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="block block-rounded block-transparent mb-0">

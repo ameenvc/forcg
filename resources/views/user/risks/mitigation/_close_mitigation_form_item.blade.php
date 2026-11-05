@@ -1,3 +1,4 @@
+@include('shared.forms.risk-assets')
 <div class="form-group" style="display:inline-block;width:25%;">
     <label class="col-sm-12 col-form-label"
            style="font-size: 13px;" for="linked_risk">

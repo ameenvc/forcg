@@ -1,10 +1,11 @@
+@include('shared.forms.risk-assets')
 <!-- Close Mitigating Modal -->
-<div class="modal close-mitigating-popup"
+<div class="risk-module-form modal close-mitigating-popup"
      id="modal-close-mitigating-{{ $mitigation->id }}" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog m-dialog modal-xl" role="document">
         <div class="modal-content" style="text-align: left">
-            <form action="{{ route('mitigations.close', $mitigation->id) }}" method="POST">
+            <form class="risk-module-form" action="{{ route('mitigations.close', $mitigation->id) }}" method="POST">
                 @csrf
                 @method('put')
                 <div class="modal-body m-body p-4">

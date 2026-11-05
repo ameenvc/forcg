@@ -1,4 +1,5 @@
-<div class="modal fade racm-popup risk-workflow-modal" id="racmModal"
+@include('shared.forms.risk-assets')
+<div class="risk-module-form modal fade racm-popup risk-workflow-modal" id="racmModal"
      aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

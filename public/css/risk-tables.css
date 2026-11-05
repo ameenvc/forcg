@@ -34,3 +34,15 @@ html body #main-container .workflow-racm table.risk-module-table>thead th:nth-ch
 html body #main-container .workflow-racm table.risk-module-table>thead th:nth-child(7)>span { background:#e1f3e9!important; color:#247052!important; }
 html[data-risk-theme=dark] body .risk-module-table { --risk-table-header:#24344f; --risk-table-heading:#d2ddf1; --risk-table-rule:#405174; --risk-table-content:#bdcbe1; }
 @media print { html body #main-container table.risk-module-table>thead>tr>:is(th,td) { background:#edf0f5!important; color:#263750!important; font-size:9pt!important; } html body #main-container table.risk-module-table>tbody>tr>td { color:#263750; font-size:9pt!important; } }
+/* Compact progress summary: text and percentage remain meaningful at 0% and when closed. */
+.mitigation-progress { min-width:110px; text-align:left; }
+.mitigation-progress-label { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:5px; color:#647693; font-size:12px; line-height:16px; }
+.mitigation-progress-label strong { font-size:12px; font-weight:600; font-variant-numeric:tabular-nums; color:#4058a7; }
+.mitigation-progress-track { height:6px; background:#e9edf6; border-radius:8px; overflow:hidden; }
+.mitigation-progress-fill { height:100%; border-radius:inherit; background:linear-gradient(90deg,#5275db,#8170d7); }
+.mitigation-progress.is-complete .mitigation-progress-fill { background:#369b80; }
+.mitigation-progress.is-complete .mitigation-progress-label strong { color:#277c66; }
+[data-risk-theme=dark] .mitigation-progress-label { color:#b1bfd4; }
+[data-risk-theme=dark] .mitigation-progress-label strong { color:#b9c8ff; }
+[data-risk-theme=dark] .mitigation-progress-track { background:#34445f; }
+[data-risk-theme=dark] .mitigation-progress.is-complete .mitigation-progress-label strong { color:#8cd8bd; }

@@ -1,7 +1,9 @@
 @extends('layouts.multiselect')
 @section('content')
-<!doctype html>
-<html lang="en">
+@include('shared.forms.risk-assets')
+
+
+
 <style>
     .text-counter {
         font-size: 12px;
@@ -26,8 +28,8 @@
         border-bottom-left-radius: 0;
     }
 </style>
-<body>
-    <div class="content">
+
+    <div class="content risk-form-page">
         <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
             <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
                 <ol class="breadcrumb">
@@ -61,7 +63,7 @@
                         <div style="FONT-SIZE:8px; margin-right: 1rem;">MS.02.01</div>
                         <button type="button" class="btn btn-dark" style="font-size:12px;width: 86px;"
                             data-toggle="modal" data-target="#viewModal"><strong>Risk Info</strong> </button>
-                        <div id="viewModal" class="modal fadebd-example-modal-lg" tabindex="-1" role="dialog"
+                        <div id="viewModal" class="risk-module-form modal fadebd-example-modal-lg" tabindex="-1" role="dialog"
                             aria-hidden="false">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
@@ -82,7 +84,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-12">
-                        <form class="mb-5" action="{{ url('/user/risks/usereditsubmit') }}" method="post" onsubmit="return validateChips()">
+                        <form class="risk-module-form mb-5" action="{{ url('/user/risks/usereditsubmit') }}" method="post" onsubmit="return validateChips()">
                             {{ csrf_field() }}
                             @if (count($data) > 0)
                                 @foreach ($data as $d)
@@ -314,7 +316,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps"
+    <div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps"
         aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
@@ -374,7 +376,7 @@
         </div>
     </div>
 
-    </body>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
         let CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
@@ -579,5 +581,5 @@
         preventEnterArea($('#existing_controls'))
     </script>
 
-    </html>
+
 @endsection

@@ -1,7 +1,9 @@
 @extends('layouts.multiselect')
 @section('content')
-<!doctype html>
-<html lang="en">
+@include('shared.forms.risk-assets')
+
+
+
     <style>
         .text-counter {
             font-size: 12px;
@@ -27,7 +29,7 @@
     </style>
 
 <!-- Page Content -->
-<div class="content">
+<div class="content risk-form-page">
     <!-- Horizontal -->
     <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
         <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
@@ -48,7 +50,7 @@
                 <div class="col-lg-12">
 
                     <!-- Form Horizontal - Default Style -->
-                    <form class="mb-5" action="{{url('/user/risks/updaterisk')}}" method="POST" onsubmit="return validateChips()">
+                    <form class="risk-module-form mb-5" action="{{url('/user/risks/updaterisk')}}" method="POST" onsubmit="return validateChips()">
                         {{csrf_field()}}
                         @if(count($data)>0)
                         @foreach($data as $dat)
@@ -244,7 +246,7 @@
 
     <!-- Apps Modal -->
     <!-- Opens from the modal toggle button in the header -->
-    <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
+    <div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="block block-rounded block-themed block-transparent mb-0">
@@ -313,7 +315,7 @@
         </div>
     </div>
 
-    </body>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
         function validateChips() {
@@ -443,5 +445,5 @@
 
 
     </script>
-</html>
+
 @endsection

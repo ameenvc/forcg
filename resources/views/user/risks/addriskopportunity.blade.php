@@ -1,5 +1,7 @@
 @extends('layouts.multiselect')
 @section('content')
+@include('shared.forms.risk-assets')
+
 <style>
     .breadcrumb>li+li:before {
         display: none !important;
@@ -15,7 +17,7 @@
         border-bottom-left-radius: 0;
     }
 </style>
-<div class="content">
+<div class="content risk-form-page">
     <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
         <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
             <ol class="breadcrumb">
@@ -32,7 +34,7 @@
         <div class="block-content block-content-full">
             <div class="row">
                 <div class="col-lg-12">
-                    <form class="mb-5" action="{{url('/user/risks/opportunitysubmit')}}" enctype="multipart/form-data"  method="POST" files="true" onsubmit="return validateChips()">
+                    <form class="risk-module-form mb-5" action="{{url('/user/risks/opportunitysubmit')}}" enctype="multipart/form-data"  method="POST" files="true" onsubmit="return validateChips()">
                         {{csrf_field()}}
                         @if(count($errors) >0 )
                         @foreach($errors->all() as $error)
@@ -66,14 +68,14 @@
                                     <input type="text" class="form-control" style="font-size: 13px;" id="opportunityname" name="opportunityname" placeholder="Enter Opportunity Name" required>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group col-sm-12">
                                 <label class="col-sm-12 col-form-label" style="font-size:13px;" for="oppdec">Opportunity Description<span class="text-danger">*</span></label>
                                 <div class="col-sm-12">
                                     <textarea type="text" class="form-control" style="font-size: 13px;" id="oppdec" name="oppdec" placeholder="Enter Description" required></textarea>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group col-sm-6">
                                 <label class="col-sm-12 col-form-label" style="font-size:13px;" for="ohs">Is this OHS related?<span class="text-danger">*</span></label>
                                 <div class="custom-control custom-switch col-sm-12" style="padding-left: 14px !important;">
@@ -97,7 +99,7 @@
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group col-sm-4">
                                 <label class="col-sm-12 col-form-label" style="font-size:13px;" for="department">Responsible Department<span class="text-danger">*</span></label>
                                 <div class="col-sm-12">
@@ -111,7 +113,7 @@
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group d-none col-sm-4" id="division">
                                 <label class="col-sm-12 col-form-label" style="font-size:13px;" for="division">Division</label>
                                 <div class="col-sm-12">
@@ -148,7 +150,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group col-sm-6">
                                 <label class="col-sm-12 col-form-label" style="font-size:13px;" for="date">Target Date<span class="text-danger">*</span></label>
                                 <div class="col-sm-12">
@@ -225,7 +227,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
+<div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="block block-rounded block-themed block-transparent mb-0">

@@ -1,7 +1,9 @@
 @extends('layouts.backend')
 @section('content')
-<!doctype html>
-<html lang="en">
+@include('shared.forms.risk-assets')
+
+
+
 
                 <div class="bg-body-light">
                     <div class="content content-full">
@@ -24,7 +26,7 @@
                 <!-- END Hero -->
 
                 <!-- Page Content -->
-                <div class="content">
+                <div class="content risk-form-page">
 
 
                    <!-- Horizontal -->
@@ -34,7 +36,7 @@
                             <div class="row">
 
                                 <div class="col-lg-8">
-<form action="{{route('risk.disapprovingg')}}" method="post" >
+<form class="risk-module-form" action="{{route('risk.disapprovingg')}}" method="post" >
     {{ csrf_field() }}
     {{-- <div class="jumbotron jumbotron-fluid"> --}}
             <div class="container">
@@ -67,7 +69,7 @@
 
     <!-- Apps Modal -->
     <!-- Opens from the modal toggle button in the header -->
-    <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
+    <div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
     <div class="modal-content">
     <div class="block block-rounded block-themed block-transparent mb-0">
@@ -137,7 +139,7 @@
     </div>
     <!-- END Apps Modal -->
 
-    </body>
 
-    </html>
+
+
     @endsection

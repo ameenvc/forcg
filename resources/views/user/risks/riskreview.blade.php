@@ -1,7 +1,9 @@
 @extends('layouts.multiselect')
 @section('content')
-    <!doctype html>
-    <html lang="en">
+@include('shared.forms.risk-assets')
+
+
+
     <style>
         .text-counter {
             font-size: 12px;
@@ -25,7 +27,7 @@
 
     </style>
     <!-- Page Content -->
-    <div class="content">
+    <div class="content risk-form-page">
         <!-- Horizontal -->
         <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
             <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
@@ -45,7 +47,7 @@
                 <div class="row">
 
                     <div class="col-lg-12">
-                        <form class="mb-5" action="{{ url('/user/risks/riskreview') }}" method="post" onsubmit="return validateChips()">
+                        <form class="risk-module-form mb-5" action="{{ url('/user/risks/riskreview') }}" method="post" onsubmit="return validateChips()">
                             {{ csrf_field() }}
                             @if (count($data) > 0)
                                 @foreach ($data as $dat)
@@ -487,7 +489,7 @@
 
     <!-- Apps Modal -->
     <!-- Opens from the modal toggle button in the header -->
-    <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps"
+    <div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps"
         aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
@@ -560,5 +562,5 @@
     <!-- END Apps Modal -->
 
 
-    </html>
+
 @endsection

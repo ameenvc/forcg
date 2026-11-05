@@ -169,8 +169,7 @@
     ?>
     <div class="content risk-register-page risk-workflow-page workflow-mitigation" style="width:100%">
         @include('user.risks.register-header', ['registerPage' => 'mitigation', 'registerTitle' => 'Mitigation actions', 'registerDescription' => 'Turn risk decisions into owned actions, track progress, and verify completion.'])
-        <div class="workflow-toolbar"><div><h2>Action tracker <span class="workflow-count">{{ $mitigations->count() }}</span></h2><p>Open a risk from the register to add its mitigation actions. Update progress here, then request closure review.</p></div>@if($riskId)<a class="btn btn-outline-primary" href="{{ route('mitigations.index') }}">Show all actions</a>@endif</div>
-        @if($riskId)<div class="workflow-scope" role="status">Showing actions for the selected risk. <a href="{{ route('risk.detail', $riskId) }}">Open risk details</a> to review the assessment and manage its actions.</div>@endif
+        @if($riskId)<div class="workflow-scope" role="status">Showing actions for the selected risk. <a href="{{ route('risk.detail', $riskId) }}">Open risk details</a> to review the assessment and manage its actions. <a class="ml-2" href="{{ route('mitigations.index') }}">Show all actions</a></div>@endif
         <div class="block">
             <div class="block-content block-content-full">
                 <div class="table-responsive" id="content">
@@ -259,11 +258,7 @@
                                 </td>
 
                                 <td class="text-center" style="font-size:10px;">
-                                    @if($mitigation->status == config('constants.risk_management.mitigation.closed'))
-                                        <span class="status status-success" style="font-size:10px;">{{ $mitigation->status  }}</span>
-                                    @else
-                                        @include('user.risks.mitigation._status')
-                                    @endif
+                                    @include('user.risks.mitigation._status')
                                 </td>
                                 <td class="text-center" style="font-size:10px;">
                                     <div class="btn-group m-auto d-flex justify-content-center">

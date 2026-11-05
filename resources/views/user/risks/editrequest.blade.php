@@ -1,12 +1,14 @@
 @extends('layouts.backend')
 @section('content')
+@include('shared.forms.risk-assets')
+
 @once
 <link rel="stylesheet" href="{{ asset('css/risk-tables.css') }}?v={{ filemtime(public_path('css/risk-tables.css')) }}">
 @endonce
 
-<!doctype html>
-<html lang="en">
-   <body>
+
+
+
 
                 <!-- Hero -->
     <div class="bg-body-light">
@@ -31,13 +33,13 @@
                 <!-- END Hero -->
 
                 <!-- Page Content -->
-    <div class="content"style="width:100%">
+    <div class="content risk-form-page"style="width:100%">
          <!-- Horizontal -->
         <div class="block block-rounded">
 
             <div class="block-content block-content-full">
                 <div class="row">
-            <form class="mb-5" action="{{url('/user/risks/editrequest')}}" method="post">
+            <form class="risk-module-form mb-5" action="{{url('/user/risks/editrequest')}}" method="post">
                 {{ csrf_field() }}
 
 			@if(count($errors) >0 )
@@ -191,8 +193,8 @@
         </div>
 
 
-        </body>
-        <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
+
+        <div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
             <div class="modal-dialog modal-sm" role="document">
                 <div class="modal-content">
                     <div class="block block-rounded block-themed block-transparent mb-0">
@@ -261,8 +263,8 @@
             </div>
         </div>
         <!-- END Apps Modal -->
-        
 
-</body>
-</html>
+
+
+
 @endsection

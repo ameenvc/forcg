@@ -1,5 +1,7 @@
 @extends('layouts.multiselect')
 @section('content')
+@include('shared.forms.risk-assets')
+
 @php $liveRiskAi = config('risk_ai.enabled') && config('risk_ai.mode') === 'openai'; @endphp
 @include('shared.forms.assets')
 <link rel="stylesheet" href="{{ asset('css/risk-form.css') }}?v={{ filemtime(public_path('css/risk-form.css')) }}">
@@ -40,7 +42,7 @@
 
                 <div class="col-lg-12">
                     <!-- Form Horizontal - Default Style -->
-                    <form id="risk-entry-form" class="risk-entry-form" action="{{url('/user/risks/submit')}}" method="POST" onsubmit="return validateChips()">
+                    <form id="risk-entry-form" class="risk-module-form risk-entry-form" action="{{url('/user/risks/submit')}}" method="POST" onsubmit="return validateChips()">
                         {{csrf_field()}}
                         @include('user.risks.ai-assist')
                         <section class="risk-form-section cgbod-form-section" id="risk-context" aria-labelledby="risk-context-title">
@@ -291,7 +293,7 @@
     <!-- END Horizontal -->
     <!-- Apps Modal -->
     <!-- Opens from the modal toggle button in the header -->
-    <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
+    <div class="risk-module-form modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="block block-rounded block-themed block-transparent mb-0">

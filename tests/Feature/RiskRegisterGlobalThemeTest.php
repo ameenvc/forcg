@@ -13,6 +13,9 @@ class RiskRegisterGlobalThemeTest extends TestCase
         $this->assertSame(1, substr_count($html, 'data-risk-theme-select'));
         $this->assertSame(1, substr_count($html, 'js/risk-theme.js'));
         $this->assertSame(1, substr_count($html, 'js/app-theme.js'));
+        $this->assertSame(1, substr_count($html, 'css/app-typography.css'));
+        $this->assertStringContainsString('fonts/inter/CgbodInter-Variable.woff2', $html);
+        $this->assertStringNotContainsString('fonts.googleapis.com', $html);
         if (getenv('THEME_COMPATIBILITY_PREVIEW_PATH')) file_put_contents(getenv('THEME_COMPATIBILITY_PREVIEW_PATH'), $html);
     }
 

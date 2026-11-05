@@ -12,8 +12,8 @@
                 {targets: [2, 8], visible: false}, {targets: [0, 12], orderable: false}, {targets: [0, 1, 2, 8, 12], searchable: false},
                 {targets: 0, width: '40px'}, {targets: 1, width: '52px'}, {targets: 3, width: '90px'},
                 {targets: 4, width: '280px'}, {targets: 5, width: '110px'}, {targets: 6, width: '120px'},
-                {targets: 7, width: '90px'}, {targets: 9, width: '190px'}, {targets: 10, width: '100px'},
-                {targets: 11, width: '170px'}, {targets: 12, width: '110px'}
+                {targets: 7, width: '110px'}, {targets: 9, width: '190px'}, {targets: 10, width: '100px'},
+                {targets: 11, width: '200px'}, {targets: 12, width: '110px'}
             ],
             dom: 't<"register-table-footer"ip>',
             language: {emptyTable: 'No risks have been added to this view.', zeroRecords: 'No matching risks. Try a different search or clear the filters.', info: 'Showing _START_–_END_ of _TOTAL_ risks', infoEmpty: 'No risks to show', infoFiltered: '(from _MAX_ in this view)', paginate: {previous: 'Previous', next: 'Next'}}

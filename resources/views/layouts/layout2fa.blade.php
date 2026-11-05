@@ -59,7 +59,6 @@
 
     <!-- Fonts and Styles -->
     @yield('css_before')
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" id="css-main" href="{{ mix('/css/oneui.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css')}}">
 

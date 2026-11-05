@@ -1,7 +1,7 @@
 (function () {
     'use strict';
     if (window.cgbodAppThemeAdapterReady) return; window.cgbodAppThemeAdapterReady = true;
-    const savedStyles = new WeakMap(), chartStyles = new WeakMap(), chartStates = new WeakMap();
+    const savedStyles = new WeakMap(), chartStyles = new WeakMap(), chartStates = new WeakMap(), chartFonts = new WeakSet(), chartLibraryFonts = new WeakSet();
     const dark = () => document.documentElement.dataset.riskTheme === 'dark';
     function neutral(value, bright) {
         const match = value?.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)$/);
@@ -32,10 +32,31 @@
     }
     function adaptCharts(active = dark()) {
         const Chart = window.Chart; if (!Chart) return;
+        if (!chartLibraryFonts.has(Chart)) {
+            chartLibraryFonts.add(Chart); const family = getComputedStyle(document.body).fontFamily;
+            if (Chart.defaults?.global) { Chart.defaults.global.defaultFontFamily = family; Chart.defaults.global.defaultFontSize = 12; }
+            else if (Chart.defaults?.font) { Chart.defaults.font.family = family; Chart.defaults.font.size = 12; }
+        }
         Object.values(Chart.instances || {}).forEach(chart => {
-            if (!chart.options || chart.canvas?.closest('[data-theme-preserve]') || chartStates.get(chart) === active) return;
-            chartStates.set(chart, active);
+            if (!chart.options || chart.canvas?.closest('[data-theme-preserve]')) return;
             const legacy = !!Chart.defaults?.global || Array.isArray(chart.options.scales?.xAxes) || Array.isArray(chart.options.scales?.yAxes);
+            const fontChanged = !chartFonts.has(chart);
+            if (fontChanged) {
+                chartFonts.add(chart); const family = getComputedStyle(document.body).fontFamily;
+                if (legacy) {
+                    if (chart.options.legend?.labels) { chart.options.legend.labels.fontFamily = family; chart.options.legend.labels.fontSize = 12; }
+                    if (chart.options.title) chart.options.title.fontFamily = family;
+                    if (chart.options.tooltips) ['titleFontFamily', 'bodyFontFamily', 'footerFontFamily'].forEach(key => { chart.options.tooltips[key] = family; });
+                } else if (chart.options.plugins?.legend?.labels) chart.options.plugins.legend.labels.font = {...chart.options.plugins.legend.labels.font, family, size:12};
+                Object.values(chart.options.scales || {}).forEach(axes => (Array.isArray(axes) ? axes : [axes]).forEach(scale => {
+                    if (!scale.ticks) return;
+                    if (legacy) { scale.ticks.fontFamily = family; scale.ticks.fontSize = 12; }
+                    else if (typeof scale.ticks.font !== 'function') scale.ticks.font = {...scale.ticks.font, family, size:12};
+                }));
+                document.fonts?.ready.then(() => { if (chart.ctx) { try { chart.update(legacy ? 0 : 'none'); } catch (error) {} } });
+            }
+            if (chartStates.get(chart) === active && !fontChanged) return;
+            chartStates.set(chart, active);
             let snapshot = chartStyles.get(chart); if (!snapshot) { snapshot = []; chartStyles.set(chart, snapshot); }
             const parentAt = path => path.slice(0, -1).reduce((object, key) => object?.[key], chart.options);
             function paint(path, value) { const object = parentAt(path), key = path[path.length - 1]; if (!object) return; snapshot.push({path, own: Object.prototype.hasOwnProperty.call(object, key), value: object[key]}); object[key] = value; }
@@ -51,7 +72,7 @@
                     paint([...path, scale.gridLines ? 'gridLines' : 'grid', 'color'], '#30415b');
                 }));
             }
-            if (active || snapshot.length) { try { chart.update(legacy ? 0 : 'none'); } catch (error) { /* A chart may be loading or being removed. */ } }
+            if (active || snapshot.length || fontChanged) { try { chart.update(legacy ? 0 : 'none'); } catch (error) { /* A chart may be loading or being removed. */ } }
         });
     }
     let pending = false;

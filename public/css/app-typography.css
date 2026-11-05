@@ -1,0 +1,54 @@
+/* One locally served, cached variable font for application UI; icon and document fonts stay independent. */
+@font-face {font-family:'CGBOD Inter UI';src:url('../fonts/inter/CgbodInter-Variable.woff2') format('woff2');font-weight:400 700;font-style:normal;font-display:swap;}
+:root {--app-font:'CGBOD Inter UI',ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,'Noto Sans',sans-serif;--app-font-body:.875rem;--app-font-label:.8125rem;--app-font-small:.75rem;--app-font-table:.75rem;--app-leading:1.6;}
+html {text-size-adjust:100%;-webkit-text-size-adjust:100%;}
+html body {font-family:var(--app-font);font-size:var(--app-font-body);font-weight:400;line-height:var(--app-leading);font-kerning:normal;font-synthesis:style;}
+html body .cgbod-form,html body :is(h1,h2,h3,h4,h5,h6,p,label,legend,input,select,textarea,.btn,.nav-main-link,.block-title,.dropdown-item,.select2-container,.ck-editor,.note-editable,.table):not(.fa):not(.fas):not(.far):not(.fab):not(.si) {font-family:var(--app-font);}
+html body #main-container :is(h1,.h1) {font-size:clamp(1.5rem,1.2rem + .6vw,1.875rem)!important;line-height:1.25;font-weight:650;letter-spacing:-.025em;}
+html body #main-container :is(h2,.h2) {font-size:1.25rem;line-height:1.35;font-weight:600;letter-spacing:-.015em;}
+html body #main-container :is(h3,.h3) {font-size:1.0625rem;line-height:1.4;font-weight:600;letter-spacing:-.01em;}
+html body #main-container :is(h4,.h4) {font-size:.9375rem;line-height:1.45;font-weight:600;}
+html body #main-container :is(h5,h6,.h5,.h6) {font-size:.875rem;line-height:1.5;font-weight:600;}
+html body #main-container :is(.block-title,.card-title) {font-size:1rem!important;font-weight:600;line-height:1.45;letter-spacing:0;text-transform:none;}
+html body #main-container :is(label,legend,.col-form-label) {font-size:var(--app-font-label)!important;font-weight:550;line-height:1.5;letter-spacing:0;}
+html body #main-container :is(.form-control,.custom-select,.select2-selection__rendered,.select2-results__option) {font-size:var(--app-font-body)!important;line-height:1.5;}
+html body #main-container :is(.btn:not(.fa):not(.fas):not(.far):not(.fab):not(.si),.dropdown-item,.nav-tabs .nav-link) {font-size:var(--app-font-label);font-weight:550;line-height:1.5;letter-spacing:0;}
+html body #main-container :is(small,.small,.form-text,.text-sm,.font-size-sm,.text-counter) {font-size:var(--app-font-small)!important;line-height:1.55;}
+html body :is(pre,code,kbd,samp) {font-family:ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',monospace;}
+html body #sidebar .nav-main-link {font-family:var(--app-font);font-size:.8125rem;line-height:1.5;font-weight:500;letter-spacing:0;}
+html body #sidebar .nav-main-heading {font-size:.6875rem;font-weight:600;line-height:1.5;letter-spacing:.065em;}
+html body #page-header :is(.btn,.dropdown-item):not(.fa):not(.fas):not(.far):not(.fab):not(.si) {font-family:var(--app-font);font-size:.8125rem;font-weight:550;}
+/* Match old inline 9–11px register text without flattening larger KPI numbers or icon fonts. */
+html body #main-container table :is(th,td) {font-family:var(--app-font);font-size:var(--app-font-table)!important;line-height:1.5;font-variant-numeric:tabular-nums;}
+html body #main-container table th {font-weight:600;letter-spacing:.01em;text-transform:none!important;}
+html body #main-container table :is(span,a,em,button)[style*="font-size:9px"],html body #main-container table :is(span,a,em,button)[style*="font-size: 9px"],html body #main-container table :is(span,a,em,button)[style*="font-size:10px"],html body #main-container table :is(span,a,em,button)[style*="font-size: 10px"],html body #main-container table :is(span,a,em,button)[style*="font-size:11px"],html body #main-container table :is(span,a,em,button)[style*="font-size: 11px"] {font-size:var(--app-font-table)!important;}
+html body #main-container table :is(.badge,.status,.register-id-text,.register-owner-label,.register-owner-label small,.register-cell-text) {font-size:var(--app-font-table)!important;line-height:1.45;}
+html body #main-container .risk-register .register-risk-name a {font-size:.8125rem!important;font-weight:600;line-height:18px;}
+html body #main-container .risk-register[data-density=compact] :is(.register-name-text,.register-cell-text) {line-height:18px;max-height:18px;}
+html body #main-container .risk-register :is(.register-view-options,.register-table-footer,.register-summary-label,.register-toolbar-actions .btn,.register-menu summary,.register-view-options select) {font-size:.75rem!important;line-height:1.5;}
+html body #main-container .risk-register :is(.register-search input,.register-filters label,.register-filters select) {font-size:.8125rem!important;}
+html body #main-container :is(.analysis-card h2,.org-card h2) {font-size:1.0625rem;font-weight:600;}
+html body #main-container :is(.analysis-card p,.analysis-context p,.org-card p,.risk-review-heading p,.risk-review-results p,.risk-review-results li) {font-size:.8125rem;line-height:1.7;}
+html body #main-container :is(.analysis-note,.analysis-chart-legend,.analysis-legend,.analysis-legend small,.analysis-current,.analysis-department-row>small,.analysis-footer span,.analysis-quality,.analysis-eyebrow,.register-eyebrow,.org-status,.risk-review-status,.risk-review-assist small) {font-size:.75rem!important;line-height:1.6;}
+html body #main-container :is(.risk-review-heading h3,.risk-ai-panel-header strong) {font-size:1rem;font-weight:600;line-height:1.4;}
+html body #main-container :is(.risk-review-results h4,.risk-ai-feedback legend) {font-size:.875rem;font-weight:600;line-height:1.5;}
+html body #main-container :is(.analysis-rating-strip strong,.analysis-donut strong,.analysis-department-row>b,.register-summary-card strong) {font-variant-numeric:tabular-nums;}
+html body .risk-quick-view :is(.modal-title) {font-family:var(--app-font);font-size:1.25rem;font-weight:600;line-height:1.4;}
+html body .risk-quick-view .risk-detail-facts :is(th,td) {font-family:var(--app-font);font-size:.8125rem!important;line-height:1.6;}
+html body .select2-dropdown {font-family:var(--app-font);font-size:.875rem;}
+@media(max-width:767px) {html body #main-container :is(.form-control,.custom-select) {font-size:1rem!important;}html body #main-container .risk-register :is(.register-view-options select,.register-filters select) {font-size:.8125rem!important;}html body #main-container .risk-register .register-search input {font-size:1rem!important;}html body #main-container .risk-quick-view .modal-title {font-size:1.125rem!important;}html body #main-container .register-eyebrow {letter-spacing:.06em;}}
+@media print {html body {font-size:11pt;line-height:1.5;}html body #main-container table :is(th,td) {font-size:9pt!important;}}
+html body #main-container .btn:not(.fa):not(.fas):not(.far):not(.fab):not(.si) {font-size:.8125rem!important;}
+html body #main-container .btn-sm:not(.fa):not(.fas):not(.far):not(.fab):not(.si) {font-size:.75rem!important;}
+html body #main-container .btn-lg:not(.fa):not(.fas):not(.far):not(.fab):not(.si) {font-size:1rem!important;}
+html body #main-container .risk-quick-view .risk-detail-facts :is(th,td) {font-size:.8125rem!important;}
+@media(max-width:767px) {html body #main-container .register-rating-tabs {overflow-x:auto;scrollbar-width:thin;}html body #main-container .register-rating-tabs .register-summary-card {flex:1 0 auto;padding-left:7px;padding-right:7px;}}
+
+html body #page-header .risk-theme-control select {font-family:var(--app-font);font-size:.75rem;}
+html body #main-container :is(input,select,textarea).form-control {font-size:.875rem!important;}
+html body #main-container :is(.highcharts-axis-labels text,.highcharts-legend-item text,.apexcharts-text) {font-family:var(--app-font)!important;font-size:.75rem;}
+@media(max-width:767px) {html body #main-container :is(input,select,textarea).form-control {font-size:1rem!important;}}
+html body #main-container .risk-register #tabledata .register-risk-rating {padding-left:8px;padding-right:8px;}
+html body #main-container :is(.highcharts-title,.highcharts-subtitle,.apexcharts-title-text,.apexcharts-subtitle-text) {font-family:var(--app-font)!important;}
+/* Legacy module styles naming Inter resolve to the same cached local font. */
+@font-face {font-family:Inter;src:url('../fonts/inter/CgbodInter-Variable.woff2') format('woff2');font-weight:400 700;font-style:normal;font-display:swap;}

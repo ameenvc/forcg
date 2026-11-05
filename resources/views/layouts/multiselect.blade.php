@@ -70,13 +70,11 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>--}}
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{asset('js/plugins/dropzone/dist/min/dropzone.min.css')}}">
     <link rel="stylesheet" id="css-main" href="{{asset('css/oneui.min.css')}}">
     <link rel="stylesheet" href="{{asset('js/plugins/select2/css/select2.min.css')}}">
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <link rel="stylesheet" href="{{ asset('css/flash_new_tag.css')}}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" id="css-main" href="{{ mix('/css/oneui.css') }}">
     @yield('css_multiselect')
 

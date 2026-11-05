@@ -8,7 +8,7 @@
         const table = $('#tabledata').DataTable({
             responsive: false, autoWidth: false, order: [[0, 'asc']], pageLength: 25, lengthChange: false,
             columnDefs: [{targets: 1, visible: false, searchable: false}, {targets: [0, 12], orderable: false, searchable: false},
-                ...['52px', '0px', '90px', '280px', '110px', '130px', '90px', '170px', '100px', '100px', '100px', '110px', '145px'].map((width, targets) => ({targets, width}))],
+                ...['52px', '0px', '90px', '280px', '110px', '130px', '110px', '170px', '100px', '100px', '100px', '110px', '145px'].map((width, targets) => ({targets, width}))],
             dom: 't<"register-table-footer"ip>',
             language: {emptyTable: 'No closed risks yet. Closed records will appear here.', zeroRecords: 'No matching closed risks. Try another search or clear the filters.', info: 'Showing _START_–_END_ of _TOTAL_ closed risks', infoEmpty: 'No closed risks to show', infoFiltered: '(from _MAX_ total)', paginate: {previous: 'Previous', next: 'Next'}}
         });

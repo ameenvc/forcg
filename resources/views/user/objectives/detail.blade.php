@@ -1,13 +1,12 @@
 @extends('pages.datatables')
 @section('css_before')
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap');
 
     /* Style Variables representing the original design */
     :root {
-        --font-sans: "Inter";
-        --font-display: "Outfit", sans-serif;
-        --font-mono: "Inter";
+        --font-sans: var(--app-font);
+        --font-display: var(--app-font);
+        --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
 
         /* Color Palette */
         --bg-primary: #ffffff;

@@ -39,7 +39,7 @@ Blade escapes filter values and row metadata. Owner filters match employee IDs w
 
 ## Validation
 
-`bash tools/risk-ai-dev.sh test` passes 46 tests / 2275 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
+`bash tools/risk-ai-dev.sh test` passes 46 tests / 2278 assertions, covering the AI, SMTP-failure handling and register rendering. Register tests check create/export links, existing permission-dependent actions, empty views and 13-cell row/header consistency using synthetic data and a minimal layout.
 
 Browser checks with the real local DataTables assets and 31 synthetic rows passed search, rating/group/owner filtering, filtered export IDs, no-result display, numeric severity sorting, filtering hidden columns, pagination selection, clear-on-filter behavior, delete cancellation, partial failures with mocked requests, visible row menus, and desktop/mobile overflow checks. No real risks were deleted and no customer exports were generated during tests. These checks do not establish production deployment or resolve the separate fresh-database migration blocker.
 
@@ -76,3 +76,5 @@ The global compatibility layer covers common cards, forms, tables, modals, Selec
 Validation follows the inheritance chains of more than 400 user module views to ensure global theme wiring. Browser checks use representative forms, an editor, actual Select2, actual DataTables and actual Chart.js, verifying preserved values/filtering, reversible palettes, print colour restoration, desktop/mobile layout, cross-page preference persistence and the simplified analysis interactions. These checks do not constitute a production visual audit of every bespoke module page.
 
 Organization AI is available from the risk navigation. Its approved profile/notes guide live form and review requests, and answer-level feedback can become shared knowledge only through an authorized, sourced review. See [organization-ai.md](organization-ai.md) for the one-time migration, permissions, organization namespace and persistence details.
+
+Shared font loading and the cross-module type scale are documented in [ui-typography.md](ui-typography.md). The UI now serves a single local Inter variable font and preserves the compact register row layout.

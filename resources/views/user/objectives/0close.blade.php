@@ -22,12 +22,12 @@
 
         <!-- Fonts and Styles -->
 
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+
         <link rel="stylesheet" id="css-main" href="{{ asset( 'css/oneui.min.css')}}">
         <link rel="stylesheet" href="{{ asset( 'js/plugins/select2/css/select2.min.css')}}">
         <link rel="stylesheet" id="css-main" href="{{ asset( 'css/oneui.min.css')}}">
 
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+
         <link rel="stylesheet" id="css-main" href="{{ mix('/css/oneui.css') }}">
 
         <script>window.Laravel = {!! json_encode(['csrfToken' => csrf_token(),]) !!};</script>

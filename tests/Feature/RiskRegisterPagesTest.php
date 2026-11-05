@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\RiskController;
+use App\Services\RiskAnalysisService;
+use Illuminate\Http\Request;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -45,7 +47,7 @@ class RiskRegisterPagesTest extends TestCase
     public function testAnalysisCountsAgreeAcrossGroupsAndDepartmentsAndExcludeDeletedRisks()
     {
         Schema::create('risks', function (Blueprint $table) {
-            $table->increments('Rid'); $table->string('riskgroup')->nullable(); $table->string('rank')->nullable(); $table->integer('riskarea')->nullable(); $table->string('action_status')->nullable(); $table->softDeletes();
+            $table->increments('Rid'); $table->string('riskgroup')->nullable(); $table->string('rank')->nullable(); $table->integer('riskarea')->nullable(); $table->string('action_status')->nullable(); $table->string('date')->nullable(); $table->dateTime('created_at')->nullable(); $table->string('risk_owner')->nullable(); $table->string('risk_response')->nullable(); $table->softDeletes();
         });
         Schema::create('departments', function (Blueprint $table) { $table->increments('id'); $table->string('code')->nullable(); });
         Schema::create('modenadisable', function (Blueprint $table) { $table->increments('id'); });
@@ -57,7 +59,11 @@ class RiskRegisterPagesTest extends TestCase
             ['riskgroup' => null, 'rank' => null, 'riskarea' => null, 'action_status' => 'Under review', 'deleted_at' => null],
             ['riskgroup' => 'Strategic', 'rank' => 'High', 'riskarea' => 2, 'action_status' => 'Active Risk', 'deleted_at' => '2026-01-01'],
         ]);
-        $view = (new RiskController)->analysis();
+        DB::table('risks')->where('Rid', 1)->update(['created_at' => '2026-01-10 00:00:00', 'date' => '10-02-2026 02:30:00 PM', 'risk_owner' => 'owner@example.test', 'risk_response' => 'Mitigate']);
+        DB::table('risks')->where('Rid', 2)->update(['created_at' => '2026-02-10 23:59:59', 'risk_response' => 'Accept']);
+        DB::table('risks')->where('Rid', 3)->update(['date' => '11-02-2026 02:30:00 PM']);
+        DB::table('risks')->where('Rid', 4)->update(['date' => '31-02-2026']);
+        $view = (new RiskController)->analysis(Request::create('/user/risks/analysis'), app(RiskAnalysisService::class));
         $data = $view->getData()['analysisData'];
         $this->assertSame(['total' => 4, 'High' => 1, 'Moderate' => 1, 'Low' => 1, 'Unassessed' => 1], $data['totals']);
         $this->assertSame(2, $data['departments']['ENG']['total']);
@@ -70,8 +76,28 @@ class RiskRegisterPagesTest extends TestCase
         $this->assertStringContainsString('Department comparison', $html);
         $this->assertStringNotContainsString('everything looks great', $html);
         if (getenv('RISK_ANALYSIS_PREVIEW_PATH')) file_put_contents(getenv('RISK_ANALYSIS_PREVIEW_PATH'), $html);
+        $this->assertSame(['unassigned_owner' => 3, 'missing_response' => 2, 'undated' => 1], $data['quality']);
+        $this->assertSame(['2026-01-10' => 1, '2026-02-10' => 1, '2026-02-11' => 1], $data['dates']);
+        $request = Request::create('/user/risks/analysis', 'GET', ['from' => '2026-02-10', 'to' => '2026-02-11'], [], [], ['HTTP_ACCEPT' => 'application/json']);
+        $response = (new RiskController)->analysis($request, app(RiskAnalysisService::class));
+        $filtered = $response->getData(true);
+        $this->assertSame(2, $filtered['analysisData']['totals']['total']);
+        $this->assertSame(1, $filtered['analysisData']['excluded_undated']);
+        $this->assertSame(0, $filtered['analysisData']['totals']['High']);
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        $this->assertNotEmpty($filtered['generatedAt']);
+        $closed = app(RiskAnalysisService::class)->snapshot(['scope' => 'closed']);
+        $this->assertSame(1, $closed['totals']['total']);
+        $current = app(RiskAnalysisService::class)->snapshot(['scope' => 'current']);
+        $this->assertSame(3, $current['totals']['total']);
+        $upperOnly = app(RiskAnalysisService::class)->snapshot(['to' => '2026-01-10']);
+        $this->assertSame(1, $upperOnly['totals']['total']);
+        try {
+            (new RiskController)->analysis(Request::create('/user/risks/analysis', 'GET', ['from' => '2026-02-11', 'to' => '2026-02-10']), app(RiskAnalysisService::class));
+            $this->fail('Reversed date range must be rejected.');
+        } catch (\Illuminate\Validation\ValidationException $exception) { $this->assertArrayHasKey('to', $exception->errors()); }
         DB::table('risks')->delete();
-        $empty = (new RiskController)->analysis();
+        $empty = (new RiskController)->analysis(Request::create('/user/risks/analysis'), app(RiskAnalysisService::class));
         $this->assertSame(0, $empty->getData()['analysisData']['totals']['total']);
         $this->assertStringContainsString('No risk groups to display yet.', $empty->render());
         if (getenv('RISK_ANALYSIS_EMPTY_PREVIEW_PATH')) file_put_contents(getenv('RISK_ANALYSIS_EMPTY_PREVIEW_PATH'), $empty->render());

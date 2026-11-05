@@ -41,6 +41,7 @@ use App\Mail\Escalaterisk;
 use App\Opportunity;
 use App\Helpers\Risk\NewRiskAddedEmailHelper;
 use App\Services\RiskWordExport;
+use App\Services\RiskAnalysisService;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
 
@@ -1190,41 +1191,21 @@ class RiskController extends Controller
         }
     }
 
-    public function analysis()
+    public function analysis(Request $request, RiskAnalysisService $service)
     {
-        $emptyCounts = ['total' => 0, 'High' => 0, 'Moderate' => 0, 'Low' => 0, 'Unassessed' => 0];
-        $analysisData = ['totals' => $emptyCounts, 'groups' => [], 'departments' => []];
-        // Use the same soft-delete scope for every summary and breakdown.
-        $groupRows = Risk::select('riskgroup', 'rank', DB::raw('COUNT(*) as total'))->groupBy('riskgroup', 'rank')->get();
-        foreach ($groupRows as $row) {
-            $group = trim((string) $row->riskgroup) ?: 'Unspecified';
-            $rating = in_array($row->rank, ['High', 'Moderate', 'Low'], true) ? $row->rank : 'Unassessed';
-            if (!isset($analysisData['groups'][$group])) $analysisData['groups'][$group] = ['counts' => $emptyCounts, 'departments' => []];
-            $count = (int) $row->total;
-            $analysisData['totals']['total'] += $count;
-            $analysisData['totals'][$rating] += $count;
-            $analysisData['groups'][$group]['counts']['total'] += $count;
-            $analysisData['groups'][$group]['counts'][$rating] += $count;
+        $filters = $request->validate([
+            'from' => 'nullable|date_format:Y-m-d',
+            'to' => 'nullable|date_format:Y-m-d'.($request->filled('from') ? '|after_or_equal:from' : ''),
+            'scope' => 'nullable|in:all,current,closed',
+        ]);
+        $filters = ['from' => $filters['from'] ?? '', 'to' => $filters['to'] ?? '', 'scope' => $filters['scope'] ?? 'all'];
+        $analysisData = $service->snapshot($filters);
+        $generatedAt = Carbon::now()->toIso8601String();
+        if ($request->wantsJson()) {
+            return response()->json(compact('analysisData', 'filters', 'generatedAt'))->header('Cache-Control', 'no-store');
         }
-        $departmentRows = Risk::leftJoin('departments', 'risks.riskarea', '=', 'departments.id')
-            ->select('risks.riskgroup', 'departments.code', 'risks.rank', DB::raw('COUNT(*) as total'))
-            ->groupBy('risks.riskgroup', 'departments.code', 'risks.rank')->get();
-        foreach ($departmentRows as $row) {
-            $group = trim((string) $row->riskgroup) ?: 'Unspecified';
-            $department = trim((string) $row->code) ?: 'Unassigned';
-            $rating = in_array($row->rank, ['High', 'Moderate', 'Low'], true) ? $row->rank : 'Unassessed';
-            if (!isset($analysisData['departments'][$department])) $analysisData['departments'][$department] = $emptyCounts;
-            if (!isset($analysisData['groups'][$group]['departments'][$department])) $analysisData['groups'][$group]['departments'][$department] = $emptyCounts;
-            $count = (int) $row->total;
-            $analysisData['departments'][$department]['total'] += $count;
-            $analysisData['departments'][$department][$rating] += $count;
-            $analysisData['groups'][$group]['departments'][$department]['total'] += $count;
-            $analysisData['groups'][$group]['departments'][$department][$rating] += $count;
-        }
-        ksort($analysisData['groups']);
-        ksort($analysisData['departments']);
         $models = DB::table('modenadisable')->first();
-        return view('user.risks.analysis', compact('analysisData'))->with('model', $models);
+        return view('user.risks.analysis', compact('analysisData', 'filters', 'generatedAt'))->with('model', $models);
     }
 
     protected function countRiskByGroup()

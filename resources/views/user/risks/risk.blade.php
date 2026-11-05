@@ -1,189 +1,12 @@
 @extends('pages.datatables')
-@section('exportadd')
-{{-- <div class="input-group input-group-sm">
-    <a href="" class="btn btn-sm btn-dual" style="margin-left:0;" onclick="return fnCovertTable('print')">
-
-        <i class="fa fa-print  fa-1x" style="color:grey"></i>
-
-    </a>
-</div> --}}
-<div class="input-group input-group-sm">
-    <button type="button" class=" btn-sm btn-dual btn btn-default dropdown-toggle mr-0 mb-0" style="margin-left:8px; " data-toggle="dropdown">
-        <i class="fa fa-file-export fa-1x" style="color:grey;"></i>
-    </button>
-    <ul class="dropdown-menu" role="menu" style="min-width:10px;text-align:center;">
-        <li>
-            <a href="{{ route('risk.exportData', 'pdf') }}" class="export-link"
-                style="padding-right:16px !important;padding-left:16px !important;color:black;width:50px;font-size:10px;border:none;">
-                Pdf
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('risk.exportData', 'excel') }}" class="export-link"
-                style="padding-right:16px !important;padding-left:16px !important;color:black;width:50px;font-size:10px;border:none;">
-                Excel
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('risk.exportData', 'word') }}" class="export-link"
-                style="padding-right:16px !important;padding-left:16px !important;color:black;width:50px;font-size:10px;border:none;">
-                Word
-            </a>
-        </li>
-    </ul>
-</div>
-
-<div class="input-group input-group-sm">
-    <a type="button" href="{{url('/user/risks/addrisk')}}" class="btn btn-sm btn-dual" style="margin-left:8px;">
-        <i class="fa fa-1x fa-plus" style="color:grey;"></i>
-    </a>
-</div>
-@endsection
 @section('content')
-<link rel="stylesheet" href="https://cdn.dnatatables.net/responsive/2.2.3/css/responsive.bootstrap.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.js">
-<!-- <link rel="stylesheet" href="{{ asset('css/workflow.css') }}"> -->
-<link rel="stylesheet" href="{{ asset('css/register_filter.css') }}">
-<style>
-    /*@media screen and (max-width: 760px),*/
-    /*(min-device-width: 768px) and (max-device-width: 1366px) {*/
-    /*    body {*/
-    /*        margin: 0;*/
-    /*        padding: 0;*/
-    /*        overflow-x: hidden;*/
-    /*        overflow-y: hidden;*/
-    /*    }*/
-
-    /*    table {*/
-    /*        border-collapse: collapse;*/
-    /*        border-spacing: 0;*/
-    /*        width: 100%;*/
-    /*    }*/
-
-    /*    .pb-1,*/
-    /*    .py-1 {*/
-    /*        !*padding-bottom: .25rem!important;*!*/
-    /*        bottom: 0;*/
-    /*        position: relative;*/
-    /*        display: inline-block;*/
-    /*        clear: both;*/
-    /*    }*/
-    /*}*/
-    .select2-container .select2-selection--single {
-        height: calc(1.5em + 0.5rem + 2px);
-    }
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        height: calc(1.5em + 0.5rem + 2px);
-        font-size: 13px;
-    }
-    .select2-container .select2-dropdown {
-        z-index: 100;
-    }
-    .select2-results__options, .select2-search__field {
-        font-size: 13px;
-    }
-    .breadcrumb > li + li:before {
-        display: none !important;
-    }
-    .breadcrumb {
-        font-size: 15px;
-        padding: 0.75rem 1.25rem;
-        background: #F6F7F9;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-    .breadcrumb li:first-child {
-        font-size: 1rem;
-        text-transform: uppercase;
-    }
-    .breadcrumb li:last-child {
-        font-size: 1rem;
-        color: gray;
-    }
-    .status{
-        display: inline-block;
-        padding: 7px 5px 5px 7px;
-        font-weight: 600;
-        line-height: 1;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: baseline;
-        border-radius: 0.25rem;
-        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-
-    .status-blue{
-        color: #25499c;
-        background-color: #d9e2f6;
-        border-color: #d9e2f6;
-    }
-
-    .status-red{
-        color: #af1e1e;
-        background-color: #f8d4d4;
-        border-color: #fbeaea;
-    }
-    .status-warning{
-        color: #af6f1e;
-        background-color: #fbdece;
-        border-color: #fbf4ea;
-    }
-    .status-secondary{
-        color: #343a40;
-        background-color: #E5E4E2;
-        border-color: #edf0f2;
-    }
-    .status-success{
-        color: #176044;
-        background-color: #e0edcf;
-        border-color: #bff0dd;
-    }
-    .scrollable {
-        height: 500px !important;
-        overflow-x: scroll;
-        overflow-y: scroll;
-    }
-    #modal-learn-module .close {
-        position: absolute;
-        right: -30px;
-        top: 0;
-        z-index: 999;
-        font-size: 2rem;
-        font-weight: normal;
-        color: #fff;
-        opacity: 1;
-    }
-    .width-150 {
-        width: 150px !important;
-    }
-
-    .m-dialog {
-        max-width: 800px;
-        margin: 30px auto;
-    }
-
-    .m-body {
-        position: relative;
-        padding: 0px;
-    }
-    .dropdown-menu.show {
-        left: -20px !important;
-        min-width: auto !important;
-    }
-    table.table-bordered.dataTable th {
-        border: 1px solid #dee2e6;
-    }
-</style>
-<div class="content" style="width:100%">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item font-w700">Register</li>
-            <li class="breadcrumb-item">
-                Enterprise Risk
-            </li>
-        </ol>
-    </nav>
-    <div class="block block-rounded">
+@include('shared.forms.assets')
+<link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
+<script src="{{ asset('js/risk-register.js') }}?v={{ filemtime(public_path('js/risk-register.js')) }}" defer></script>
+<div class="content cgbod-form risk-register" id="risk-register"
+     data-edit-url="{{ route('risk.editrisk') }}" data-delete-url="{{ route('risk.deleterisk') }}">
+    @include('user.risks.register-header')
+    <div class="block block-rounded risk-register-card">
         <div class="block-content block-content-full">
             @include('user.risks.notification-warning')
             @if(Session::has('errmsg'))
@@ -198,41 +21,30 @@
                     {!!Session::get('msg')!!}
                 </div>
             @endif
-            <div id="content">
-                <table class="table table-bordered table-striped table-vcenter js-dataTable-full" id="tabledata">
-                    <input type="hidden" value="a1" id="tabselected">
+            @include('user.risks.register-toolbar')
+            <div id="risk-register-feedback" role="status" aria-live="polite"></div>
+            <input type="hidden" value="a1" id="tabselected">
+            <div id="risk-register-empty" class="register-empty-state" @if(count($data)) hidden @endif role="status">
+                <i class="fa fa-search" aria-hidden="true"></i><strong id="risk-empty-title">No risks in this view</strong>
+                <p id="risk-empty-description">Add a risk or clear any page filters to see more records.</p>
+            </div>
+            <div id="content" class="risk-table-scroll" role="region" aria-label="Risk register table; scroll horizontally for more columns" tabindex="0">
+                <table class="table table-vcenter risk-register-table" id="tabledata">
                     <thead>
                     <tr>
-                        <th style="position:sticky;top:-1px"></th>
-                        <th class="text-center" style="font-size:10px;text-transform:capitalize;width: 5%;position:sticky;top:-1px;vertical-align: middle;">
-                            S.No
-                        </th>
-                        <td class="d-none"></td>
-                        <th class="text-center" style="font-size:10px;text-transform:capitalize;width:5%;position:sticky;top:-1px;vertical-align: middle;">
-                            Risk&nbspID
-                        </th>
-                        <th class="text-center"
-                            id="riskgroupselectdata"
-                            data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;">
-                        </th>
-                        <th class="text-center" id="riskareaselectdata" data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;">
-                        </th>
-                        <th class="text-center" style="font-size:10px;text-transform:capitalize;width: 25%;position:sticky;top:-1px;vertical-align: middle;">
-                            Risk&nbsp&nbspName
-                        </th>
-                        <th class="text-center" id="riskselectdata" data-orderable="false" style="width:5%;text-transform:capitalize;position:sticky;">
-                        </th>
-                        <th class="text-center" style="font-size:10px;text-transform:capitalize;width:10%;position:sticky;top:-1px;vertical-align: middle;">
-                            <i class="far fa-user" style="font-size:14px;"></i>
-                        </th>
-                        <th class="text-center" id="riskownerselectdata" data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;">
-                        </th>
-                        <th class="text-center" id="riskresponseselectdata" data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;">
-                        </th>
-                        <th class="text-center" id="processtageseselectdata" data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;">
-                        </th>
-                        <th class="text-center" style="font-size:10px;text-transform:capitalize;position:sticky;top:-1px; z-index: 1;vertical-align: middle;">Actions
-                        </th>
+                        <th data-orderable="false" data-searchable="false"><input type="checkbox" id="risk-select-page" aria-label="Select risks on this page"></th>
+                        <th data-searchable="false">S.No</th>
+                        <th class="d-none" data-searchable="false">Internal ID</th>
+                        <th>Risk ID</th>
+                        <th>Risk name</th>
+                        <th>Risk group</th>
+                        <th>Risk area</th>
+                        <th>Rating</th>
+                        <th class="d-none" data-orderable="false" data-searchable="false">Owner image</th>
+                        <th>Risk owner</th>
+                        <th>Response</th>
+                        <th>Process stage</th>
+                        <th data-orderable="false" data-searchable="false">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -240,23 +52,27 @@
                         @foreach($data as $value)
                         @php
                             $rr = $value->Rid;
-                            $riskowners = explode(',', $value->risk_owner);
+                            $riskowners = explode(',', (string) $value->risk_owner);
+                            $ownerSearch = [];
+                            foreach ($riskowners as $ownerEmail) {
+                                if (isset($riskOwnerData[$ownerEmail])) $ownerSearch[] = $riskOwnerData[$ownerEmail]['name'].' '.$riskOwnerData[$ownerEmail]['employeeid'];
+                            }
                         @endphp
-                        <tr>
-                            <td><input class="text-center font-size-sm" type="checkbox" id="{{ $value->Rid}}" name="id[]"></td>
+                        <tr data-risk-id="{{ $value->Rid }}" data-risk-rank="{{ $value->rank }}">
+                            <td><input class="risk-row-select" type="checkbox" id="risk-select-{{ $value->Rid }}" value="{{ $value->Rid }}" name="id[]" aria-label="Select risk {{ $value->grp_id }}"></td>
                             <td class="text-center " style="font-size:10px;">{{$no=$no+1}}</td>
                             <td class="d-none">{{ $value->Rid }}</td>
                             <td class="text-center " style="font-size:10px;">{{$value->grp_id}}</td>
-                            <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
-                                <em class="text-muted">{{$value->riskgroup}}</em>
-                            </td>
-                            <td class="d-none d-sm-table-cell text-center" style="font-size:10px;">
-                                <em class="text-muted">{{$value->department ? $value->department->departmentname : '-'}}</em>
-                            </td>
-                            <td class="font-w600 " style="font-size:10px;">
+                            <td class="register-risk-name" style="font-size:10px;">
                                 <a href="{{ route('risk.detail', $value->Rid) }}">{{$value->riskname}}</a>
                             </td>
-                            <td class="d-none d-sm-table-cell text-center" style="font-size:12px;">
+                            <td class="register-risk-group" data-search="{{ $value->riskgroup }}" style="font-size:10px;">
+                                <em class="text-muted">{{$value->riskgroup}}</em>
+                            </td>
+                            <td class="register-risk-area" data-search="{{ $value->department ? $value->department->departmentname : '-' }}" style="font-size:10px;">
+                                <em class="text-muted">{{$value->department ? $value->department->departmentname : '-'}}</em>
+                            </td>
+                            <td class="register-risk-rating" data-search="{{ $value->rank }}" data-order="{{ $value->rank === 'High' ? 3 : ($value->rank === 'Moderate' ? 2 : 1) }}">
                                 @if($value->rank=="High")
                                     <span class="status status-red" style="font-size:10px;">{{$value->rank }}</span>
                                 @elseif($value->rank=="Moderate")
@@ -265,33 +81,25 @@
                                     <span class="status status-success" style="font-size:10px;">{{$value->rank }}</span>
                                 @endif
                             </td>
-                            <td class="text-center " style="font-size:10px;">
+                            <td class="d-none"></td>
+                            <td class="register-risk-owner" data-search="{{ implode(' ', $ownerSearch) }}">
                                 @foreach($riskowners as $riskowner)
                                     @if(isset($riskOwnerData[$riskowner]))
-                                        @php
-                                            $riskOwnerItem = $riskOwnerData[$riskowner];
-                                        @endphp
-                                        @if ($riskOwnerItem['profile_picture'] && file_exists(public_path('/storage/profile/'. $riskOwnerItem['profile_picture'])))
-                                            <img src="{{ asset("storage/profile/". $riskOwnerItem['profile_picture']) }}"
-                                                    class="avatar" alt="{{ $riskOwnerItem['name'] }}">
-                                        @else
-                                            <img src="{{ asset("/images/avatar10.jpg") }}"
-                                                    class="avatar"
-                                                    alt="{{ $riskOwnerItem['name'] }}">
-                                        @endif
-                                    @endif
-                                    <br />
-                                @endforeach
-                            </td>
-                            <td class="text-center " style="font-size:10px;">
-                                @foreach($riskowners as $riskowner)
-                                    @if(isset($riskOwnerData[$riskowner]))
-                                        {{ $riskOwnerData[$riskowner]['name'] }}-{{ $riskOwnerData[$riskowner]['employeeid'] }} <br />
+                                        @php $riskOwnerItem = $riskOwnerData[$riskowner]; @endphp
+                                        <div class="register-owner">
+                                            @if($riskOwnerItem['profile_picture'] && file_exists(public_path('/storage/profile/'.$riskOwnerItem['profile_picture'])))
+                                                <img src="{{ asset('storage/profile/'.$riskOwnerItem['profile_picture']) }}" alt="" class="register-avatar">
+                                            @else
+                                                <span class="register-avatar register-avatar-initial" aria-hidden="true">{{ mb_substr($riskOwnerItem['name'], 0, 1) }}</span>
+                                            @endif
+                                            <span>{{ $riskOwnerItem['name'] }} <small>{{ $riskOwnerItem['employeeid'] }}</small></span>
+                                        </div>
                                     @endif
                                 @endforeach
+                                @if(!count($ownerSearch))<span class="register-muted">{{ trim((string) $value->risk_owner) === '' ? 'Unassigned' : 'Owner unavailable' }}</span>@endif
                             </td>
-                            <td class="text-center text-center" style="font-size:10px;">{{ $value->risk_response }}</td>
-                            <td class="d-none d-sm-table-cell text-center" style="font-size:12px;">
+                            <td data-search="{{ $value->risk_response }}">{{ $value->risk_response ?: '—' }}</td>
+                            <td data-search="{{ $value->action_status }}">
                                 @if($value->action_status=='Active Risk')
                                     <span class="status status-success" style="font-size:10px;">{{$value->action_status}}</span>
                                 @elseif($value->action_status=='Action under review')
@@ -306,12 +114,12 @@
                                     <span class="status status-warning" style="font-size:10px;">{{$value->action_status}}</span>
                                 @endif
                             </td>
-                            <td>
-                                <div class="btn-group m-auto d-flex justify-content-center">
-                                    <a href="#" class="btn btn-sm btn-alt-primary" data-toggle="dropdown" data-placement="top" title="Actions" id="drop{{$value->id}}">
-                                        <i class="fa fa-fw fa-ellipsis-v" style="font-size:10px;cursor:pointer"></i>
-                                    </a>
-                                    <div class="dropdown-menu font-size-sm" aria-labelledby="dropdown-dropleft-outline-dark" id="dropdownMenu{{ $value->id }}">
+                            <td class="register-row-actions">
+                                <div class="btn-group">
+                                    <button type="button" class="btn register-action-menu" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" aria-label="Actions for risk {{ $value->grp_id }}" id="risk-actions-{{ $value->Rid }}">
+                                        <i class="fa fa-fw fa-ellipsis-v" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="risk-actions-{{ $value->Rid }}">
                                         <!-- Status: Under review, Action under review -->
                                         @if(in_array($value->action_status, ['Under review', 'Action under review']))
                                             <!-- Action: Edit -->
@@ -426,11 +234,9 @@
                                         @endif
                                     </div>
                                     <!-- Action: View detail -->
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-alt-primary show-detail"
-                                        data-id="{{ $value->Rid }}">
-                                        <i class="far fa-eye text-center " style="font-size:10px;cursor:pointer" ></i>
-                                    </a>
+                                    <button type="button" class="btn register-view-button show-detail" data-id="{{ $value->Rid }}" aria-label="View risk {{ $value->grp_id }}">
+                                        <i class="far fa-eye" aria-hidden="true"></i><span>View</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -438,11 +244,12 @@
                     </tbody>
                 </table>
             </div>
+            <div id="risk-table-footer"></div>
         </div>
         <!-- END Dynamic Table Full -->
     </div>
 
-    <div class="modal" id="modal-learn-module" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal" id="modal-learn-module" tabindex="-1" role="dialog" aria-label="Risk management module tutorial" aria-hidden="true">
         <div class="modal-dialog m-dialog" role="document">
             <div class="modal-content">
 
@@ -454,7 +261,7 @@
                     <!-- 16:9 aspect ratio -->
 
                     <div class="embed-responsive embed-responsive-16by9">
-                        <iframe class="embed-responsive-item" src="https://youtube.com/embed/M2qMFyvFPTI" id="video" allowscriptaccess="always" allow="autoplay"></iframe>
+                        <iframe class="embed-responsive-item" src="about:blank" id="video" title="Risk management module tutorial" allowscriptaccess="always" allow="autoplay"></iframe>
                     </div>
 
                 </div>
@@ -464,121 +271,17 @@
     </div>
     <div class="risk-area"></div>
     {{-- --------delete request button for mr --}}
-    @section('sideitem')
 
-        <div class="input-group input-group-sm ml-2">
-            <button type="button" class="btn btn-sm btn-dual width-150 video-btn" id="learn_btn" data-toggle="modal" data-src="https://youtube.com/embed/M2qMFyvFPTI" data-target="#modal-learn-module">
-                <i class="fa fa-1x fa-video" style="color:grey;"></i><span id="learn" class="ml-2">Learn Module</span>
-            </button>
-        </div>
-
-        @if(Gate::allows('edit-risk') || Gate::allows('edit-all'))
-        <div class="input-group input-group-sm ml-2">
-            <button type="button" class="btn btn-sm btn-dual" id="edit" value=id[]>
-                <i class="fa fa-1x fa-edit" style="color:grey;"></i>
-            </button>
-        </div>
-        @endif
-        @if(Gate::allows('delete-risk') || Gate::allows('delete-all'))
-        <div class="input-group input-group-sm ml-2">
-            <button type="button" class="btn btn-sm btn-dual" id="del" value=id[]>
-                <i class="fas fa-1x fa-trash" style="color:red;"></i>
-            </button>
-        </div>
-        @endif
-
-    @endsection
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/learn_module.js') }}"></script>
     <script>
         let video_selector = $('#modal-learn-module');
         let video_id_selector = $('#video');
-        displayVideo(video_selector, );
+        displayVideo(video_selector, video_id_selector);
+        video_selector.on('hidden.bs.modal', function () { video_id_selector.attr('src', 'about:blank'); });
         let learn_selector = $('#learn');
         let learn_btn_selector = $('#learn_btn');
-        showOrHide(learn_selector, learn_btn_selector);
-        $('.export-link').on('click', function (e) {
-            e.preventDefault();
-            let baseUrl = $(this).attr('href');
-            let finalUrl = baseUrl;
-            let ids = getVisibleIds('#tabledata');
-            let countData = "{{count($data)}}";
-            if(countData!=ids.length){
-                finalUrl = baseUrl+'?ids='+encodeURIComponent(JSON.stringify(ids));
-            }
-            window.location.href = finalUrl;
-        });
-        function getVisibleIds(tableSelector,columnIndex=2) {
-            let table = $(tableSelector).DataTable();
-            let ids = [];
-            table.rows({ search: 'applied' }).every(function () {
-                let rowData = this.data();
-                ids.push(rowData[columnIndex]);
-            });
-            return ids;
-        }
-    </script>
-    <script>
-        $("#del").on('click', function() {
-            let dataArr = [];
-            let input_checkbox_selector = $('input:checkbox:checked');
-            if (input_checkbox_selector.length > 0){
-                input_checkbox_selector.each(function() {
-                    dataArr.push($(this).attr('id'));
-                    $.ajax({
-                        type: 'get'
-                        , url: "{{route('risk.deleterisk')}}" + "?val=" + $(this).attr('id')
-                        , success: function() {
-                            window.location.href = "{{url('/user/riskmgmt')}}";
-                        }
-                        , error: function(response) {
-                            console.log(response);
-                        }
-                    });
-                });
 
-            } else {
-                alert('No Record Selected');
-            }
-        });
-
-        function autoResizeDiv(height) {
-            document.getElementById('content').style.height = (height) + 'px';
-        }
-
-        // window.onresize = autoResizeDiv;
-        // autoResizeDiv(window.innerHeight - 100);
-
-    </script>
-    {{-- --------edit  button ------------}}
-    <script>
-        $("#edit").on('click', function() {
-            let dataArr = [];
-            let group = [];
-            let all;
-            let input_checkbox_selector = $('input:checkbox:checked');
-            if (input_checkbox_selector.length > 0) {
-                input_checkbox_selector.each(function() {
-                    dataArr.push($(this).attr('id'));
-                    all = "" + dataArr;
-                    group.push(all); // push all checkbox values into an array
-
-                });
-                $.ajax({
-                    type: 'get'
-                    , url: "{{route('risk.editrisk')}}" + "?val=" + (all)
-                    , success: function() {
-                        window.location.href = "{{route('risk.editrisk')}}" + "?val=" + (all);
-                    }
-                    , error: function(response) {
-                        console.log(response);
-                    }
-                });
-
-            } else {
-                alert('No Record Selected');
-            }
-        });
     </script>
     <!-- END Footer -->
     <script>
@@ -627,72 +330,6 @@
                 $('#resource_required').val(val);
             });
 
-            const createHeadingSelect = (
-                headingName = '', headingId = '',
-                values = '', dropdownId = '', columnIndex = 0, caseInsensitive = true
-            ) => {
-                let nameArr = values.split(',');
-                let optionText = "";
-                for (let i = 0; i < nameArr.length; i++) {
-                    if(nameArr[i] != '') {
-                        if (headingId == 'riskownerselectdata') {
-                            const $ownerAfterParse = nameArr[i].split('-')
-                            optionText += `<option value="${nameArr[i]}">${$ownerAfterParse[0]}</option>`;
-                        } else {
-                            optionText += `<option value="${nameArr[i]}">${nameArr[i]}</option>`;
-                        }
-                    }
-                }
-                $("#tabledata").one("preInit.dt", function() {
-                    let table = $('#tabledata').DataTable();
-                    // Add index column
-                    table.on('draw.dt', function() {
-                        let pageInfo = table.page.info();
-                        table.rows({ page: 'current' }).every(function(rowIdx, tableLoop, rowLoop) {
-                            $('td:eq(1)', this.node()).text(pageInfo.start + rowLoop + 1);
-                        });
-                    });
-                    const heading = $(`<select class="headingselect"
-                            style="width:100px;" id="${dropdownId}">
-                                <option value="">${headingName}&nbsp;&nbsp;&#9207;</option>${optionText}
-                            </select>`);
-
-                    $('#' + headingId).html(heading);
-                    $("#" + dropdownId).on('change', function() {
-                        if ($(this).val()) {
-                            table.columns(columnIndex).search($(this).val(), false, false, caseInsensitive).draw();
-                            $(this).addClass('text-primary');
-                            $("#" + dropdownId +  "option").css('color', 'black')
-                        } else {
-                            location.reload();
-                        }
-                    });
-                });
-            }
-
-            // Risk group
-            const riskGroups = "{{ $allRiskGroup }}";
-            createHeadingSelect('Risk Group', 'riskgroupselectdata', riskGroups, 'riskgroup_dropdown', 4);
-
-            // Risk area
-            const riskAreas = "{{ $allRiskArea }}";
-            createHeadingSelect('Risk Area', 'riskareaselectdata', riskAreas, 'riskarea_dropdown', 5);
-
-            // rank
-            const ranks = "{{ $allRank }}";
-            createHeadingSelect('Risk', 'riskselectdata', ranks, 'risk_dropdown', 7);
-
-            // risk owner
-            const allRiskOwner = "{{ $allRiskOwner }}";
-            createHeadingSelect('Risk Owner', 'riskownerselectdata', allRiskOwner, 'riskowner_dropdown', 9);
-
-            // risk response
-            const allRiskResponse = "{{ $allRiskResponse }}";
-            createHeadingSelect('Risk Response', 'riskresponseselectdata', allRiskResponse, 'riskresponse_dropdown', 10);
-
-            // process stage
-            const allProcessStage = "{{ $allProcessStage }}";
-            createHeadingSelect('Process Stage', 'processtageseselectdata', allProcessStage, 'processstage_dropdown', 11, false);
         });
         $(document).ready(function () {
             // Parse query parameters

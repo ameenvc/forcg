@@ -18,7 +18,7 @@ case "${1:-test}" in
             "$image" install --no-interaction --prefer-source --no-scripts --no-plugins
         ;;
     test)
-        docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit --filter 'RiskAi|RiskSubmission'
+        docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit --filter 'RiskAi|RiskSubmission|RiskRegister'
         ;;
     serve)
         docker run "${common[@]}" -p 127.0.0.1:8080:8080 --entrypoint php "$image" \

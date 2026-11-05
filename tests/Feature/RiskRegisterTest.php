@@ -58,6 +58,8 @@ class RiskRegisterTest extends TestCase
     {
         $html = $this->renderRegister();
         $this->assertStringContainsString('Add Risk', $html);
+        $this->assertSame(1, substr_count($html, 'data-risk-theme-select'));
+        $this->assertLessThan(strpos($html, '</head>'), strpos($html, 'js/app-theme.js'));
         $this->assertStringContainsString('risk-register-ai-toggle', $html);
         $this->assertStringContainsString('Review this register', $html);
         $this->assertStringContainsString(route('risk.addrisk'), $html);

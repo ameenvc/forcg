@@ -1193,19 +1193,14 @@ class RiskController extends Controller
 
     public function analysis(Request $request, RiskAnalysisService $service)
     {
-        $filters = $request->validate([
-            'from' => 'nullable|date_format:Y-m-d',
-            'to' => 'nullable|date_format:Y-m-d'.($request->filled('from') ? '|after_or_equal:from' : ''),
-            'scope' => 'nullable|in:all,current,closed',
-        ]);
-        $filters = ['from' => $filters['from'] ?? '', 'to' => $filters['to'] ?? '', 'scope' => $filters['scope'] ?? 'all'];
-        $analysisData = $service->snapshot($filters);
+        // This page always presents the complete current snapshot; legacy date URLs do not silently filter it.
+        $analysisData = $service->snapshot([]);
         $generatedAt = Carbon::now()->toIso8601String();
         if ($request->wantsJson()) {
-            return response()->json(compact('analysisData', 'filters', 'generatedAt'))->header('Cache-Control', 'no-store');
+            return response()->json(compact('analysisData', 'generatedAt'))->header('Cache-Control', 'no-store');
         }
         $models = DB::table('modenadisable')->first();
-        return view('user.risks.analysis', compact('analysisData', 'filters', 'generatedAt'))->with('model', $models);
+        return view('user.risks.analysis', compact('analysisData', 'generatedAt'))->with('model', $models);
     }
 
     protected function countRiskByGroup()

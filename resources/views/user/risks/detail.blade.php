@@ -641,7 +641,6 @@
                     </div>
                 </div>
             </div>
-            <div class="risk-detail-theme">@include('shared.forms.theme-control')</div>
             @include('user.risks.review-assist', ['reviewRisk' => $risk])
             <div class="mt-4 px-5 d-flex justify-content-around d-block-sp px-xs-adjust">
                 <div class="px-4 mr-4 pb-3 mb-2-sp mr-xs-adjust w-50 w-100-sp" style="background: #F6F7F9; border-radius: 20px; font-size: 0.75rem;">

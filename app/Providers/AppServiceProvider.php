@@ -101,6 +101,9 @@ class AppServiceProvider extends ServiceProvider
             'user.risks.mitigation._mitigation_attachment',
             'user.risks._analysis_group_item',
             'user.risks.organization-ai-answer',
+            'shared.theme.assets',
+            'shared.forms.theme-control',
+            'shared.forms.assets',
             'exporting.forcorrective'
         ];
 

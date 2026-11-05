@@ -21,7 +21,6 @@
             <a href="#risk-details"><span>02</span> Risk details</a>
             <a href="#risk-assessment"><span>03</span> Assessment &amp; review</a>
             <small><span aria-hidden="true">*</span> Required fields</small>
-            @include('shared.forms.theme-control')
         </nav>
         <div class="block-content block-content-full">
             @include('user.risks.notification-warning')

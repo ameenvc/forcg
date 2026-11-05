@@ -8,7 +8,6 @@
     <a href="{{ route('risk.closedrisks') }}" @if($registerPage === 'closed') aria-current="page" @endif>Closed risks</a>
     <a href="{{ route('risk.analysis') }}" @if($registerPage === 'analysis') aria-current="page" @endif>Analysis</a>
     <a href="{{ route('risk.ai.organization') }}" @if($registerPage === 'organization') aria-current="page" @endif>Organization AI</a>
-    @include('shared.forms.theme-control')
     @if($registerPage === 'register')
     <button type="button" class="video-btn" id="learn_btn" data-toggle="modal" data-src="https://youtube.com/embed/M2qMFyvFPTI" data-target="#modal-learn-module"><i class="fa fa-video mr-1" aria-hidden="true"></i><span id="learn">Learn module</span></button>
     @endif

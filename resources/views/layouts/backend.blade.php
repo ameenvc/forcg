@@ -88,6 +88,7 @@
     <!-- Scripts -->
         @yield('js_before')
     <script src="/js/sweetalert/sweetalert2.all.min.js"></script>
+    @include('shared.theme.assets')
 </head>
 
 <body>
@@ -1318,6 +1319,7 @@
                       $user_details= App\User::where('email',Auth::user()->email)->first();
                       $profilePicture =  $user_details ? $user_details->profile_picture : '';
                     @endphp
+                    @include('shared.forms.theme-control')
                     <div class="dropdown d-inline-block ml-2">
                         <button type="button" class="btn btn-sm btn-dual d-flex align-items-center" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @if($profilePicture != null)

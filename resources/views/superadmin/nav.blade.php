@@ -49,7 +49,8 @@
 
         <!-- Scripts -->
         <script>window.Laravel = {!! json_encode(['csrfToken' => csrf_token(),]) !!};</script>
-    </head>
+        @include('shared.theme.assets')
+</head>
     <body>
         <!-- Page Container -->
         <!--
@@ -360,7 +361,8 @@
                     <!-- Right Section -->
                     <div class="d-flex align-items-center">
                         <!-- User Dropdown -->
-                        <div class="dropdown d-inline-block ml-2">
+                        @include('shared.forms.theme-control')
+                    <div class="dropdown d-inline-block ml-2">
                             <button type="button" class="btn btn-sm btn-dual d-flex align-items-center" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img class="rounded-circle" src="{{ asset('media/avatars/avatar10.jpg') }}" alt="Header Avatar" style="width: 21px;">
                                 <span class="d-none d-sm-inline-block ml-2">{{Auth::user()->name}}</span>

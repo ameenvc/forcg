@@ -61,10 +61,12 @@
     <link rel="stylesheet" id="css-main" href="{{ mix('/css/oneui.css') }}">
     @yield('css_after')
         <script>window.Laravel = {!! json_encode(['csrfToken' => csrf_token(),]) !!};</script>
-    </head>
+        @include('shared.theme.assets')
+</head>
     <body>
         <div id="page-container">
-           @yield('content')
+           <div class="app-simple-theme">@include('shared.forms.theme-control')</div>
+@yield('content')
         </div>
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     @if (Auth::user())

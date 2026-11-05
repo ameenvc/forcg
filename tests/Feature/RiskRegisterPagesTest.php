@@ -80,22 +80,9 @@ class RiskRegisterPagesTest extends TestCase
         $this->assertSame(['2026-01-10' => 1, '2026-02-10' => 1, '2026-02-11' => 1], $data['dates']);
         $request = Request::create('/user/risks/analysis', 'GET', ['from' => '2026-02-10', 'to' => '2026-02-11'], [], [], ['HTTP_ACCEPT' => 'application/json']);
         $response = (new RiskController)->analysis($request, app(RiskAnalysisService::class));
-        $filtered = $response->getData(true);
-        $this->assertSame(2, $filtered['analysisData']['totals']['total']);
-        $this->assertSame(1, $filtered['analysisData']['excluded_undated']);
-        $this->assertSame(0, $filtered['analysisData']['totals']['High']);
+        $this->assertSame(4, $response->getData(true)['analysisData']['totals']['total']);
         $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
-        $this->assertNotEmpty($filtered['generatedAt']);
-        $closed = app(RiskAnalysisService::class)->snapshot(['scope' => 'closed']);
-        $this->assertSame(1, $closed['totals']['total']);
-        $current = app(RiskAnalysisService::class)->snapshot(['scope' => 'current']);
-        $this->assertSame(3, $current['totals']['total']);
-        $upperOnly = app(RiskAnalysisService::class)->snapshot(['to' => '2026-01-10']);
-        $this->assertSame(1, $upperOnly['totals']['total']);
-        try {
-            (new RiskController)->analysis(Request::create('/user/risks/analysis', 'GET', ['from' => '2026-02-11', 'to' => '2026-02-10']), app(RiskAnalysisService::class));
-            $this->fail('Reversed date range must be rejected.');
-        } catch (\Illuminate\Validation\ValidationException $exception) { $this->assertArrayHasKey('to', $exception->errors()); }
+        foreach (['analysis-date-form', 'analysis-refresh', 'analysis-live', 'Risks added over time'] as $removed) $this->assertStringNotContainsString($removed, $html);
         DB::table('risks')->delete();
         $empty = (new RiskController)->analysis(Request::create('/user/risks/analysis'), app(RiskAnalysisService::class));
         $this->assertSame(0, $empty->getData()['analysisData']['totals']['total']);

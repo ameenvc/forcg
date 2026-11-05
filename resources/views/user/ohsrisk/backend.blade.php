@@ -65,6 +65,7 @@
 
     </style>
 
+    @include('shared.theme.assets')
 </head>
 <body>
     <!-- Page Container -->
@@ -427,6 +428,7 @@
                     @yield('sideitem')
                     <!-- END User Dropdown -->
                     <!-- User Dropdown -->
+                    @include('shared.forms.theme-control')
                     <div class="dropdown d-inline-block ml-2">
                         <button type="button" class="btn btn-sm btn-dual d-flex align-items-center" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img class="rounded-circle" src="{{ asset('media/avatars/avatar10.jpg') }}" alt="Header Avatar" style="width: 21px;">

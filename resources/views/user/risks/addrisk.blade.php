@@ -43,6 +43,7 @@
                     Add Risk
                 </li>
             </ol>
+            @include('user.risks.ai-trigger')
         </nav>
         <div class="block-content block-content-full">
             @if(Session::has('errmsg'))
@@ -63,6 +64,7 @@
                     <!-- Form Horizontal - Default Style -->
                     <form class="mb-5" action="{{url('/user/risks/submit')}}" method="POST" onsubmit="return validateChips()">
                         {{csrf_field()}}
+                        @include('user.risks.ai-assist')
                         <div class="row">
                             <div class="form-group col-sm-4">
                                 <label class="col-sm-12 col-form-label text-sm" for="riskgroup">Risk Group<span class="text-danger">*</span></label>

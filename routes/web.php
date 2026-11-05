@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
@@ -754,6 +753,7 @@ Route::post('/public/nearmiss/report/employeeid-verification','ApprovalControlle
  */
 Route::middleware(['track.activity'])->group(function () {
     //risk
+    Route::post('/user/risks/ai/draft', 'RiskAiController@draft')->name('risk.ai.draft');
     Route::get('/user/riskmgmt', 'RiskController@regrisk')->name('risk.index');
     Route::get('/user/riskmgmt/{id}/detail', 'RiskController@regriskDetail')->name('risk.detail');
     Route::get('/user/riskmgmt/{id}/detail_pdf', 'RiskController@regriskDetailPdf')->name('risk.detail.pdf');

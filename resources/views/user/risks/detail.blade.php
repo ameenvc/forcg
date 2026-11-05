@@ -597,8 +597,10 @@
     </style>
     <script src="{{ asset('js/plugins/ckeditor5-classic/build/ckeditor.js') }}"></script>
     <script src="https://ckeditor.com/apps/ckfinder/3.5.0/ckfinder.js"></script>
+    @include('shared.forms.assets')
+    @include('user.risks.review-assets')
     <!-- Page Content -->
-    <div class="content px-0" style="-webkit-print-color-adjust: exact">
+    <div class="content px-0 cgbod-form risk-detail-page" style="-webkit-print-color-adjust: exact">
         <!-- Horizontal -->
         <div class="block block-rounded" style="box-shadow: 0 0 15px;background-color: #ffffff;">
             <div class="d-flex justify-content-between align-items-center d-block-643" style="background: #F5F5F5;">
@@ -639,6 +641,7 @@
                     </div>
                 </div>
             </div>
+            @include('user.risks.review-assist', ['reviewRisk' => $risk])
             <div class="mt-4 px-5 d-flex justify-content-around d-block-sp px-xs-adjust">
                 <div class="px-4 mr-4 pb-3 mb-2-sp mr-xs-adjust w-50 w-100-sp" style="background: #F6F7F9; border-radius: 20px; font-size: 0.75rem;">
                     <label class="mt-2 ml-2"><i class="fa fa-eye mr-2 p-1" style="background: #2529453D;border-radius: 5px;"></i> Overview</label>

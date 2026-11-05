@@ -53,6 +53,39 @@ class RiskAiService
             'draft' => array_intersect_key($draft, array_flip(['risk_name', 'risk_description', 'risk_drivers', 'proposed_controls', 'questions'])),
         ];
     }
+    public function review(array $context)
+    {
+        $mode = config('risk_ai.mode');
+        if ($mode === 'demo') {
+            $gaps = [];
+            foreach (['risk_description' => 'Describe the risk event and its business consequences.', 'risk_drivers' => 'Record the causes and conditions that could trigger this risk.', 'existing_controls' => 'Document implemented controls and evidence of their effectiveness.'] as $key => $message) {
+                if (trim($context[$key] ?? '') === '') $gaps[] = $message;
+            }
+            $review = [
+                'summary' => 'Checklist review of: '.($context['concern'] ?? 'this risk').'. Validate the assessment against your approved 3×3 criteria.',
+                'gaps' => $gaps,
+                'proposed_controls' => ['Consider an early-warning indicator with an escalation threshold and accountable owner.', 'Consider a contingency plan and test its effectiveness against the stated risk event.'],
+                'questions' => ['What evidence supports the selected impact and likelihood?', 'Who tests existing controls, and when were they last tested?', 'Which mitigation actions need an owner, target date, or effectiveness check?'],
+            ];
+        } else {
+            $review = $this->generate($context, 'Review the supplied risk record. Return JSON with summary (string, max 2000 characters), gaps, proposed_controls, questions (arrays of strings). Identify missing information, propose specific practical controls, and ask evidence-based reviewer questions. Do not invent mitigation history, owners, dates, or change ratings. Distinguish missing information from proven control failures.');
+        }
+        if (!isset($review['summary']) || !is_string($review['summary']) || trim($review['summary']) === '' || mb_strlen($review['summary']) > 2000) {
+            throw new RuntimeException('Invalid provider response.');
+        }
+        foreach (['gaps', 'proposed_controls', 'questions'] as $key) {
+            if (!isset($review[$key]) || !is_array($review[$key]) || array_values($review[$key]) !== $review[$key] || count($review[$key]) > 20) {
+                throw new RuntimeException('Invalid provider response.');
+            }
+            foreach ($review[$key] as $item) {
+                if (!is_string($item) || mb_strlen($item) > 2000) throw new RuntimeException('Invalid provider response.');
+            }
+        }
+        return ['mode' => $mode, 'requires_review' => true,
+            'notice' => $mode === 'demo' ? 'Checklist results, not AI-generated. Verify with the risk owner.' : 'AI review suggestions. Verify evidence before making changes.',
+            'review' => array_intersect_key($review, array_flip(['summary', 'gaps', 'proposed_controls', 'questions']))];
+    }
+
     public function suggestions(array $context)
     {
         if (config('risk_ai.mode') === 'demo') {

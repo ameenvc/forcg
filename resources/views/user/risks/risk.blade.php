@@ -1,9 +1,10 @@
 @extends('pages.datatables')
 @section('content')
 @include('shared.forms.assets')
+@include('user.risks.review-assets')
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <script src="{{ asset('js/risk-register.js') }}?v={{ filemtime(public_path('js/risk-register.js')) }}" defer></script>
-<div class="content cgbod-form risk-register" id="risk-register" data-density="standard"
+<div class="content cgbod-form risk-register" id="risk-register" data-density="compact"
      data-edit-url="{{ route('risk.editrisk') }}" data-delete-url="{{ route('risk.deleterisk') }}">
     @include('user.risks.register-header')
     <div class="block block-rounded risk-register-card">

@@ -1,10 +1,12 @@
-<div id="viewModal{{$value->Rid}}" class="modal fadebd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="false">
+<div id="viewModal{{$value->Rid}}" class="modal fade risk-quick-view" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="risk-title-{{$value->Rid}}">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Detailed View</h2>
+                <div><span class="risk-detail-eyebrow">RISK DETAILS · {{ $value->grp_id }}</span><h2 class="modal-title" id="risk-title-{{$value->Rid}}">{{ $value->riskname }}</h2></div><button type="button" class="close" data-dismiss="modal" aria-label="Close risk details"><span aria-hidden="true">&times;</span></button>
             </div>
-            <table class="table table-bordered table-striped table-vcenter js-dataTable-full">
+            <div class="modal-body">
+@include('user.risks.review-assist', ['reviewRisk' => $value])
+<table class="table risk-detail-facts">
                 <tr>
                     <th style="width:200px">Risk id</th>
                     <td>{{ $value->grp_id }}</td>
@@ -25,11 +27,11 @@
 
                 <tr>
                     <th>Description</th>
-                    <td style="word-break: break-all"><?php echo nl2br($value->riskdec) ?></td>
+                    <td style="word-break: break-all">{{ $value->riskdec }}</td>
                 </tr>
                 <tr>
                     <th>Risk drivers</th>
-                    <td style="word-break: break-all"><?php echo nl2br($value->riskdri) ?></td>
+                    <td style="word-break: break-all">{{ $value->riskdri }}</td>
                 </tr>
 
                 <tr>
@@ -196,8 +198,8 @@
                         {{$value->review_date }}
                     </td>
                 </tr>
-            </table>
-            <div class="modal-footer">
+            </table></div>
+            <div class="modal-footer"><a href="{{ route('risk.detail', $value->Rid) }}" class="btn btn-primary">Open full record <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i></a>
                 <button type="button" class="btn btn-primary" style="font-size:11px;" data-dismiss="modal">Close
                 </button>
                 @if(Gate::allows('escalate-risk-button-access'))

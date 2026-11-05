@@ -47,6 +47,25 @@ class RiskAiTest extends TestCase
         $this->actingAs($user);
     }
 
+    public function testQuickViewEscapesContentAndOffersReviewAndFullRecord()
+    {
+        $risk = new \App\Risk;
+        $risk->setRawAttributes(['Rid' => 1, 'grp_id' => 'OPE191', 'riskname' => 'Supplier interruption', 'riskdec' => '<script>alert(1)</script>', 'riskdri' => 'Single supplier', 'riskgroup' => 'Operational', 'rank' => 'High']);
+        $risk->setRelations(['department' => null, 'division' => null, 'area' => null, 'riskreviewer' => null, 'postedByRisk' => null, 'reviewedByRisk' => null, 'approvedByRisk' => null, 'opportunities' => collect(), 'mitigations' => collect()]);
+        $html = view('user.risks._risk_detail', ['value' => $risk, 'riskowners' => [], 'riskOwnerData' => [], 'rr' => 1])->render();
+        $this->assertStringNotContainsString('<script>alert(1)</script>', $html);
+        $this->assertStringContainsString('Open full record', $html);
+        $this->assertStringContainsString('Review this risk', $html);
+        $this->assertStringContainsString('risk-detail-facts', $html);
+        if (getenv('RISK_DETAIL_PREVIEW_PATH')) file_put_contents(getenv('RISK_DETAIL_PREVIEW_PATH'), $html);
+    }
+
+    public function testAuthenticatedReviewReturnsReadOnlySuggestions()
+    {
+        $this->signIn();
+        $this->postJson(route('risk.ai.draft'), ['action' => 'review', 'concern' => 'Supplier interruption'])->assertOk()->assertJsonPath('mode', 'demo')->assertJsonPath('requires_review', true)->assertJsonCount(3, 'review.gaps');
+    }
+
     public function testAiOptionStaysVisibleAndReflectsServiceAvailability()
     {
         foreach ([false, true] as $enabled) {

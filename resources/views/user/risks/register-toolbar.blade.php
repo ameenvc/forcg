@@ -4,7 +4,7 @@
         <button type="button" id="risk-toggle-filters" class="btn register-secondary" aria-controls="risk-register-filters" aria-expanded="false"><i class="fa fa-filter mr-1" aria-hidden="true"></i>Filters <span id="risk-filter-count" hidden></span></button>
         <details class="register-menu"><summary>Columns <i class="fa fa-chevron-down ml-1" aria-hidden="true"></i></summary><div class="register-menu-body">
             @foreach([1 => 'Row number', 5 => 'Risk group', 6 => 'Risk area', 9 => 'Risk owner', 10 => 'Response', 11 => 'Process stage'] as $column => $label)
-                <label><input type="checkbox" data-register-column="{{ $column }}" @if($column !== 1) checked @endif> {{ $label }}</label>
+                <label><input type="checkbox" data-register-column="{{ $column }}" checked> {{ $label }}</label>
             @endforeach
         </div></details>
         <details class="register-menu"><summary><i class="fa fa-download mr-1" aria-hidden="true"></i>Export <i class="fa fa-chevron-down ml-1" aria-hidden="true"></i></summary><div class="register-menu-body">
@@ -27,7 +27,6 @@
     <span id="risk-match-count" aria-live="polite">{{ count($data) }} risks in this view</span>
     <button type="button" id="risk-clear-filters" hidden>Clear search &amp; filters</button>
     @if(request('rank') || request('riskgroup'))<a href="{{ route('risk.index') }}">Clear page filters</a>@endif
-    <label class="register-layout">Row layout<select id="risk-row-layout"><option value="standard">Standard · 2 lines</option><option value="compact">Compact · 1 line</option><option value="full">Full text · auto height</option></select></label>
     <label class="register-sort">Sort by<select id="risk-register-sort"><option value="default">Default order</option><option value="rating">Highest rating</option><option value="name">Risk name A–Z</option><option value="id">Latest risk ID</option></select></label>
     <label>Rows<select id="risk-register-length"><option>25</option><option>50</option><option>75</option><option>100</option><option>1000</option></select></label>
 </div>

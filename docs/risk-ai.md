@@ -68,3 +68,5 @@ This does not reactivate the mail account. The hosting/mail administrator must r
 ## Risk register
 
 The risk register adopts the shared blue/purple theme with a local Add Risk action, module navigation, current-view rating summaries, search, six exact-match filters, sorting, page-size and optional column controls. See risk-register.md for the table data contract and validation details. The targeted development test command now includes RiskRegisterTest.
+
+Risk detail views also offer Review this risk, using the existing authenticated, throttled draft endpoint with action=review. The browser supplies visible name, description, drivers, controls and group/area; no database reads or writes occur. Review returns validated summary, gaps, proposed_controls and questions. Demo mode is a rule-based checklist explicitly labelled as not AI-generated. Live mode uses the existing OpenAI configuration.

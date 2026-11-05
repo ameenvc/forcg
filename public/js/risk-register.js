@@ -9,7 +9,7 @@
         const table = $('#tabledata').DataTable({
             responsive: false, autoWidth: false, order: [], pageLength: 25, lengthChange: false,
             columnDefs: [
-                {targets: [1, 2, 8], visible: false}, {targets: [0, 12], orderable: false}, {targets: [0, 1, 2, 8, 12], searchable: false},
+                {targets: [2, 8], visible: false}, {targets: [0, 12], orderable: false}, {targets: [0, 1, 2, 8, 12], searchable: false},
                 {targets: 0, width: '40px'}, {targets: 1, width: '52px'}, {targets: 3, width: '90px'},
                 {targets: 4, width: '280px'}, {targets: 5, width: '110px'}, {targets: 6, width: '120px'},
                 {targets: 7, width: '90px'}, {targets: 9, width: '190px'}, {targets: 10, width: '100px'},
@@ -103,10 +103,6 @@
         }
         table.on('draw.dt', refreshView);
         table.on('preDraw.dt', closeRowMenus);
-        get('risk-row-layout').addEventListener('change', event => {
-            if (busy) return;
-            closeRowMenus(); root.dataset.density = event.target.value; table.columns.adjust();
-        });
         search.addEventListener('input', applyFilters);
         filters.forEach(field => field.addEventListener('change', applyFilters));
         get('risk-toggle-filters').addEventListener('click', () => {

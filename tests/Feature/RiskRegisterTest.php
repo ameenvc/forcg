@@ -79,8 +79,8 @@ class RiskRegisterTest extends TestCase
         $this->assertStringContainsString('register-name-text', $html);
         $this->assertStringContainsString('Show 3 additional owners', $html);
         $this->assertStringContainsString('Alexandra Catherine Montgomery-Williams', $html);
-        $this->assertStringContainsString('value="full"', $html);
-        $this->assertStringContainsString('data-density="standard"', $html);
+        $this->assertStringNotContainsString('id="risk-row-layout"', $html);
+        $this->assertStringContainsString('data-density="compact"', $html);
         if (getenv('RISK_REGISTER_STRESS_PREVIEW_PATH')) file_put_contents(getenv('RISK_REGISTER_STRESS_PREVIEW_PATH'), $html);
     }
 

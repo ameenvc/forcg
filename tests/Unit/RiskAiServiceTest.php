@@ -31,6 +31,24 @@ class RiskAiServiceTest extends TestCase
         parent::tearDown();
     }
 
+    public function testChecklistReviewIdentifiesOnlyMissingFields()
+    {
+        $result = (new RiskAiService)->review(['concern' => 'Supplier interruption', 'risk_description' => 'Delayed parts may stop production.', 'existing_controls' => 'Safety stock']);
+        $this->assertSame('demo', $result['mode']);
+        $this->assertTrue($result['requires_review']);
+        $this->assertCount(1, $result['review']['gaps']);
+        $this->assertStringContainsString('causes', $result['review']['gaps'][0]);
+        $this->assertArrayNotHasKey('rating', $result['review']);
+    }
+
+    public function testMalformedReviewProviderResponseIsRejected()
+    {
+        config(['risk_ai.mode' => 'openai']);
+        Http::fake(['api.openai.com/*' => Create::promiseFor(new Response(200, [], json_encode(['choices' => [['message' => ['content' => json_encode(['summary' => 'Review', 'gaps' => 'invalid'])]]]])))]);
+        $this->expectException(\RuntimeException::class);
+        (new RiskAiService)->review(['concern' => 'Supplier interruption']);
+    }
+
     public function testAllNineMatrixCells()
     {
         $expected = [['Low', 'Low', 'Moderate'], ['Low', 'Moderate', 'High'], ['Moderate', 'High', 'High']];

@@ -16,7 +16,9 @@ class RiskAiController extends Controller
     {
         abort_unless(config('risk_ai.enabled'), 404);
         $context = $request->validate([
-            'concern' => 'required|string|min:10|max:10000',
+            'action' => 'nullable|in:suggest,draft',
+            'selected_risk_name' => 'nullable|string|max:190',
+            'concern' => 'required|string|min:3|max:10000',
             'risk_group' => 'nullable|string|max:190',
             'risk_area' => 'nullable|string|max:190',
             'risk_source' => 'nullable|string|max:190',
@@ -26,10 +28,11 @@ class RiskAiController extends Controller
         ]);
         // Draft only from supplied form text: no database reads or record writes.
         try {
-            return response()->json($service->draft($context))->header('Cache-Control', 'no-store');
+            $result = ($context['action'] ?? 'draft') === 'suggest' ? $service->suggestions($context) : $service->draft($context);
+            return response()->json($result)->header('Cache-Control', 'no-store');
         } catch (\Exception $exception) {
             // Never return upstream responses or credentials to the browser.
-            return response()->json(['message' => 'Risk assistance is unavailable. Check provider configuration or retry.'], 502);
+            return response()->json(['message' => 'Risk assistance is temporarily unavailable. Please try again or contact your administrator.'], 502);
         }
     }
 }

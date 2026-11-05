@@ -1,0 +1,96 @@
+/* Opt-in design foundation. Other modules are unchanged until explicitly adopted. */
+.cgbod-form {
+    --cgbod-primary: #535ed3;
+    --cgbod-primary-hover: #414bb5;
+    --cgbod-primary-soft: #f0f2fd;
+    --cgbod-accent: #147d78;
+    --cgbod-accent-soft: #eaf7f4;
+    --cgbod-ink: #253650;
+    --cgbod-muted: #64748a;
+    --cgbod-surface: #ffffff;
+    --cgbod-canvas: #f7f9fc;
+    --cgbod-border: #e3e9f2;
+    --cgbod-success: #24765c;
+    --cgbod-success-soft: #edf8f2;
+    --cgbod-warning: #95691d;
+    --cgbod-warning-soft: #fff8e9;
+    --cgbod-danger: #b14756;
+    --cgbod-danger-soft: #fff2f4;
+    --cgbod-radius: 10px;
+    color: var(--cgbod-ink);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.cgbod-form .cgbod-form-card {
+    background: var(--cgbod-surface);
+    border: 1px solid var(--cgbod-border);
+    border-radius: 18px;
+    box-shadow: 0 12px 36px rgba(32, 52, 89, .06);
+    overflow: hidden;
+}
+.cgbod-form-card::before {
+    content: "";
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, var(--cgbod-primary), #7784df 58%, var(--cgbod-accent));
+}
+.cgbod-form-header {
+    padding: 28px;
+    background: linear-gradient(110deg, #ffffff 8%, #f4f6ff 68%, #eef8f5);
+}
+.cgbod-form-section { padding: 28px; border-bottom: 1px solid var(--cgbod-border); }
+.cgbod-form .form-group { margin-bottom: 24px; }
+.cgbod-form .col-form-label {
+    color: var(--cgbod-ink);
+    font-size: 12px !important;
+    font-weight: 600;
+    padding-top: 0;
+    padding-bottom: 10px;
+}
+.cgbod-form .form-control,
+.cgbod-form .form-select {
+    min-height: 44px;
+    padding: 11px 13px;
+    border: 1px solid #d8e1ef;
+    border-radius: var(--cgbod-radius);
+    background: var(--cgbod-surface);
+    color: var(--cgbod-ink);
+    font-size: 13px !important;
+    box-shadow: 0 1px 3px rgba(24, 43, 73, .02);
+    transition: border-color .15s, box-shadow .15s;
+}
+.cgbod-form textarea.form-control { min-height: 130px; line-height: 1.7; resize: vertical; }
+.cgbod-form .form-control::placeholder { color: #7c899c; }
+.cgbod-form .form-control:focus {
+    border-color: #858ee1;
+    box-shadow: 0 0 0 3px rgba(83, 94, 211, .11);
+    outline: none;
+}
+.cgbod-form .btn-primary {
+    min-height: 44px;
+    padding: 11px 18px;
+    border-color: var(--cgbod-primary);
+    border-radius: var(--cgbod-radius);
+    background: var(--cgbod-primary);
+    color: #fff;
+}
+.cgbod-form .btn-primary:hover { background: var(--cgbod-primary-hover); border-color: var(--cgbod-primary-hover); }
+.cgbod-form .btn-outline-primary { color: var(--cgbod-primary); border-color: #b4bce9; }
+.cgbod-form .btn-outline-primary:hover { color: #fff; background: var(--cgbod-primary); border-color: var(--cgbod-primary); }
+.cgbod-form .btn:focus-visible { outline: 3px solid #b5bcef; outline-offset: 3px; }
+.cgbod-section-heading { display: flex; gap: 13px; align-items: flex-start; margin-bottom: 26px; }
+.cgbod-section-number {
+    display: grid;
+    place-items: center;
+    min-width: 36px;
+    height: 36px;
+    border: 1px solid #d8eee8;
+    border-radius: 11px;
+    background: var(--cgbod-accent-soft);
+    color: var(--cgbod-accent);
+    font-size: 11px;
+    font-weight: 700;
+}
+.cgbod-section-heading h2 { margin: 0 0 6px; color: var(--cgbod-ink); font-size: 17px; font-weight: 650; }
+.cgbod-section-heading p { margin: 0; color: var(--cgbod-muted); font-size: 12px; line-height: 1.7; }
+.cgbod-form-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 28px; border-top: 1px solid var(--cgbod-border); background: var(--cgbod-surface); }
+@media (prefers-reduced-motion: reduce) { .cgbod-form .form-control { transition: none; } }

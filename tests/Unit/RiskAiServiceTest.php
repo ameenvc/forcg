@@ -18,7 +18,7 @@ class RiskAiServiceTest extends TestCase
         parent::setUp();
         $app = new Container;
         Container::setInstance($app);
-        $app->instance('config', new Repository(['risk_ai' => ['mode' => 'demo', 'key' => 'test-placeholder', 'model' => 'test-model']]));
+        $app->instance('config', new Repository(['risk_ai' => ['mode' => 'demo', 'key' => 'test-placeholder', 'model' => 'test-model'], 'risk_ai_examples' => require __DIR__.'/../../config/risk_ai_examples.php']));
         Facade::clearResolvedInstances();
         Facade::setFacadeApplication($app);
     }
@@ -59,6 +59,35 @@ class RiskAiServiceTest extends TestCase
         $this->assertArrayNotHasKey('impact', $result['draft']);
     }
 
+    public function testGeopoliticalTopicProducesDistinctRisksAndSubstantiveDrafts()
+    {
+        $service = new RiskAiService;
+        $result = $service->suggestions(['concern' => 'geopolitical']);
+        $this->assertSame('demo', $result['mode']);
+        $this->assertCount(3, $result['suggestions']);
+        $names = array_column($result['suggestions'], 'risk_name');
+        $this->assertCount(3, array_unique($names));
+        foreach ($names as $name) {
+            $this->assertNotSame('geopolitical', strtolower($name));
+            $draft = $service->draft(['concern' => 'geopolitical', 'selected_risk_name' => $name]);
+            $this->assertSame($name, $draft['draft']['risk_name']);
+            $this->assertGreaterThan(100, strlen($draft['draft']['risk_description']));
+            $this->assertNotEmpty($draft['draft']['proposed_controls']);
+        }
+    }
+
+    public function testUnknownDemoTopicsDoNotFabricateSuggestions()
+    {
+        $result = (new RiskAiService)->suggestions(['concern' => 'unrecognized topic']);
+        $this->assertSame([], $result['suggestions']);
+    }
+
+    public function testDemoCannotSelectAnUnrelatedRisk()
+    {
+        $this->expectException(\RuntimeException::class);
+        (new RiskAiService)->draft(['concern' => 'geopolitical', 'selected_risk_name' => 'Invented option']);
+    }
+
     public function testProviderDraftIsValidatedAndExtraFieldsAreDiscarded()
     {
         config(['risk_ai.mode' => 'openai']);
@@ -70,6 +99,25 @@ class RiskAiServiceTest extends TestCase
         $this->assertSame('Supplier interruption', $result['draft']['risk_name']);
         $this->assertArrayNotHasKey('approved', $result['draft']);
         Http::assertSent(function ($request) { return $request->url() === 'https://api.openai.com/v1/chat/completions'; });
+    }
+
+    public function testLiveSuggestionFormatIsValidated()
+    {
+        config(['risk_ai.mode' => 'openai']);
+        $payload = ['suggestions' => [['risk_name' => 'Border restrictions interrupt material deliveries', 'reason' => 'Relevant to cross-border supply chains.', 'approved' => true]]];
+        Http::fake(['api.openai.com/*' => Create::promiseFor(new Response(200, [], json_encode(['choices' => [['message' => ['content' => json_encode($payload)]]]])))]);
+        $result = (new RiskAiService)->suggestions(['concern' => 'geopolitical']);
+        $this->assertSame('openai', $result['mode']);
+        $this->assertSame('Border restrictions interrupt material deliveries', $result['suggestions'][0]['risk_name']);
+        $this->assertArrayNotHasKey('approved', $result['suggestions'][0]);
+    }
+
+    public function testMalformedProviderSuggestionsAreRejected()
+    {
+        config(['risk_ai.mode' => 'openai']);
+        Http::fake(['api.openai.com/*' => Create::promiseFor(new Response(200, [], json_encode(['choices' => [['message' => ['content' => '{"suggestions":[{"risk_name":"Missing reason"}]}']]]])))]);
+        $this->expectException(\RuntimeException::class);
+        (new RiskAiService)->suggestions(['concern' => 'geopolitical']);
     }
 
     public function testMalformedProviderOutputIsRejected()

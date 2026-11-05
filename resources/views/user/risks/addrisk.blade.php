@@ -1,12 +1,13 @@
 @extends('layouts.multiselect')
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/risk-form.css') }}">
+@include('shared.forms.assets')
+<link rel="stylesheet" href="{{ asset('css/risk-form.css') }}?v={{ filemtime(public_path('css/risk-form.css')) }}">
 <script src="{{ asset('js/risk-form.js') }}" defer></script>
 <!-- Page Content -->
-<div class="content risk-workspace">
+<div class="content risk-workspace cgbod-form">
     <!-- Horizontal -->
-    <div class="block block-rounded risk-form-shell">
-        <header class="risk-page-header">
+    <div class="block block-rounded risk-form-shell cgbod-form-card">
+        <header class="risk-page-header cgbod-form-header">
             <div>
                 <a class="risk-back-link" href="{{ route('risk.index') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Enterprise risk register</a>
                 <h1>Add a new risk</h1>
@@ -40,8 +41,8 @@
                     <form id="risk-entry-form" class="risk-entry-form" action="{{url('/user/risks/submit')}}" method="POST" onsubmit="return validateChips()">
                         {{csrf_field()}}
                         @include('user.risks.ai-assist')
-                        <section class="risk-form-section" id="risk-context" aria-labelledby="risk-context-title">
-                        <div class="risk-section-heading"><span class="risk-section-number">01</span><div><h2 id="risk-context-title">Set the context</h2><p>Choose where this risk belongs in your organization.</p></div></div>
+                        <section class="risk-form-section cgbod-form-section" id="risk-context" aria-labelledby="risk-context-title">
+                        @include('shared.forms.section-heading', ['number' => '01', 'headingId' => 'risk-context-title', 'title' => 'Set the context', 'description' => 'Choose where this risk belongs in your organization.'])
                         <div class="row">
                             <div class="form-group col-sm-4">
                                 <label class="col-sm-12 col-form-label text-sm" for="riskgroup">Risk Group<span class="text-danger">*</span></label>
@@ -119,8 +120,8 @@
                             </div>
                         </div>
                         </section>
-                        <section class="risk-form-section" id="risk-details" aria-labelledby="risk-details-title">
-                        <div class="risk-section-heading"><span class="risk-section-number">02</span><div><h2 id="risk-details-title">Describe the risk</h2><p>Explain what could happen, why it could happen, and what is already in place.</p></div></div>
+                        <section class="risk-form-section cgbod-form-section" id="risk-details" aria-labelledby="risk-details-title">
+                        @include('shared.forms.section-heading', ['number' => '02', 'headingId' => 'risk-details-title', 'title' => 'Describe the risk', 'description' => 'Explain what could happen, why it could happen, and what is already in place.'])
                         <div class="row">
                             <div class="form-group col-sm-12">
                                 <label class="col-sm-12 col-form-label text-sm" for="riskname">Risk Name<span class="text-danger">*</span></label>
@@ -181,8 +182,8 @@
                             </div>
                         </div>
                         </section>
-                        <section class="risk-form-section" id="risk-assessment" aria-labelledby="risk-assessment-title">
-                        <div class="risk-section-heading"><span class="risk-section-number">03</span><div><h2 id="risk-assessment-title">Assess &amp; assign</h2><p>Select impact and likelihood using your approved criteria, then choose a reviewer.</p></div></div>
+                        <section class="risk-form-section cgbod-form-section" id="risk-assessment" aria-labelledby="risk-assessment-title">
+                        @include('shared.forms.section-heading', ['number' => '03', 'headingId' => 'risk-assessment-title', 'title' => 'Assess & assign', 'description' => 'Select impact and likelihood using your approved criteria, then choose a reviewer.'])
                         <div class="row">
                             <div class="form-group col-sm-4">
                                 <label class="col-sm-12 col-form-label text-sm" for="risk_response">Risk Response Strategy</label>
@@ -268,7 +269,7 @@
                             </div>
                         </div>
                         </section>
-                        <div class="risk-form-actions">
+                        <div class="risk-form-actions cgbod-form-actions">
                             <p><i class="fa fa-check-circle" aria-hidden="true"></i> Review your entries before submitting.</p>
                             <div>
                                 <button type="reset" class="btn risk-reset-button" onclick="resetFormCustom()">Reset form</button>

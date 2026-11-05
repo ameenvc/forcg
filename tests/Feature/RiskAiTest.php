@@ -56,7 +56,7 @@ class RiskAiTest extends TestCase
             $this->assertStringContainsString('aria-controls="risk-ai-panel"', $html);
             if ($enabled) {
                 $this->assertStringContainsString('id="risk-ai-generate"', $html);
-                $this->assertStringContainsString('Template demo', $html);
+                $this->assertStringContainsString('Example library', $html);
             } else {
                 $this->assertStringContainsString('AI assistance is not available yet.', $html);
                 $this->assertStringNotContainsString('id="risk-ai-generate"', $html);
@@ -99,6 +99,17 @@ class RiskAiTest extends TestCase
         $this->assertFalse(Schema::hasTable('risks'));
     }
 
+    public function testTopicCanBeExploredAndSelectedBeforeDrafting()
+    {
+        $this->signIn();
+        $response = $this->postJson('/user/risks/ai/draft', ['action' => 'suggest', 'concern' => 'geopolitical']);
+        $response->assertOk()->assertJsonCount(3, 'suggestions');
+        $name = $response->json('suggestions.1.risk_name');
+        $this->postJson('/user/risks/ai/draft', ['action' => 'draft', 'concern' => 'geopolitical', 'selected_risk_name' => $name])
+            ->assertOk()->assertJsonPath('draft.risk_name', $name);
+        $this->assertFalse(Schema::hasTable('risks'));
+    }
+
     public function testFeatureFlagDisablesEndpoint()
     {
         $this->signIn();
@@ -109,7 +120,7 @@ class RiskAiTest extends TestCase
     public function testConcernIsValidated()
     {
         $this->signIn();
-        $this->postJson('/user/risks/ai/draft', ['concern' => 'short'])->assertStatus(422);
+        $this->postJson('/user/risks/ai/draft', ['concern' => 'x'])->assertStatus(422);
     }
 
     public function testMfaRequirementIsRetained()

@@ -9,7 +9,7 @@ The risk form is the pilot for a shared design across CGBOD modules. Only this f
 - `resources/views/shared/forms/section-heading.blade.php`: reusable numbered section heading with an accessible heading ID.
 - `public/css/risk-form.css`: risk-specific layout, matrix status, and AI dialog. Keep these features out of the common foundation until another module needs them.
 
-The palette uses navy for content, indigo for primary actions, teal for assistance and section accents, and neutral surfaces. Green, amber and red remain reserved for status meaning. Example-library notices remain clearly labelled; color does not imply that a live AI provider is connected.
+The palette uses navy for content, brand blue for primary actions, and purple for assistance. Section accents alternate blue and purple against neutral surfaces. Green, amber and red remain reserved for status meaning. Example-library notices remain clearly labelled; color does not imply that a live AI provider is connected.
 
 ## Adopt in a future module
 

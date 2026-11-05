@@ -1,10 +1,11 @@
 /* Opt-in design foundation. Other modules are unchanged until explicitly adopted. */
 .cgbod-form {
-    --cgbod-primary: #535ed3;
-    --cgbod-primary-hover: #414bb5;
-    --cgbod-primary-soft: #f0f2fd;
-    --cgbod-accent: #147d78;
-    --cgbod-accent-soft: #eaf7f4;
+    --cgbod-primary: #3563db;
+    --cgbod-primary-hover: #2850ba;
+    --cgbod-primary-soft: #eef3ff;
+    --cgbod-accent: #7c3aed;
+    --cgbod-accent-soft: #f3edff;
+    --cgbod-accent-hover: #6929ca;
     --cgbod-ink: #253650;
     --cgbod-muted: #64748a;
     --cgbod-surface: #ffffff;
@@ -31,11 +32,11 @@
     content: "";
     display: block;
     height: 4px;
-    background: linear-gradient(90deg, var(--cgbod-primary), #7784df 58%, var(--cgbod-accent));
+    background: linear-gradient(90deg, var(--cgbod-primary), #6374e5 58%, var(--cgbod-accent));
 }
 .cgbod-form-header {
     padding: 28px;
-    background: linear-gradient(110deg, #ffffff 8%, #f4f6ff 68%, #eef8f5);
+    background: linear-gradient(110deg, #ffffff 8%, #f1f5ff 68%, #f5efff);
 }
 .cgbod-form-section { padding: 28px; border-bottom: 1px solid var(--cgbod-border); }
 .cgbod-form .form-group { margin-bottom: 24px; }
@@ -62,7 +63,7 @@
 .cgbod-form .form-control::placeholder { color: #7c899c; }
 .cgbod-form .form-control:focus {
     border-color: #858ee1;
-    box-shadow: 0 0 0 3px rgba(83, 94, 211, .11);
+    box-shadow: 0 0 0 3px rgba(53, 99, 219, .11);
     outline: none;
 }
 .cgbod-form .btn-primary {
@@ -83,7 +84,7 @@
     place-items: center;
     min-width: 36px;
     height: 36px;
-    border: 1px solid #d8eee8;
+    border: 1px solid #e5d9fa;
     border-radius: 11px;
     background: var(--cgbod-accent-soft);
     color: var(--cgbod-accent);
@@ -94,3 +95,6 @@
 .cgbod-section-heading p { margin: 0; color: var(--cgbod-muted); font-size: 12px; line-height: 1.7; }
 .cgbod-form-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 28px; border-top: 1px solid var(--cgbod-border); background: var(--cgbod-surface); }
 @media (prefers-reduced-motion: reduce) { .cgbod-form .form-control { transition: none; } }
+
+/* Alternate section accents in the brand sequence: blue, purple, blue. */
+.cgbod-form-section:nth-of-type(odd) .cgbod-section-number { background:var(--cgbod-primary-soft); color:var(--cgbod-primary); border-color:#dbe5fc; }

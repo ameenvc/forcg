@@ -430,10 +430,10 @@
 /* Risk-specific accents built on the shared form palette. */
 .risk-back-link { color:var(--cgbod-accent); }
 .risk-step-nav a:hover { color:var(--cgbod-primary); text-decoration:none; }
-.risk-workspace .risk-ai-trigger { background:var(--cgbod-accent); border-color:var(--cgbod-accent); box-shadow:0 4px 12px rgba(20,125,120,.12); }
-.risk-workspace .risk-ai-trigger:hover { background:#106965; border-color:#106965; }
-.risk-ai-symbol { border:1px solid #d8e7ef; background:linear-gradient(135deg,var(--cgbod-primary-soft),var(--cgbod-accent-soft)); color:var(--cgbod-accent); }
-.risk-ai-choice[aria-pressed=true] { background:var(--cgbod-accent-soft); border-color:var(--cgbod-accent); box-shadow:0 0 0 1px rgba(20,125,120,.08); }
+.risk-workspace .risk-ai-trigger { background:var(--cgbod-accent); border-color:var(--cgbod-accent); box-shadow:0 4px 12px rgba(124,58,237,.14); }
+.risk-workspace .risk-ai-trigger:hover { background:var(--cgbod-accent-hover); border-color:var(--cgbod-accent-hover); }
+.risk-ai-symbol { border:1px solid #e3ddf6; background:linear-gradient(135deg,var(--cgbod-primary-soft),var(--cgbod-accent-soft)); color:var(--cgbod-accent); }
+.risk-ai-choice[aria-pressed=true] { background:var(--cgbod-accent-soft); border-color:var(--cgbod-accent); box-shadow:0 0 0 1px rgba(124,58,237,.09); }
 .risk-score-card[data-rating=Low] .risk-score-icon { color:var(--cgbod-success); background:#dff0e6; }
 .risk-score-card[data-rating=Moderate] .risk-score-icon { color:var(--cgbod-warning); background:#f8ecd0; }
 .risk-score-card[data-rating=High] .risk-score-icon { color:var(--cgbod-danger); background:#f7dfe3; }

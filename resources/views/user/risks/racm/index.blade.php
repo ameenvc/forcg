@@ -283,7 +283,7 @@
             {!!Session::get('error')!!}
         </div>
     @endif
-    <div class="content risk-register-page risk-workflow-page" style="width:100%;">
+    <div class="content risk-register-page risk-workflow-page workflow-racm" style="width:100%;">
         @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Agree on what low, moderate, and high mean before assessing a risk.'])
         @include('user.risks.workflow-guide', ['workflowStep' => 'criteria'])
         <div class="workflow-toolbar"><div><h2>Criteria library <span class="workflow-count">{{ $riskAcms->count() }}</span></h2><p>Select criteria below to request review and approval.</p></div><button type="button" class="btn btn-outline-primary" id="request-review-approve"><i class="fa fa-user-edit mr-2" aria-hidden="true"></i>Request review & approval</button></div>
@@ -292,6 +292,7 @@
                 <div class="table-responsive" id="content">
                     <!-- approved documents listing starts -->
                     <table class="table table-borderless table-striped table-vcenter js-dataTable-full" id="tabledata">
+                        <colgroup><col style="width:38px"><col style="width:46px"><col style="width:130px"><col style="width:190px"><col style="width:230px"><col style="width:100px"><col style="width:110px"><col style="width:100px"><col style="width:100px"><col style="width:100px"><col style="width:140px"><col style="width:100px"></colgroup>
                         <thead class="border-top">
                             <tr>
                                 <th class="text-center" style="width: 1%;position:sticky;" id="firstColumn"></th>
@@ -357,10 +358,10 @@
                                     <span>{{ $riskAcm->department ? $riskAcm->department->departmentname : '--' }}</span>
                                 </td>
                                 <td style="font-size: 11px;" class="text-center">
-                                    <span>{{ $riskAcm->risk_factor_title }}</span>
+                                    <span class="workflow-name" title="{{ $riskAcm->risk_factor_title }}">{{ $riskAcm->risk_factor_title }}</span>
                                 </td>
                                 <td style="font-size: 11px;" class="text-left">
-                                    <span>{{ $riskAcm->risk_factor_description }}</span>
+                                    <span class="workflow-description" title="{{ $riskAcm->risk_factor_description }}">{{ $riskAcm->risk_factor_description }}</span>
                                 </td>
                                 <td style="font-size: 11px;" class="text-center">
                                     @if($riskAcm->high)
@@ -903,6 +904,9 @@
                 })
             });
 
+            $('#tabledata').one('init.dt', function () {
+                $(this).wrap('<div class="workflow-table-scroll" role="region" aria-label="Scrollable table" tabindex="0"></div>');
+            });
             const createHeadingSelect = (
                 headingName = '', headingId = '',
                 values = '', dropdownId = '', columnIndex = 0, caseInsensitive = true

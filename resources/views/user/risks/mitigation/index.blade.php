@@ -162,7 +162,7 @@
     $data1 = [];
     $data2 = [];
     ?>
-    <div class="content risk-register-page risk-workflow-page" style="width:100%">
+    <div class="content risk-register-page risk-workflow-page workflow-mitigation" style="width:100%">
         @include('user.risks.register-header', ['registerPage' => 'mitigation', 'registerTitle' => 'Mitigation actions', 'registerDescription' => 'Turn risk decisions into owned actions, track progress, and verify completion.'])
         @include('user.risks.workflow-guide', ['workflowStep' => 'mitigation'])
         <div class="workflow-toolbar"><div><h2>Action tracker <span class="workflow-count">{{ $mitigations->count() }}</span></h2><p>Open a risk from the register to add its mitigation actions. Update progress here, then request closure review.</p></div>@if($riskId)<a class="btn btn-outline-primary" href="{{ route('mitigations.index') }}">Show all actions</a>@endif</div>
@@ -185,6 +185,7 @@
                     @endif
                     <input type="hidden" value="a1" id="tabselected">
                     <table class="table table-striped table-vcenter js-dataTable-full" id="tabledata">
+                        <colgroup><col style="width:38px"><col style="width:46px"><col style="width:100px"><col style="width:260px"><col style="width:150px"><col style="width:60px"><col style="width:150px"><col style="width:100px"><col style="width:110px"><col style="width:160px"><col style="width:120px"></colgroup>
                         <thead>
                             <tr>
                                 <td style="position:sticky;top:-1px; width: 5%"></td>
@@ -227,7 +228,7 @@
                                     {{ $mitigation->action_id }}
                                 </td>
                                 <td class="text-left" style="font-size:10px;">
-                                    <a href="{{ route('mitigations.detail', $mitigation->id) }}">
+                                    <a class="workflow-name" title="{{ $mitigation->action_name }}" href="{{ route('mitigations.detail', $mitigation->id) }}">
                                         {{ $mitigation->action_name }}
                                     </a>
                                 </td>
@@ -435,6 +436,9 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
+            $('#tabledata').one('init.dt', function () {
+                $(this).wrap('<div class="workflow-table-scroll" role="region" aria-label="Scrollable table" tabindex="0"></div>');
+            });
                 const createHeadingSelect = (
                     headingName = '', headingId = '',
                     values = '', dropdownId = '', columnIndex = 0, caseInsensitive = true

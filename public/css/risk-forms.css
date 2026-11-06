@@ -188,3 +188,9 @@ html body #main-container .risk-module-form .rf-rating-options input { min-heigh
 [data-risk-theme=dark] .risk-module-form .rf-validation-summary { background:#3c2939; border-color:#755063; }
 @media(max-width:575px) { .risk-form-actions { flex-wrap:wrap; } .risk-form-actions>.btn { flex:1 1 auto; } .risk-module-form .modal-footer { flex-wrap:wrap; } }
 @media(prefers-reduced-motion:reduce) { html body #main-container .risk-module-form .form-control { transition:none; } }
+
+/* Completed fields are subtly blue; focus and error states remain distinct. */
+html body #main-container .risk-module-form .form-control.rf-filled:not(.rf-invalid):not(.is-invalid):not([aria-invalid=true]) { background:#f1f5ff; border-color:#9aafe6; }
+.risk-module-form select.rf-filled:not(.rf-invalid):not(.is-invalid):not([aria-invalid=true])+.select2 .select2-selection { background:#f1f5ff; border-color:#9aafe6; }
+html body #main-container .risk-module-form .form-control.rf-filled:focus { border-color:var(--rf-focus); }
+[data-risk-theme=dark] body #main-container .risk-module-form .form-control.rf-filled:not(.rf-invalid):not(.is-invalid):not([aria-invalid=true]),[data-risk-theme=dark] .risk-module-form select.rf-filled:not(.rf-invalid):not(.is-invalid):not([aria-invalid=true])+.select2 .select2-selection { background:#243854; border-color:#637fb5; }

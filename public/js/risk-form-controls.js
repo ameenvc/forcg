@@ -2,6 +2,16 @@
 (function () {
     'use strict';
     var sequence = 0;
+    function syncFilled(field) {
+        if (!field.matches || !field.matches('input.form-control,textarea.form-control,select.form-control')) return;
+        var filled = !field.disabled && !field.readOnly && String(field.value || '').trim() !== '';
+        if (field.tagName === 'SELECT') {
+            filled = !field.disabled && Array.from(field.selectedOptions).some(function (option) {
+                return option.value !== '' && !option.disabled && !(option.value === '0' && /^\s*(choose|select)\b/i.test(option.textContent));
+            });
+        }
+        field.classList.toggle('rf-filled', filled);
+    }
     function labelFor(field, form) {
         var label = Array.from(form.querySelectorAll('label')).find(function (item) { return item.htmlFor === field.id && field.id; });
         if (!label) label = field.closest('.form-group') && field.closest('.form-group').querySelector('label');
@@ -45,6 +55,7 @@
             if (form.dataset.rfControlsReady) return;
             form.dataset.rfControlsReady = 'true';
             form.querySelectorAll('input:not([type=hidden]),select,textarea').forEach(function (field) {
+                syncFilled(field);
                 if (!field.id) field.id = 'rf-control-' + (++sequence);
                 if (!field.labels || !field.labels.length) {
                     var label = field.closest('.form-group') && field.closest('.form-group').querySelector('label:not([for])');
@@ -56,17 +67,21 @@
             form.addEventListener('invalid', function (event) { invalid(event.target, form); }, true);
             function update(event) {
                 var field = event.target;
+                syncFilled(field);
                 if (field.dataset && field.dataset.rfErrorId && field.validity.valid) clear(field);
                 if (!form.querySelector('[data-rf-error-id]')) {
                     var summary = form.querySelector('.rf-validation-summary');
                     if (summary) summary.remove();
                 }
             }
+            if (window.jQuery) window.jQuery(form).on('change.rfFilled', '.form-control', function () { syncFilled(this); });
+            new MutationObserver(function () { form.querySelectorAll('.form-control').forEach(syncFilled); }).observe(form, { childList: true, subtree: true });
             form.addEventListener('input', update);
             form.addEventListener('change', update);
             form.addEventListener('reset', function () {
                 setTimeout(function () {
                     form.querySelectorAll('[data-rf-error-id]').forEach(clear);
+                    form.querySelectorAll('.form-control').forEach(syncFilled);
                     var summary = form.querySelector('.rf-validation-summary');
                     if (summary) summary.remove();
                 }, 0);

@@ -2,14 +2,14 @@
 @section('content')
 <!doctype html>
 <html lang="en">
-   
+
     <body>
-        
+
     <!-- Hero -->
     <div class="bg-body-light">
                     <div class="content content-full">
                         <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center" style="height:0px;">
-                           
+
                             <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                                 <ol class="breadcrumb breadcrumb-alt">
                                     <li class="breadcrumb-item">Health And Safety Risk</li>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
 
-        
+
         <!-- END Hero -->
 
         <!-- Page Content -->
@@ -37,8 +37,8 @@
                         <div class="col-lg-10">
                             <!-- Form Horizontal - Default Style -->
                             <?php $f=0; ?>               
-            
-                       
+
+
                                 <form class="mb-5" action="{{url('user/context/changelog/ohsrisk/submit')}}" method="post" style="margin-top:40px">
                                     {{csrf_field()}}
                                         @if(count($errors) >0 )
@@ -54,9 +54,9 @@
                                                 {!!Session::get('msg')!!}
                                             </div>
                                         @endif
-                         
+
                                     <!-- <div class="col-lg-10"> -->
-                                          
+
                                           <input type="hidden" name="context_id" value="{{$context_id}}">
                                         <div class="form-group" style="display:inline-block;width:49%;">
                                             <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="department">Department</label>
@@ -108,34 +108,11 @@
                                             <input type="text" class="form-control" id="team" name="team"  placeholder="Enter Risk Assessment Team" style="font-size: 13px;">
                                             </div>
                                         </div><br>
-                            
-                                        <div class="form-group" style="display:inline-block;width:49%;" >
-                                            <button type="button" class="btn btn-dark" style="font-size:13px;width: 130px;margin-left:13px;" data-toggle="modal"  data-target="#viewModal"><strong>Risk Information</strong> </button>
-                                            <div id="viewModal" class="modal fadebd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="false">
-                                                <div class="modal-dialog modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h2 class="modal-title">Risk Information</h2>
-                                                        </div><br>
-                    
-                                                        @if(count($ohsinfo)>0)
-                                                            @foreach($ohsinfo as $c)
-                                                                <img src="{{url("storage/ohsinfo/".$c->infoname)}}" alt="No Risk Info">
-                                                            @endforeach
-                                                        @else
-                                                            <h3>No info</h3>
-                                                        @endif
-                    
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
+
 
                                     <!-- </div> -->
-                                 
+
                             <div class="col-lg-15"> 
                                 <table class="table table-responsive table-bordered table-striped table-vcenter " id="dynamicTable" style="width:120%;">
                                     <thead style="background-color:#FFFFFF">
@@ -174,7 +151,7 @@
                                                 <option value="4">4</option>
                                                 </select>
                                         </td>
-            
+
                                         <td><select name="doc[0][OrL]" class="form-control"  style="width:56px;font-size:13px" >
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
@@ -199,14 +176,14 @@
                                         </td>
                                         <td><input type="text" name="doc[0][monitor]"  class="form-control" style="font-size:13px"/></td> 
                                         <input type="hidden" name="postedby" value="{{Auth::user()->employeeid}}">
-                                    
+
                                         <td><button type="button" name="add" id="add" class="btn btn-sm btn-light" data-toggle="tooltip" title="Add more">
                                                 <i class="fa fa-fw fa-plus"></i>
                                             </button>
                                         </td>  
-                                        
+
                                     </tr>
-                                
+
                                     </tbody>
                                 </table>
                             </div>
@@ -221,7 +198,7 @@
         </div>
                     <!-- END Horizontal -->
 
-               
+
                     <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
                 <div class="modal-dialog modal-sm" role="document">
                     <div class="modal-content">
@@ -236,10 +213,10 @@
                             </div>
                             <div class="block-content block-content-full">
                                 <div class="row gutters-tiny">
-                                  
-                                  
+
+
                                     <div class="col-6">
-                                       
+
                                        <a class="block block-rounded block-link-shadow bg-body mb-0" href="/user/ohsrisk/folder">
                                            <div class="block-content text-center">
                                                <i class="fa fa-2x fa-clipboard-list text-primary"></i>
@@ -248,10 +225,10 @@
                                                </p>
                                            </div>
                                        </a>
-                                  
+
                                    </div>
                                    <!-- <div class="col-6">
-                                       
+
                                         <a class="block block-rounded block-link-shadow bg-body mb-2" href="/user/ohsrisk/masterlist">
                                             <div class="block-content text-center">
                                                 <i class="fa fa-2x fa-id-card-alt text-primary"></i>
@@ -260,7 +237,7 @@
                                                 </p>
                                             </div>
                                         </a>
-                                   
+
                                     </div> -->
                                     <div class="col-6">
                                         <!-- Payments -->
@@ -274,7 +251,7 @@
                                         </a>
                                         <!-- END Payments -->
                                     </div>  
-                                  
+
                                 </div>
                             </div>
                         </div>
@@ -286,14 +263,14 @@
         <!-- END Page Container -->
 
            <!-- Apps Modal -->
-            
-       
+
+
     </body>
 <script src="{{asset('js/oneui.core.min.js')}}"></script>
 <script src="{{asset('js/oneui.app.min.js')}}"></script>
 <script src="{{asset('js/plugins/select2/js/select2.full.min.js')}}"></script>
 <script>jQuery(function () { One.helpers(['flatpickr', 'colorpicker', 'maxlength', 'select2', 'masked-inputs', 'rangeslider']);  });</script>
-    
+
 <script type="text/javascript">   
     var i = 0;
     $("#add").click(function(){

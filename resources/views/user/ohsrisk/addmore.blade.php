@@ -118,30 +118,7 @@
                                 </div>
                             </div><br>
 
-                            <div class="form-group" style="display:inline-block;width:49%;">
-                                <button type="button" class="btn btn-dark" style="font-size:13px;width: 130px;margin-left:13px;" data-toggle="modal" data-target="#viewModal"><strong>Risk Information</strong> </button>
-                                <div id="viewModal" class="modal fadebd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="false">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h2 class="modal-title">Risk Information</h2>
-                                            </div><br>
 
-                                            @if(count($ohsinfo)>0)
-                                            @foreach($ohsinfo as $c)
-                                            <img src="{{url("storage/ohsinfo/".$c->infoname)}}" alt="No Risk Info">
-                                            @endforeach
-                                            @else
-                                            <h3>No info</h3>
-                                            @endif
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- </div> -->
                             <input type="hidden" name="Rid" value="{{$dat->id}}">

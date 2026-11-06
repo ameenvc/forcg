@@ -48,30 +48,7 @@
                         {!! Session::get('msg') !!}
                     </div>
                 @endif
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12" style="display:flex; justify-content:flex-end">
-                        <div style="FONT-SIZE:8px; margin-right: 1rem;">MS.02.01</div>
-                        <button type="button" class="btn btn-dark" style="font-size:12px;width: 86px;"
-                            data-toggle="modal" data-target="#viewModal"><strong>Risk Info</strong> </button>
-                        <div id="viewModal" class="risk-module-form modal fadebd-example-modal-lg" tabindex="-1" role="dialog"
-                            aria-hidden="false">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    @if (count($riskinfo) > 0)
-                                        @foreach ($riskinfo as $c)
-                                            <img src="{{ url('storage/riskinfo/' . $c->infoname) }}" alt="No Risk Info">
-                                        @endforeach
-                                    @else
-                                        <h3>No info</h3>
-                                    @endif
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="row">
                     <div class="col-lg-12">
                         <form class="risk-module-form mb-5" action="{{ url('/user/risks/usereditsubmit') }}" method="post" onsubmit="return validateChips()">

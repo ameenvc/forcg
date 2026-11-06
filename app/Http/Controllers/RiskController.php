@@ -93,7 +93,6 @@ class RiskController extends Controller
         $departments = DB::table('departments')->get();
         $hods = DB::table('departments')->pluck('hod');
         $strategy = DB::table('riskstrategies')->get();
-        $riskinfo = DB::table('riskinfo')->get();
         $riskgroupdetails = RiskGroupDetails::all();
         $hml = DB::table('hml')->get();
 
@@ -105,7 +104,6 @@ class RiskController extends Controller
                      ->withHml($hml)
                      ->withRskgrp($rskgrp)
                      ->withStrategy($strategy)
-                     ->withRiskinfo($riskinfo)
                      ->withDepartments($departments)
                      ->with('riskgroupdetails',$riskgroupdetails)
                      ->withHods($hods);
@@ -3001,7 +2999,6 @@ class RiskController extends Controller
         $mn = Departments::all();
         $users = User::all();
         $hml = DB::table('hml')->get();
-        $riskinfo = DB::table('riskinfo')->get();
         $strategy = DB::table('riskstrategies')->get();
         $rskgrp = DB::table('risknames')->get();
         $models = Modenadisable::First();
@@ -3013,7 +3010,6 @@ class RiskController extends Controller
             ->with('mn', $mn)
             ->with('id', $id)
             ->with('model', $models)
-            ->withRiskinfo($riskinfo)
             ->withStrategy($strategy)
             ->withRskgrp($rskgrp);
     }

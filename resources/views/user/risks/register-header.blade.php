@@ -1,3 +1,6 @@
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-header-actions.css') }}?v={{ filemtime(public_path('css/risk-header-actions.css')) }}">
+@endonce
 @php
     $registerPage = $registerPage ?? 'register';
     $pageTitles = ['register' => 'Enterprise risk register', 'mitigation' => 'Risk mitigation actions', 'analysis' => 'Enterprise risk analysis', 'closed' => 'Closed risk register', 'criteria' => 'Risk assessment criteria matrix (RACM)'];
@@ -10,12 +13,12 @@
         </div>
     </div>
     @if($registerPage === 'criteria')
-    <div class="risk-header-actions"><button type="button" class="btn btn-outline-primary" id="request-review-approve"><i class="fa fa-user-edit mr-2" aria-hidden="true"></i>Request review & approval</button>
-    <button type="button" class="btn btn-primary register-add btn-add-racm"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add criteria</button></div>
+    <div class="risk-header-actions"><button type="button" class="btn btn-outline-primary risk-header-button" id="request-review-approve"><i class="fa fa-user-edit mr-2" aria-hidden="true"></i>Request review & approval</button>
+    <button type="button" class="btn btn-primary register-add risk-header-button btn-add-racm"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add criteria</button></div>
     @elseif($registerPage === 'mitigation')
-    <button type="button" class="btn btn-primary register-add btn-create-mitigation" data-route="{{ route('mitigations.create', array_filter(['riskId' => $riskId ?? null])) }}"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add mitigation action</button>
+    <button type="button" class="btn btn-primary register-add risk-header-button btn-create-mitigation" data-route="{{ route('mitigations.create', array_filter(['riskId' => $riskId ?? null])) }}"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add mitigation action</button>
     @else
-    <a href="{{ route('risk.addrisk') }}" class="btn btn-primary register-add"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add Risk</a>
+    <a href="{{ route('risk.addrisk') }}" class="btn btn-primary register-add risk-header-button"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add Risk</a>
     @endif
 </header>
 <nav class="register-navigation" aria-label="Risk module pages">

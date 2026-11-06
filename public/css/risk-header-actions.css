@@ -1,0 +1,21 @@
+/* One compact standard for risk-page primary and secondary header actions. */
+html body #main-container .risk-header-button {
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    min-height:36px; padding:7px 12px; border:1px solid #365fd1;
+    border-radius:8px; font-family:var(--app-font,sans-serif); font-size:13px!important;
+    font-weight:600; line-height:20px; text-decoration:none; text-align:center;
+    white-space:normal; box-shadow:none; cursor:pointer;
+    background:#365fd1; color:#fff;
+}
+html body #main-container .risk-header-button i {
+    display:inline-block; width:auto; height:auto; margin:0!important; padding:0;
+    border:0; border-radius:0; background:none; font-size:12px; line-height:inherit; flex:none;
+}
+html body #main-container .risk-header-button:hover { background:#2c51bc; border-color:#2c51bc; color:#fff; }
+html body #main-container .risk-header-button.btn-outline-primary { background:transparent; color:#365fc4; border-color:#bdcbed; }
+html body #main-container .risk-header-button.btn-outline-primary:hover { background:#eef3ff; border-color:#8ba4e0; }
+html body #main-container .risk-header-button:focus-visible { outline:3px solid #a99ae6; outline-offset:3px; }
+html body #main-container .risk-header-button:disabled { opacity:.6; cursor:not-allowed; }
+html[data-risk-theme=dark] body #main-container .risk-header-button.btn-outline-primary { color:#bed0ff; border-color:#5b719c; background:transparent; }
+html[data-risk-theme=dark] body #main-container .risk-header-button.btn-outline-primary:hover { background:#2b3c5b; border-color:#8aa2d4; }
+@media(pointer:coarse) { html body #main-container .risk-header-button { min-height:44px; padding-top:11px; padding-bottom:11px; } }

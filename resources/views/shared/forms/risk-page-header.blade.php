@@ -1,3 +1,6 @@
+@once
+<link rel="stylesheet" href="{{ asset('css/risk-header-actions.css') }}?v={{ filemtime(public_path('css/risk-header-actions.css')) }}">
+@endonce
 @php
     $formRecord = $formRecord ?? (isset($riskdata) ? $riskdata : (isset($data) ? ($data instanceof \Illuminate\Support\Collection ? $data->first() : $data) : ($risk ?? null)));
     $formRecordId = ($showRecord ?? true) && is_object($formRecord) ? ($formRecord->Rid ?? null) : null;

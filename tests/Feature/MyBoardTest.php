@@ -42,6 +42,25 @@ class MyBoardTest extends TestCase
     {
         return DB::table('mitigations')->insertGetId(array_merge(['owner'=>'1','action_name'=>'Improve controls','action_id'=>'OPE1/1/26','status'=>'Open','due_date'=>'2026-11-10','updated_at'=>'2026-11-06 10:00:00'], $fields));
     }
+    public function testAuditAssignmentsShowDepartmentInsteadOfStandardsInTasksAndUpdates()
+    {
+        $this->only(['audit_schedules']);
+        Schema::create('departments', function (Blueprint $t) { $t->increments('id'); $t->string('departmentname'); });
+        Schema::create('audit', function (Blueprint $t) {
+            $t->increments('id'); $t->integer('department')->nullable(); $t->string('scope');
+            $t->string('aud_id'); $t->string('email'); $t->string('status'); $t->string('updated_at');
+        });
+        DB::table('departments')->insert(['id'=>7,'departmentname'=>'Warehouse']);
+        foreach ([7,999,null] as $department) DB::table('audit')->insert([
+            'department'=>$department,'scope'=>'ISO 9001:2015, ISO 14001:2015','aud_id'=>'WHS1/26',
+            'email'=>'alex@example.test','status'=>'Planned','updated_at'=>'2026-11-06 10:00:00',
+        ]);
+        $board = $this->service()->snapshot($this->user(), ['auditmanagement']);
+        $this->assertSame(['Warehouse audit','Department audit','Department audit'], array_column($board['tasks'], 'title'));
+        $this->assertContains('Warehouse audit', array_column($board['updates'], 'title'));
+        $this->assertStringNotContainsString('ISO 9001', json_encode($board));
+        $this->assertSame('WHS1/26', $board['tasks'][0]['reference']);
+    }
     public function testPersonalActionsMatchExactIdsAndJsonListsWithoutSubstringLeaks()
     {
         $this->only(['mitigations']); $this->mitigationTable();

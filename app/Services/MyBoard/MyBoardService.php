@@ -189,7 +189,10 @@ class MyBoardService
         });
         $hasState = in_array($source['stage'], $columns, true) || (isset($source['progress']) && in_array($source['progress'], $columns, true));
         foreach ($source['conditions'] ?? [] as $field => $value) if (!in_array($field, $columns, true)) return false;
+        // Override cached registry titles too: audit scope contains standards, not the department.
+        if ($key === 'audit_schedules') $source['title'] = ['department_audit_title'];
         $fields = [$source['id'], $source['stage'], 'deleted_at', 'is_deleted', 'priority_level', 'priority', 'rank', $source['progress'] ?? ''];
+        if ($key === 'audit_schedules') $fields[] = 'department';
         foreach (['title', 'reference', 'due', 'updated', 'completion'] as $group) $fields = array_merge($fields, $source[$group]);
         foreach ($roles as $role) $fields = array_merge($fields, [$role['field']], $role['due'] ?? [], array_values($role['due_pairs'] ?? []));
         foreach ($source['events'] as $event) $fields = array_merge($fields, [$event['field'], $event['date']]);
@@ -221,8 +224,16 @@ class MyBoardService
         if (!empty($source['course']) && !array_diff(['id', 'name'], $this->columns('courses'))) {
             $courseNames = DB::table('courses')->whereIn('id', $records->pluck('course_id')->filter()->unique())->pluck('name', 'id')->all();
         }
+        $departmentNames = [];
+        if ($key === 'audit_schedules' && !array_diff(['id', 'departmentname'], $this->columns('departments'))) {
+            $departmentNames = DB::table('departments')->pluck('departmentname', 'id')->all();
+        }
         foreach ($records as $record) {
             $row = (array) $record;
+            if ($key === 'audit_schedules') {
+                $department = $this->text($departmentNames[$row['department'] ?? ''] ?? '');
+                $row['department_audit_title'] = $department !== '' ? $department.' audit' : 'Department audit';
+            }
             if (!empty($source['course'])) $row['course_name'] = $courseNames[$row['course_id'] ?? ''] ?? 'Assigned course';
             $state = trim((string) ($row[$source['stage']] ?? ''));
             $closed = in_array(strtolower($state), array_map('strtolower', $source['complete']), true)

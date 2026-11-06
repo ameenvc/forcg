@@ -114,7 +114,7 @@ return [
         'incident_approvals' => $source('incidentreport', 'incident_reports', ['incidentdesc'], ['report_no'], 'reviewed', [
             $role('approver_email', 'email', 'approval', ['Reviewed']),
         ], ['score' => false, 'watch' => []]),
-        'audit_schedules' => $source('auditmanagement', 'audit', ['scope'], ['aud_id'], 'status', [
+        'audit_schedules' => $source('auditmanagement', 'audit', ['department_audit_title'], ['aud_id'], 'status', [
             $role('email', 'email', 'action', '*', ['title' => 'Prepare or complete assigned audit']),
         ], ['score' => false, 'due' => ['enddate', 'date'], 'complete' => ['Completed', 'Cancelled', 'Archived'], 'watch' => []]),
         'waste' => $source('wastemanagement', 'waste', ['wastedesc', 'itemname'], ['request_no'], 'process_stage', [

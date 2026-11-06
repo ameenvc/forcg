@@ -7,14 +7,16 @@
 @include('shared.forms.assets')
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/risk-pages.css') }}?v={{ filemtime(public_path('css/risk-pages.css')) }}">
+<script src="{{ asset('js/risk-analysis-export.js') }}?v={{ filemtime(public_path('js/risk-analysis-export.js')) }}" defer></script>
+<link rel="stylesheet" href="{{ asset('css/risk-analysis-export.css') }}?v={{ filemtime(public_path('css/risk-analysis-export.css')) }}">
 <script src="{{ asset('js/risk-analysis.js') }}?v={{ filemtime(public_path('js/risk-analysis.js')) }}" defer></script>
 @php
     $counts = $analysisData['totals'];
     $highShare = $counts['total'] ? round(100 * $counts['High'] / $counts['total']) : 0;
 @endphp
-<div class="content cgbod-form risk-register risk-analysis risk-module-page" id="risk-analysis" data-analysis="{{ json_encode($analysisData) }}">
+<div class="content cgbod-form risk-register risk-analysis risk-module-page" id="risk-analysis" data-pptx-library="{{ asset('js/vendor/pptxgenjs/pptxgen.bundle.js') }}?v={{ filemtime(public_path('js/vendor/pptxgenjs/pptxgen.bundle.js')) }}" data-analysis="{{ json_encode($analysisData) }}">
     @include('user.risks.register-header', ['registerPage' => 'analysis', 'registerTitle' => 'Risk analysis', 'registerDescription' => 'Compare risk ratings across departments and identify areas that need attention.'])
-    <span class="sr-only" id="analysis-export-status" role="status" aria-live="polite"></span>
+    <span class="analysis-export-status" id="analysis-export-status" role="status" aria-live="polite" hidden></span>
     <div class="analysis-rating-strip" aria-label="Risk counts for the selected group">
         @foreach(['total' => 'Total risks', 'High' => 'High', 'Moderate' => 'Moderate', 'Low' => 'Low', 'Unassessed' => 'Unassessed'] as $rating => $label)
         <div data-tone="{{ $rating }}"><span>{{ $label }}</span><strong data-analysis-count="{{ $rating }}">{{ $counts[$rating] }}</strong></div>

@@ -79,6 +79,8 @@ class RiskRegisterPagesTest extends TestCase
         $this->assertStringContainsString('data-analysis-count="total"', $html);
         $this->assertStringContainsString('Department comparison', $html);
         $this->assertStringContainsString('id="analysis-export"', $html);
+        foreach (['analysis-export-pptx', 'analysis-export-print', 'analysis-export-csv'] as $exportId) $this->assertStringContainsString('id="'.$exportId.'"', $html);
+        $this->assertStringContainsString('data-pptx-library=', $html);
         $this->assertStringContainsString('id="analysis-export-status"', $html);
         $this->assertStringNotContainsString('everything looks great', $html);
         if (getenv('RISK_ANALYSIS_PREVIEW_PATH')) file_put_contents(getenv('RISK_ANALYSIS_PREVIEW_PATH'), $html);

@@ -63,7 +63,7 @@
         if (typeof value === 'string' && /^[\s]*[=+\-@]/.test(text)) text = "'" + text;
         return '"' + text.replace(/"/g, '""') + '"';
     }
-    get('analysis-export').addEventListener('click', () => {
+    get('analysis-export-csv').addEventListener('click', () => {
         const snapshot = current(), scope = selectedGroup || 'All groups';
         const rows = [['Section', 'Scope', 'Item', 'Total', 'High', 'Moderate', 'Low', 'Unassessed', 'Count', 'Percentage']];
         const countsRow = (section, item, counts) => rows.push([section, scope, item, counts.total, counts.High, counts.Moderate, counts.Low, counts.Unassessed, '', '']);
@@ -79,7 +79,25 @@
         const link = document.createElement('a'); link.href = url; link.download = 'risk-analysis.csv';
         document.body.appendChild(link); link.click(); link.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
+        get('analysis-export-status').hidden = false;
         get('analysis-export-status').textContent = 'Analysis exported for ' + scope + '. Department rows follow the current search and sort.';
+    });
+    get('analysis-export-print').addEventListener('click', () => { renderDepartments(); window.print(); });
+    get('analysis-export-pptx').addEventListener('click', async () => {
+        const button = get('analysis-export'), status = get('analysis-export-status');
+        if (button.disabled) return;
+        button.disabled = true; button.setAttribute('aria-busy', 'true');
+        status.hidden = false; status.textContent = 'Preparing PowerPoint with charts…';
+        try {
+            await window.CgbodAnalysisExport.powerPoint({
+                libraryUrl: root.dataset.pptxLibrary, scope: selectedGroup || 'All groups',
+                snapshot: current(), groups: Object.entries(data.groups).filter(([name]) => !selectedGroup || name === selectedGroup),
+                departments: visibleDepartments().matching, departmentSearch: search.value.trim()
+            });
+            status.textContent = 'PowerPoint exported with editable charts for ' + (selectedGroup || 'All groups') + '.';
+        } catch (error) {
+            status.textContent = 'PowerPoint export could not finish. Please try again, or use Print / save PDF.';
+        } finally { button.disabled = false; button.removeAttribute('aria-busy'); }
     });
     render();
 })();

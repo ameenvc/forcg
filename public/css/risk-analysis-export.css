@@ -1,0 +1,39 @@
+.risk-analysis .risk-page-banner { overflow:visible; }
+.risk-analysis .risk-page-banner::before { border-radius:14px 14px 0 0; }
+.risk-analysis .risk-page-banner .dropdown-menu { z-index:1060; border-radius:9px; padding:6px; border:1px solid #dce3f0; box-shadow:0 12px 30px #20334e20; }
+.risk-analysis .dropdown-item { font-size:13px; padding:10px 12px; border-radius:5px; }
+.analysis-export-status { display:block; font-size:12px; color:var(--cgbod-muted,#687a95); margin-top:14px; }
+.analysis-export-status[hidden] { display:none; }
+@media print {
+    @page { size:A4 portrait; margin:12mm; }
+    html,body { background:#fff!important; color:#243855!important; }
+    #page-header,#sidebar,#side-overlay,#page-footer,.register-navigation,.risk-page-banner .risk-header-actions,.analysis-chart-controls,#analysis-reset,#analysis-export-status,.analysis-footer { display:none!important; }
+    #page-container,#main-container { padding:0!important; margin:0!important; min-height:0!important; }
+    html body #main-container .risk-analysis { width:100%; max-width:none; padding:0; margin:0; }
+    .risk-analysis,.risk-analysis * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .risk-analysis .register-header { border:0; padding:0 0 14px; background:#fff!important; }
+    html body #main-container .risk-analysis .risk-page-banner h1 { color:#243855!important; }
+    .risk-analysis .register-header::before { display:none; }
+    .risk-analysis .analysis-overview { display:block; }
+    .risk-analysis .analysis-card { break-inside:avoid; margin-bottom:14px; border:1px solid #dce3f0; background:#fff!important; }
+    .risk-analysis .analysis-departments { break-inside:auto; break-before:page; }
+    .risk-analysis .analysis-card-heading { flex-direction:row; break-after:avoid; }
+    html body #main-container .risk-analysis { --app-surface:#fff; --app-raised:#f4f6fb; --app-text:#243855; --app-muted:#566a86; --app-line:#dce3f0; }
+    html body #main-container .risk-analysis .register-header.risk-page-banner { background:#fff!important; border:0!important; }
+    html body #main-container .risk-analysis .analysis-group-table .is-active { background:#f0f4ff!important; }
+    html body #main-container .risk-analysis .analysis-group-table :is(th,td,button) { color:#40587b!important; }
+    html body #main-container .risk-analysis .analysis-current { background:#f0edfa!important; color:#6752a3!important; }
+    html body #main-container .risk-analysis .analysis-bar-track { background:#eef2f8!important; }
+    .risk-analysis .analysis-department-row { break-inside:avoid; }
+    html body #main-container .risk-analysis .analysis-rating-strip { display:flex!important; break-inside:avoid; background:#fff!important; color:#40587b!important; }
+    html body #main-container .risk-analysis .analysis-rating-strip>div { color:#40587b!important; }
+    html body #main-container .risk-analysis .analysis-rating-strip strong { color:#263b60!important; }
+    html body #main-container .risk-analysis .analysis-rating-strip [data-tone=High] strong { color:#b73c58!important; }
+    html body #main-container .risk-analysis .analysis-rating-strip [data-tone=Moderate] strong { color:#946519!important; }
+    html body #main-container .risk-analysis .analysis-rating-strip [data-tone=Low] strong { color:#208365!important; }
+    .risk-analysis .analysis-group-scroll { overflow:visible; }
+    .risk-analysis .analysis-group-table { min-width:0; width:100%; }
+    .risk-analysis .analysis-group-table:has(tr.is-active) tbody tr:not(.is-active) { display:none; }
+    .risk-analysis .analysis-group-hint { display:none; }
+    html[data-risk-theme=dark] body #main-container .risk-analysis { --risk-text:#243855; --risk-muted:#566a86; --risk-panel:#fff; --risk-line:#dce3f0; }
+}

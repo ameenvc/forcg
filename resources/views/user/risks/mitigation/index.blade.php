@@ -483,7 +483,7 @@
                 $(".alert-danger").fadeTo(2000, 500).slideUp(500, function(){
                     $(".alert-danger").slideUp(500);
                 });
-                $('body').on('click', '.btn-edit-mitigation', function () {
+                $('body').on('click', '.btn-edit-mitigation, .btn-create-mitigation', function () {
                     const url = $(this).attr('data-route');
                     $.ajax({
                         url,

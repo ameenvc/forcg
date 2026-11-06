@@ -24,11 +24,11 @@
 
 <!-- Mitigating Modal -->
 <div class="risk-module-form modal new-mitigating-popup risk-workflow-modal" id="modal-mitigating-{{ $riskId }}" tabindex="-1" role="dialog"
-     aria-labelledby="exampleModalLabel" aria-hidden="true">
+     aria-labelledby="mitigation-form-title-{{ $riskId }}" aria-hidden="true">
     <div class="modal-dialog m-dialog" role="document">
         <div class="modal-content" style="text-align: left">
             <div class="modal-header" style="border-bottom: 1px solid #e1e6e9; padding: 0.75rem 1rem;">
-                <h5 class="modal-title"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-tasks"></i></span>{{isset($mitigation)? 'Edit' : 'Add'}} Mitigation Action</h5>
+                <h5 class="modal-title" id="mitigation-form-title-{{ $riskId }}"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-tasks"></i></span>{{isset($mitigation)? 'Edit' : 'Add'}} Mitigation Action</h5>
                 <div class="block-options">
                     <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
                         <i class="si si-close"></i>
@@ -49,9 +49,23 @@
                 @if(isset($mitigation))
                     @method('put')
                 @endif
+                @unless($selectRisk ?? false)
                 <input type="hidden" name="risk_id" value="{{ $riskId }}">
+                @endunless
                 <div class="modal-body m-body p-4 risk-action-grid">
                     <p class="workflow-form-hint">Describe the action, assign an owner, and set a realistic due date. Track progress and request closure review from Mitigation actions.</p>
+                    @if($selectRisk ?? false)
+                    <div class="form-group risk-action-field risk-action-wide">
+                        <label for="mitigation-primary-risk">Select risk <span class="text-danger">*</span></label>
+                        <select class="form-control" id="mitigation-primary-risk" name="risk_id" required aria-describedby="mitigation-risk-help">
+                            <option value="">Search or choose a risk</option>
+                            @foreach($data as $riskItem)
+                            <option value="{{ $riskItem->Rid }}" {{ (string)($selectedRiskId ?? '') === (string)$riskItem->Rid ? 'selected' : '' }}>{{ $riskItem->grp_id }} — {{ $riskItem->riskname }}</option>
+                            @endforeach
+                        </select>
+                        <small id="mitigation-risk-help" class="text-muted">Choose the risk this action will address. Additional risks can be linked below.</small>
+                    </div>
+                    @endif
                     <!-- Owner -->
                     <div class="form-group risk-action-field">
                         <label class="col-sm-12 col-form-label" style="font-size: 13px;" for="owner">Owner <span class="text-danger">*</span></label>
@@ -208,8 +222,9 @@
                     </div>
                     <!-- Save button -->
                     <div class="risk-form-actions">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary"
-                                style="font-size:13px;">Submit</button>
+                                style="font-size:13px;">{{ isset($mitigation) ? 'Save changes' : 'Create action' }}</button>
                     </div>
                 </div>
             </form>
@@ -244,6 +259,7 @@
 @else
     <script>
         $(document).ready(function () {
+            $('#mitigation-primary-risk').select2({width:'100%', dropdownParent: $('#modal-mitigating-new'), placeholder:'Search or choose a risk'});
             $('#owner').select2({
                 placeholder: $('#owner').data('placeholder'),
                 width: '100%',

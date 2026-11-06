@@ -959,3 +959,8 @@ html[data-risk-theme=dark] .register-title-icon { background:linear-gradient(135
 .register-header.risk-page-banner.register-header-compact { padding:18px 24px; }
 .register-header-compact .register-title-line { margin-top:0; }
 @media(max-width:575px) { .register-header.risk-page-banner.register-header-compact { padding:16px 18px; } }
+
+/* Primary creation action: consistent size, clear icon and restrained elevation. */
+.risk-page-banner .register-add { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:10px 17px; font-size:13px; font-weight:600; line-height:20px; border-radius:10px; box-shadow:0 3px 9px #365fd11a; white-space:normal; text-align:center; }
+.risk-page-banner .register-add .fa-plus { display:grid; place-items:center; width:22px; height:22px; margin:0!important; border-radius:6px; background:#ffffff24; font-size:11px; flex:none; }
+.risk-page-banner .register-add:focus-visible { outline:3px solid #aa9ce9; outline-offset:3px; }

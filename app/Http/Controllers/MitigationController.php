@@ -91,6 +91,20 @@ class MitigationController extends Controller
         ));
     }
 
+    /** Open the existing action form with a required primary risk selector. */
+    public function create(Request $request): JsonResponse
+    {
+        $riskId = 'new';
+        $selectRisk = true;
+        $selectedRiskId = $request->query('riskId');
+        $data = Risk::select('Rid', 'grp_id', 'riskname')->orderBy('riskname')->get();
+        $deletedRisks = collect();
+        $actionOwners = User::where('is_email_verified', true)->where('approved', true)->orderBy('name')->pluck('name', 'id')->toArray();
+        $departments = DB::table('departments')->get();
+        return response()->json(['success' => true, 'risk_id' => $riskId,
+            'view' => view('user.risks.mitigation._form', compact('riskId', 'selectRisk', 'selectedRiskId', 'data', 'deletedRisks', 'actionOwners', 'departments'))->render()]);
+    }
+
     /**
      * Add Mitigation
      *
@@ -100,6 +114,7 @@ class MitigationController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $request->validate(['risk_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('risks', 'Rid')->whereNull('deleted_at')]]);
         try {
             $mitigationData = $request->only(app(Mitigation::class)->getFillable());
 
@@ -109,7 +124,7 @@ class MitigationController extends Controller
             $currentYear = date('y');
             $numberOfMitigationOfRisk = Mitigation::where('risk_id', $riskId)->count('risk_id');
             $mitigationData['action_id'] = $risk->grp_id . '/' . ($numberOfMitigationOfRisk + 1) . '/' . $currentYear;
-            $mitigationData['link_other_risk'] = $this->getLinkOtherRiskData($mitigationData['link_other_risk']);
+            $mitigationData['link_other_risk'] = $this->getLinkOtherRiskData($mitigationData['link_other_risk'] ?? []);
             $mitigationData['created_by'] = $this->getCurrentUserId();
 
             $mitigation = Mitigation::create($mitigationData);

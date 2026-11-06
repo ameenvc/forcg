@@ -827,6 +827,7 @@ Route::middleware(['track.activity'])->group(function () {
     Route::group(['prefix' => '/user/riskmgmt/mitigations', 'as' => 'mitigations.'], function () {
         Route::get('/', 'MitigationController@index')->name('index');
         Route::post('/', 'MitigationController@store')->name('store');
+        Route::get('/create', 'MitigationController@create')->name('create');
         Route::get('/{id}', 'MitigationController@edit')->name('edit');
         Route::get('/show/{id}', 'MitigationController@detail')->name('detail');
         Route::get('/export-pdf/{id}', 'MitigationController@detailPdf')->name('detail.pdf');

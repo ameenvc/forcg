@@ -25,7 +25,8 @@ class RiskRegisterWorkflowTest extends TestCase
         $this->assertStringContainsString('risk-workflow.css', $criteria);
         $vars = ['mitigations' => collect(), 'riskId' => null, 'allOwnerNames' => '', 'allDeptNames' => '', 'allPriorityLevel' => '', 'allYears' => '', 'allStatus' => '', 'allResourceRequired' => '', 'model' => null, 'currentUserId' => null, 'reviewerIds' => []];
         $actions = view('user.risks.mitigation.index', $vars)->render();
-        $this->assertStringContainsString('Choose risk to add action', $actions);
+        $this->assertStringContainsString('Add mitigation action', $actions);
+        $this->assertStringContainsString(route('mitigations.create'), $actions);
         $this->assertStringNotContainsString('Action tracker', $actions);
         $this->assertStringNotContainsString('Criteria library', $criteria);
         preg_match('/<nav class="register-navigation".*?<\/nav>/s', $criteria, $navigation);
@@ -84,6 +85,27 @@ class RiskRegisterWorkflowTest extends TestCase
                 file_put_contents(getenv('RISK_WORKFLOW_PREVIEW_DIR').'/risk-'.$name.'-preview.html', view('risk-form-workflow-preview', compact('form'))->render());
             }
         }
+    }
+
+    public function testDirectActionFormRequiresPrimaryRiskAndPreservesExistingRiskBoundForm()
+    {
+        $vars = ['riskId' => 'new', 'selectRisk' => true, 'selectedRiskId' => 42,
+            'data' => collect([(object)['Rid' => 42, 'grp_id' => 'OPE42', 'riskname' => 'Supplier disruption']]),
+            'deletedRisks' => collect(), 'actionOwners' => [], 'departments' => collect()];
+        $html = view('user.risks.mitigation._form', $vars)->render();
+        $this->assertStringContainsString('id="mitigation-primary-risk" name="risk_id" required', $html);
+        $this->assertStringContainsString('value="42" selected', $html);
+        $this->assertStringContainsString('OPE42 — Supplier disruption', $html);
+        $this->assertStringNotContainsString('type="hidden" name="risk_id"', $html);
+        $this->assertStringContainsString('Create action', $html);
+        if (getenv('RISK_WORKFLOW_PREVIEW_DIR')) {
+            file_put_contents(getenv('RISK_WORKFLOW_PREVIEW_DIR').'/risk-direct-action-preview.html', view('risk-form-workflow-preview', ['form' => $html])->render());
+        }
+        $this->assertStringContainsString('data-dismiss="modal">Cancel', $html);
+        $this->assertSame('App\\Http\\Controllers\\MitigationController@create', app('router')->getRoutes()->match(\Illuminate\Http\Request::create('/user/riskmgmt/mitigations/create'))->getActionName());
+        $bound = view('user.risks.mitigation._form', ['riskId' => 42, 'actionOwners' => [], 'departments' => collect()])->render();
+        $this->assertStringContainsString('type="hidden" name="risk_id" value="42"', $bound);
+        $this->assertStringNotContainsString('id="mitigation-primary-risk"', $bound);
     }
 
 }

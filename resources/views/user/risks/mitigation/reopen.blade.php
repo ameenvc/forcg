@@ -2,9 +2,9 @@
 @section('content')
 @include('shared.forms.risk-assets')
 
-<!doctype html>
-<html lang="en">
-<head>
+
+
+
     <style>
         .breadcrumb > li + li:before {
             display: none !important;
@@ -36,29 +36,14 @@
             color: #4EAD5B;
         }
     </style>
-</head>
-<body>
+
+
     <!-- Page Content -->
-    <div class="content">
+    <div class="content risk-form-page risk-form-shell">
+@include('shared.forms.risk-page-header', ['formTitle' => 'Reopen mitigation action', 'formDescription' => 'Review responsibilities and dates before resuming this mitigation action.', 'formRecord' => $risk ?? null])
         <!-- Horizontal -->
         <div class="block block-rounded" style="box-shadow: 0 0 15px;background-color: #ffffff;">
-            <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item font-w700">
-                        <a href="{{ route('mitigations.index') }}" class="text-black">
-                            Mitigating Actions
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item" aria-current="page">
-                        Reopen
-                    </li>
-                </ol>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('risk.index') }}">Enterprise Risk</a>
-                    </li>
-                </ol>
-            </nav>
+
             <div class="block-content block-content-full">
                 <div class="row">
                     <div class="col-lg-10">
@@ -344,7 +329,7 @@
             </div>
         </div>
     </div>
-</body>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script type="text/javascript">
@@ -364,7 +349,7 @@
         });
     });
 </script>
-</html>
+
 @endsection
 @section('js_after')
     <!-- Page JS Plugins -->

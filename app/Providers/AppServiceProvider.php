@@ -106,6 +106,7 @@ class AppServiceProvider extends ServiceProvider
             'shared.forms.theme-control',
             'shared.forms.assets',
             'shared.forms.risk-assets',
+            'shared.forms.risk-page-header',
             'exporting.forcorrective'
         ];
 

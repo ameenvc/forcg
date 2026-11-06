@@ -39,3 +39,41 @@ html body .risk-module-form .form-control[readonly],html body .risk-module-form 
 [data-risk-theme=dark] .risk-module-form,[data-risk-theme=dark] .risk-form-page { --rf-panel:#1b2739; --rf-field:#1b2a40; --rf-soft:#233148; --rf-ink:#e0e8f6; --rf-muted:#acbcd3; --rf-line:#384963; }
 [data-risk-theme=dark] .risk-module-form .modal-header { background:linear-gradient(115deg,#243651,#333050); }
 @media(max-width:767px) { html body #main-container .risk-module-form .form-control { font-size:16px!important; } .risk-module-form .modal-dialog { margin:12px auto; width:calc(100% - 20px); } .risk-module-form .modal-header,.risk-module-form .modal-body,.risk-module-form .modal-footer { padding:18px!important; } .risk-module-form .risk-action-grid { grid-template-columns:1fr; gap:18px; } .risk-header-actions { justify-content:flex-start; } .risk-module-form .form-group[style*="inline-block"] { width:100%!important; vertical-align:top; } .risk-form-page>.block>.block-content { padding:18px; } }
+/* Standalone review/edit workflows use the same record-oriented shell as risk details. */
+.risk-form-shell { max-width:1200px; margin:0 auto; padding:24px; }
+.rf-page-header { background:var(--rf-panel); border:1px solid var(--rf-line); border-top:3px solid #5f6bce; border-radius:13px; padding:20px 24px; margin-bottom:18px; }
+.rf-back { font-size:12px; font-weight:600; color:#526fca; }
+.rf-page-heading { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-top:15px; }
+.rf-eyebrow { display:block; font-size:10px; font-weight:600; letter-spacing:.07em; color:var(--rf-muted); }
+html body #main-container .rf-page-heading h1 { font-size:26px!important; color:var(--rf-ink); margin:5px 0 7px; letter-spacing:-.4px; }
+.rf-page-heading p { color:var(--rf-muted); font-size:13px; line-height:1.7; margin:0; }
+.rf-header-icon { display:grid; place-items:center; flex:none; width:42px; height:42px; border-radius:12px; background:#eeedfb; color:#6c60b4; font-size:18px; }
+.rf-record-context { display:flex; align-items:center; gap:10px; border-top:1px solid var(--rf-line); padding-top:14px; margin-top:16px; }
+.rf-record-context>span { flex:none; font-size:11px; background:#eeedfb; color:#6c60b4; padding:3px 7px; border-radius:5px; }
+.rf-record-context strong { font-size:13px; font-weight:500; color:var(--rf-ink); overflow-wrap:anywhere; }
+.risk-form-shell>.block { background:var(--rf-panel)!important; box-shadow:none!important; border:1px solid var(--rf-line); border-radius:13px; }
+.risk-form-shell .block-content>.row>[class*="col-lg-"] { flex:0 0 100%; max-width:100%; }
+.risk-form-shell .risk-module-form { width:100%; margin-bottom:0!important; }
+.risk-form-shell .risk-module-form>.container { padding:0; max-width:none; }
+.risk-form-shell .risk-module-form .form-group[style*="inline-block"] { vertical-align:top; padding:0 8px; }
+.risk-form-shell .risk-module-form .row.col-lg-12 { margin-left:0; margin-right:0; padding:0; }
+.risk-form-shell .risk-module-form :is(.btn-primary,.btn-danger) { min-height:40px; border-radius:8px; padding:9px 16px; }
+.rf-editor-section { padding:0 0 24px; margin-bottom:24px; border-bottom:1px solid var(--rf-line); }
+.rf-editor-section:last-of-type { margin-bottom:0; }
+.rf-section-heading { margin-bottom:20px; }
+html body #main-container .rf-section-heading h2 { font-size:18px; color:var(--rf-ink); margin:0 0 5px; }
+.rf-section-heading p { margin:0; font-size:12px; color:var(--rf-muted); line-height:1.7; }
+.rf-context { background:var(--rf-soft); padding:20px; border:1px solid var(--rf-line); border-radius:10px; }
+.rf-context>.form-group { margin-bottom:0; }
+.rf-context .row>.form-group { margin-bottom:0; }
+.rf-detail-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.rf-detail-fields>.form-group { min-width:0; max-width:100%; margin:0; padding:0; }
+.rf-detail-fields>.rf-wide { grid-column:1 / -1; }
+.risk-form-shell .clickedimpact,.risk-form-shell .clickedlikelihood { box-shadow:0 0 0 2px currentColor; font-weight:600; }
+[data-risk-theme=dark] .rf-header-icon,[data-risk-theme=dark] .rf-record-context>span { background:#393354; color:#c9bdf6; }
+[data-risk-theme=dark] .rf-back { color:#b4c7fa; }
+@media(max-width:767px) { .risk-form-shell { padding:12px; } .rf-page-header { padding:18px; } .rf-header-icon { display:none; } .rf-record-context { align-items:flex-start; } .rf-context { padding:16px; } .rf-detail-fields { grid-template-columns:1fr; } .rf-detail-fields>.rf-wide { grid-column:auto; } .rf-editor-section .row>[class*="col-"] { flex:0 0 100%; max-width:100%; margin-bottom:18px; } .risk-form-actions { flex-wrap:wrap; } }
+.rf-editor-table { max-width:100%; overflow:auto; border:1px solid var(--rf-line); border-radius:9px; }
+.rf-editor-table table { min-width:1100px; display:table; margin:0; }
+.risk-form-shell button[type=submit] { margin-left:0!important; }
+.rf-section-break { width:100%; max-width:100%; flex:0 0 100%; border-top:1px solid var(--rf-line); padding-top:22px; margin-top:8px; }

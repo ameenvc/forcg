@@ -17,20 +17,10 @@
         border-bottom-left-radius: 0;
     }
 </style>
-<div class="content risk-form-page">
+<div class="content risk-form-page risk-form-shell">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Add linked opportunity', 'formDescription' => 'Capture a potential opportunity arising from this risk and assign responsibility.'])
     <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
-        <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item font-w700">
-                    <a href="{{ route('risk.index') }}" class="text-black">
-                        Enterprise Risk
-                    </a>
-                </li>
-                <li class="breadcrumb-item" aria-current="page">
-                    Add Opportunity
-                </li>
-            </ol>
-        </nav>
+
         <div class="block-content block-content-full">
             <div class="row">
                 <div class="col-lg-12">

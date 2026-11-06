@@ -5,28 +5,11 @@
 
 
 
-                <div class="bg-body-light">
-                    <div class="content content-full">
-                        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center"  style="height:0px;">
 
-                            <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
-                                <ol class="breadcrumb breadcrumb-alt">
-                                    <li class="breadcrumb-item">Enterprise Risk</li>
-                                    <li class="breadcrumb-item" aria-current="page">
-                                        <a class="link-fx" href="">Disapproving</a>
-                                    </li>
-                                    <li class="breadcrumb-item" aria-current="page">
-                                        <a class="link-fx" href="/user/riskmgmt">Back</a>
-                                    </li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-                <!-- END Hero -->
 
                 <!-- Page Content -->
-                <div class="content risk-form-page">
+                <div class="content risk-form-page risk-form-shell">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Request changes', 'formDescription' => 'Explain the changes required so the risk owner can respond.'])
 
 
                    <!-- Horizontal -->
@@ -40,8 +23,8 @@
     {{ csrf_field() }}
     {{-- <div class="jumbotron jumbotron-fluid"> --}}
             <div class="container">
-              <h2 class="display-5" style="font-family:Arial;margin-left:200px">Reason for disapproving</h2>
-              <textarea rows="10"  class="form-control" name="reason" required style="margin-left:100px"></textarea>
+              <label for="risk-change-reason">Changes required</label>
+              <textarea rows="10"  class="form-control" id="risk-change-reason" name="reason" required style=""></textarea>
               <br>
               <input type="hidden" value="{{auth::user()->employeeid}}" name="review">
               <input type="hidden" name="id" value="{{$id}}">
@@ -55,8 +38,6 @@
             {{-- <input type="submit" value="Disapprove" class="btn btn-danger"> --}}
 
         </form>
-
-    </form>
     <!-- END Form Horizontal - Default Style -->
 
     </div>

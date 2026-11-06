@@ -11,29 +11,11 @@
 
 
                 <!-- Hero -->
-    <div class="bg-body-light">
-        <div class="content content-full">
-            <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center"  style="height:0px;">
 
-                <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
-                    <ol class="breadcrumb breadcrumb-alt">
-                        <li class="breadcrumb-item">Enterprise Risk</li>
-
-                            <li class="breadcrumb-item" aria-current="page">
-                                <a class="link-fx" href="">Edit</a>
-                            </li>
-                            <li class="breadcrumb-item" aria-current="page">
-                                <a class="link-fx" href="/user/riskmgmt">Back</a>
-                            </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-                <!-- END Hero -->
 
                 <!-- Page Content -->
-    <div class="content risk-form-page"style="width:100%">
+    <div class="content risk-form-page risk-form-shell"style="width:100%">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Request risk changes', 'formDescription' => 'Review the selected records and prepare the changes for review.'])
          <!-- Horizontal -->
         <div class="block block-rounded">
 
@@ -64,7 +46,7 @@
 
 
                     @if(count($data)>0)
-                    <table class="risk-module-table table table-responsive table-bordered table-striped table-vcenter " id="dynamicTable">
+                    <div class="rf-editor-table" role="region" aria-label="Risk changes; scroll for more fields" tabindex="0"><table class="risk-module-table table table-responsive table-bordered table-striped table-vcenter " id="dynamicTable">
 
                         <thead style="background-color:#FFFFFF">
                             <tr>
@@ -178,11 +160,11 @@
                             @endforeach
                         </tbody>
 
-                    </table>
+                    </table></div>
                     @endif
 
 
-            <div >
+            <div class="risk-form-actions">
 
                 <button for="submittl" type="submit" onclick=" return confirm('Do you want to proceed?')" class="btn btn-primary"style="font-size:13px;margin-left:90%;">Submit</button>
 

@@ -5,28 +5,11 @@
 
 
 
-                <div class="bg-body-light">
-                    <div class="content content-full">
-                        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center"  style="height:0px;">
 
-                            <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
-                                <ol class="breadcrumb breadcrumb-alt">
-                                    <li class="breadcrumb-item">Enterprise Risk</li>
-                                    <li class="breadcrumb-item" aria-current="page">
-                                        <a class="link-fx" href="">Closure Review</a>
-                                    </li>
-                                    <li class="breadcrumb-item" aria-current="page">
-                                        <a class="link-fx" href="/user/riskmgmt">Back</a>
-                                    </li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-                <!-- END Hero -->
 
                 <!-- Page Content -->
-                <div class="content risk-form-page">
+                <div class="content risk-form-page risk-form-shell">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Risk closure review', 'formDescription' => 'Review the final assessment and identify whether further action is required.'])
 
 
                    <!-- Horizontal -->
@@ -43,7 +26,8 @@
               		@foreach($data as $dat)
 
                       {{-- <div class="col-lg-10"> --}}
-                        <div class="form-group" style="display:inline-block;width:49%;">
+                        <div class="col-12 rf-section-heading rf-section-break"><h2>Risk context</h2><p>Confirm the reference information for this risk.</p></div>
+<div class="form-group" style="display:inline-block;width:49%;">
                     <label class="col-sm-12 col-form-label"style="font-size: 13px;" for="Riskid">Risk Id</label>
                     <div class="col-sm-12">
                         <input type="text" class="form-control"style="font-size: 13px;" id="Riskid"   name="Riskid" value="{{$dat->grp_id}}" Readonly="">
@@ -88,7 +72,8 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="display:inline-block;width:49%;">
+                <div class="col-12 rf-section-heading rf-section-break"><h2>Risk details</h2><p>Review the risk statement, drivers, and existing controls.</p></div>
+<div class="form-group" style="display:inline-block;width:49%;">
                     <label class="col-sm-12 col-form-label"style="font-size: 13px;" for="riskdec">Risk description</label>
                     <div class="col-sm-12">
                         <input type="text" class="form-control" id="riskdec" style="font-size: 13px;"  name="riskdec" value="{{$dat->riskdec}}"Readonly="" >
@@ -100,7 +85,8 @@
                         <input type="text" class="form-control" id="riskdri"  style="font-size: 13px;" name="riskdri" value="{{$dat->riskdri}}"Readonly="">
                     </div>
                 </div>
-                <div class="form-group" style="display:inline-block;width:49%;">
+                <div class="col-12 rf-section-heading rf-section-break"><h2>Assessment & responsibility</h2><p>Confirm the response, assessment, and responsible people.</p></div>
+<div class="form-group" style="display:inline-block;width:49%;">
                     <label class="col-sm-12 col-form-label"style="font-size: 13px;" for="riskscr">Risk source</label>
                     <div class="col-sm-12">
                         <input type="text" class="form-control" id="riskscr" style="font-size: 13px;"  name="riskscr" value="{{$dat->riskscr}}"Readonly="">
@@ -163,7 +149,7 @@
 
 
 
-                                <div style="text-align:center;">
+                                <div class="risk-form-actions">
         <button type="submit" class="btn btn-primary"style="font-size: 13px;margin-left:69.5%;">Need More Action</button>
         <a href="{{ url('/user/risks/closed?val='.$Rid)}}"style="font-size: 13px;" class="btn btn-primary">Close Risk</a>
 
@@ -175,6 +161,7 @@
     </div>
 @endforeach
 @endif
+</form>
 </div>
 </div>
 </div>

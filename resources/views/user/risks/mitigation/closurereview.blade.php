@@ -2,9 +2,9 @@
 @section('content')
 @include('shared.forms.risk-assets')
 
-<!doctype html>
-<html lang="en">
-<head>
+
+
+
     <style>
         .breadcrumb > li + li:before {
             display: none !important;
@@ -56,29 +56,14 @@
         }
 
     </style>
-</head>
-<body>
+
+
     <!-- Page Content -->
-    <div class="content">
+    <div class="content risk-form-page risk-form-shell">
+@include('shared.forms.risk-page-header', ['formTitle' => 'Review mitigation closure', 'formDescription' => 'Verify the completed action and its effect on the linked risks before closure.', 'formRecord' => $risk ?? null])
         <!-- Horizontal -->
         <div class="block block-rounded" style="box-shadow: 0 0 15px;background-color: #ffffff;">
-            <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item font-w700">
-                        <a href="{{ route('mitigations.index') }}" class="text-black">
-                            Mitigating Actions
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item" aria-current="page">
-                        Closure Review
-                    </li>
-                </ol>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('risk.index') }}">Enterprise Risk</a>
-                    </li>
-                </ol>
-            </nav>
+
             <div class="block-content block-content-full">
                 <div class="row">
                     <div class="col-lg-12">
@@ -120,7 +105,7 @@
                                             <input type="text" class="form-control" id="action_name" style="font-size: 13px;"
                                                 value="{{ isset($mitigation) && $mitigation->user ? $mitigation->user->name : '' }}"
                                                 name="action_name" readonly>
-                                            
+
                                         </div>
                                     </div>
                                     <!-- Department -->
@@ -214,9 +199,9 @@
                                                             {{ $riskItem->riskname . ' - ' . $riskItem->grp_id }}
                                                         </option>
                                                     @endforeach
-                                                    
+
                                                 </select> --}}
-                                                
+
                                                 @php 
                                                     $riskNames = [];
                                                     foreach($deletedRisks as $riskItem){
@@ -224,7 +209,7 @@
                                                            $riskNames[] = $riskItem->riskname . ' - ' . $riskItem->grp_id;
                                                         }
                                                     }
-                                                        
+
                                                     foreach($data as $riskItem){
                                                         if(isset($mitigation) && in_array($riskItem->Rid, $linkOtherRiskIds)){
                                                            $riskNames[] = $riskItem->riskname . ' - ' . $riskItem->grp_id;
@@ -401,7 +386,7 @@
             </div>
         </div>
     </div>
-</body>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script type="text/javascript">
@@ -494,7 +479,7 @@
         });
     });
 </script>
-</html>
+
 @endsection
 @section('js_after')
     <!-- Page JS Plugins -->

@@ -6,28 +6,11 @@
 
 
                 <!-- Hero -->
-                <div class="bg-body-light">
-                    <div class="content content-full">
-                        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center" style="height:0px;">
 
-                            <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
-                                <ol class="breadcrumb breadcrumb-alt">
-                                    <li class="breadcrumb-item">Enterprise Risk</li>
-                                    <li class="breadcrumb-item" aria-current="page">
-                                        <a class="link-fx" href="">Reopen Risk</a>
-                                    </li>
-									<li class="breadcrumb-item" aria-current="page">
-                                <a class="link-fx" href="/user/riskmgmt">Back</a>
-                            </li>
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-                <!-- END Hero -->
 
                 <!-- Page Content -->
-                <div class="content risk-form-page">
+                <div class="content risk-form-page risk-form-shell">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Reopen risk', 'formDescription' => 'Reassess the risk and confirm why monitoring should resume.'])
 
 
                    <!-- Horizontal -->
@@ -40,7 +23,7 @@
 					<form class="risk-module-form mb-5" action="{{url('/user/risks/reopenrisk')}}" enctype="multipart/form-data"  method="post" files="true">
 					{{ csrf_field() }}
 					{{-- <div class="form-group">
-						<h1>REOPEN RISK<h1>
+
 					</div> --}}
 					@if(count($errors) >0 )
 						@foreach($errors->all() as $error)
@@ -54,7 +37,8 @@
 					@foreach($data as $dat)
                     {{-- <div class="col-lg-10"> --}}
 
-								<div class="form-group" style="display:inline-block;width:49%;">
+								<div class="col-12 rf-section-heading rf-section-break"><h2>Risk context</h2><p>Confirm the reference information for this risk.</p></div>
+<div class="form-group" style="display:inline-block;width:49%;">
 							<label class="col-sm-12 col-form-label" for="Riskid"style="font-size: 13px;">Risk id</label>
 							<div class="col-sm-12">
 								<input type="text" class="form-control" id="Riskid" style="font-size: 13px;"  name="Riskid" value="{{$dat->grp_id}}" Readonly=""></div>
@@ -191,8 +175,8 @@
 
 
 
-									<div style="text-align:center;">
-							<button for="submittl" type="submit" onclick=" return confirm('Are you sure to reopen?')" class="btn btn-primary"style="font-size:13px;margin-left:79%;">Reopen</button>
+									<div class="risk-form-actions">
+							<button for="submittl" type="submit" onclick=" return confirm('Are you sure to reopen?')" class="btn btn-primary"style="font-size:13px;">Reopen</button>
 							<button for="reset" type="reset" class="btn btn-primary" style="font-size:13px;">Reset </button>
 							</div>
 

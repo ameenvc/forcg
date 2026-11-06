@@ -15,7 +15,7 @@ class RiskRegisterDetailTest extends TestCase
         parent::setUp();
         view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));
         app('events')->forget('composing: *');
-        Schema::create('users', function (Blueprint $table) { $table->increments('id'); $table->string('email'); $table->softDeletes(); });
+        Schema::create('users', function (Blueprint $table) { $table->increments('id'); $table->string('email'); $table->string('name')->nullable(); $table->string('employeeid')->nullable(); $table->string('profile_picture')->nullable(); $table->softDeletes(); });
         DB::table('users')->insert(['id' => 1, 'email' => 'reviewer@example.test']);
         $this->actingAs((new User)->forceFill(['id' => 1, 'email' => 'reviewer@example.test']));
     }
@@ -54,6 +54,30 @@ class RiskRegisterDetailTest extends TestCase
         $this->assertStringNotContainsString('@else', $html);
         $this->assertStringContainsString('The marker shows the recorded assessment.', $html);
         if (getenv('RISK_DETAIL_PREVIEW_PATH')) file_put_contents(getenv('RISK_DETAIL_PREVIEW_PATH'), $html);
+        $reportVars = array_merge($vars, ['clientDetails' => null]);
+        $report = view('user.risks.detail_pdf', $reportVars)->render();
+        $this->assertStringContainsString('Risk assessment report', $report);
+        $this->assertStringContainsString('Qualify alternative suppliers', $report);
+        $this->assertStringNotContainsString('@else', $report);
+        $pdf = \PDF::loadView('user.risks.detail_pdf', $reportVars)->output();
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertStringContainsString('%%EOF', $pdf);
+        if (getenv('RISK_DETAIL_PDF_PREVIEW_PATH')) file_put_contents(getenv('RISK_DETAIL_PDF_PREVIEW_PATH'), $pdf);
+        $formVars = ['data' => collect([$risk]), 'hml' => collect([(object) ['name' => 'High'], (object) ['name' => 'Moderate'], (object) ['name' => 'Low']]),
+            'mn' => collect([(new User)->forceFill(['id' => 1, 'name' => 'Alice Walker', 'email' => 'owner@example.test'])]), 'strategy' => collect([(object) ['name' => 'Mitigate']]), 'Rid' => 211, 'model' => null, 'errors' => new \Illuminate\Support\ViewErrorBag()];
+        $form = view('user.risks.updaterisk', $formVars)->render();
+        foreach (['Risk context', 'Risk details', 'Assess & assign', 'Initial risk review'] as $heading) $this->assertStringContainsString($heading, $form);
+        foreach (['Riskid', 'Riskar', 'Riskgp', 'riskname', 'riskdec', 'riskdri', 'existing_controls', 'riskscr', 'risk_response', 'riskowner[]', 'impa', 'like', 'posted'] as $name) $this->assertStringContainsString('name="'.$name.'"', $form);
+        $this->assertStringContainsString('name="impa" id="impact" value="High"', $form);
+        $this->assertStringContainsString('name="like" id="likelihood" value="Moderate"', $form);
+        $this->assertStringContainsString('>Approve</button>', $form);
+        $legacyVars = array_merge($formVars, ['riskinfo' => collect(), 'riskreviewers' => collect(), 'rskgrp' => collect(), 'departments' => collect(), 'id' => 211]);
+        foreach (['riskreview', 'resubmit', 'useredit', 'closure', 'reopenrisk', 'ownrespo'] as $page) {
+            $legacy = view('user.risks.'.$page, $legacyVars)->render();
+            $this->assertStringContainsString('rf-page-header', $legacy);
+            $this->assertStringContainsString('rf-section-break', $legacy);
+        }
+        if (getenv('RISK_INITIAL_REVIEW_PREVIEW_PATH')) file_put_contents(getenv('RISK_INITIAL_REVIEW_PREVIEW_PATH'), $form);
         $risk->setAttribute('impa', null); $risk->setAttribute('like', null); $risk->setAttribute('rank', null); $risk->setRelation('mitigations', collect());
         $empty = view('user.risks.detail', $vars)->render();
         $this->assertStringContainsString('Unassessed', $empty);

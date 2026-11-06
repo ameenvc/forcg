@@ -29,20 +29,10 @@
     }
 </style>
 
-    <div class="content risk-form-page">
+    <div class="content risk-form-page risk-form-shell">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Edit risk', 'formDescription' => 'Update the risk information, controls, assessment, and accountable owners.'])
         <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
-            <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item font-w700">
-                        <a class="link-fx" href="/user/riskmgmt" class="text-black">
-                            Enterprise Risk
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item" aria-current="page">
-                        Edit Risk
-                    </li>
-                </ol>
-            </nav>
+
 
             <div class="block-content block-content-full">
                 @include('user.risks.notification-warning')
@@ -90,7 +80,8 @@
                                 @foreach ($data as $d)
                                     <?php $idd = $d->Rid; ?>
                                     <div class="row col-lg-12 col-md-12 col-sm-12">
-                                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                        <div class="col-12 rf-section-heading rf-section-break"><h2>Risk context</h2><p>Confirm the reference information for this risk.</p></div>
+<div class="form-group col-lg-4 col-md-6 col-sm-12">
                                             <label class="col-form-label text-sm" for="posted">Risk ID</label>
                                             <div>
                                                 <input type="text" class="form-control text-sm" id="posted" name="posted" value="{{ $d->grp_id }}" Readonly="">
@@ -155,7 +146,8 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-sm-12">
+                                        <div class="col-12 rf-section-heading rf-section-break"><h2>Risk details</h2><p>Review the risk statement, drivers, and existing controls.</p></div>
+<div class="form-group col-sm-12">
                                             <label class="col-form-label text-sm"
                                                 for="riskdec">Risk Description<span class="text-danger">*</span></label>
                                             <div>
@@ -197,7 +189,8 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                        <div class="col-12 rf-section-heading rf-section-break"><h2>Assessment & responsibility</h2><p>Confirm the response, assessment, and responsible people.</p></div>
+<div class="form-group col-lg-4 col-md-6 col-sm-12">
                                             <label class="col-form-label text-sm"
                                                 for="riskscr">Risk Source</label>
                                             <div>

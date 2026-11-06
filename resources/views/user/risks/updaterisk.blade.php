@@ -29,21 +29,11 @@
     </style>
 
 <!-- Page Content -->
-<div class="content risk-form-page">
+<div class="content risk-form-page risk-form-shell">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Initial risk review', 'formDescription' => 'Confirm the risk description and assessment, then assign owners before approval.'])
     <!-- Horizontal -->
     <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
-        <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item font-w700">
-                    <a class="link-fx" href="/user/riskmgmt" class="text-black">
-                        Enterprise Risk
-                    </a>
-                </li>
-                <li class="breadcrumb-item" aria-current="page">
-                    Initial Review
-                </li>
-            </ol>
-        </nav>
+
 
         <div class="block-content block-content-full">
             <div class="row">
@@ -55,7 +45,7 @@
                         @if(count($data)>0)
                         @foreach($data as $dat)
 
-                        <div class="form-group">
+<section class="rf-editor-section rf-context"><div class="rf-section-heading"><h2>Risk context</h2><p>Reference information identifies the record being reviewed.</p></div>                        <div class="form-group">
                             <div class="row col-lg-12">
                                 <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                     <label class="col-form-label text-sm" for="Riskid">Risk ID</label>
@@ -81,13 +71,14 @@
                                     <label class="col-form-label text-sm" for="Riskgp">Risk Group</label>
                                     <input type="text" class="form-control text-sm" id="Riskgp" name="Riskgp" value="{{$dat->riskgroup}}" Readonly="">
                                 </div>
-                                <div class="form-group col-lg-4 col-md-6 col-sm-12">
-                                    <label class="col-form-label text-sm" for="riskname">Risk Name<span class="text-danger">*</span></label>
-                                    <input required type="text" class="form-control text-sm" id="riskname" name="riskname" value="{{$dat->riskname}}">
-                                </div>
+
                             </div>
                         </div>
-                        <div class="form-group col-sm-12">
+</section>
+<section class="rf-editor-section "><div class="rf-section-heading"><h2>Risk details</h2><p>Keep the risk statement specific, and distinguish existing controls from proposed actions.</p></div><div class="rf-detail-fields"><div class="form-group col-sm-12 rf-wide">
+                                    <label class="col-form-label text-sm" for="riskname">Risk Name<span class="text-danger">*</span></label>
+                                    <input required type="text" class="form-control text-sm" id="riskname" name="riskname" value="{{$dat->riskname}}">
+                                </div>                        <div class="form-group col-sm-12 rf-wide">
                             <label class="col-form-label text-sm" for="riskdec">Risk Description<span class="text-danger">*</span></label>
                             <div>
                                 <textarea rows="5"
@@ -129,12 +120,13 @@
                             </div>
                         </div>
 
-                        <div class="row col-lg-12">
+</div></section>
+<section class="rf-editor-section "><div class="rf-section-heading"><h2>Assess & assign</h2><p>Use the approved criteria for impact and likelihood, then confirm response and ownership.</p></div>                        <div class="row col-lg-12">
                             <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                 <label class="col-form-label text-sm" for="riskscr">Risk Source<span class="text-danger">*</span></label>
                                 <div>
                                     <select required class="form-control js-select2 text-sm" id="riskscr" name="riskscr">
-                                        <option option="">Select Source</option>
+                                        <option value="">Choose source</option>
                                         <option value="Internal" {{$dat->riskscr=='Internal' ? 'selected':''}}>Internal</option><br>
                                         <option value="External" {{$dat->riskscr=='External' ? 'selected':''}}>External</option><br>
                                         <option value="Internal/External" {{$dat->riskscr=='Internal/External' ? 'selected':''}}>Internal/External</option><br>
@@ -176,7 +168,7 @@
                             <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                 <label class="col-form-label" style="font-size:13px;" for="impact">Impact<span class="text-danger">*</span></label>
                                 <div>
-                                    <input type="hidden" name="impa" id="impact" value="">
+                                    <input type="hidden" name="impa" id="impact" value="{{ $dat->impa }}">
                                     @if(count($hml)> 0 )
                                         @foreach($hml as $value)
                                             @php
@@ -200,7 +192,7 @@
                             <div class="form-group col-lg-4 col-md-6 col-sm-12">
                                 <label class="col-form-label" style="font-size:13px;" for="likelihood">Likelihood<span class="text-danger">*</span></label>
                                 <div>
-                                    <input type="hidden" name="like" id="likelihood" value="">
+                                    <input type="hidden" name="like" id="likelihood" value="{{ $dat->like }}">
                                     @if(count($hml)> 0 )
                                     @foreach($hml as $value)
                                         @php
@@ -223,11 +215,12 @@
                             </div>
                         </div>
 
+</section>
                         <div class="form-group">
                             <input type="hidden" name="posted" value="{{ $dat->Rid}}">
                         </div>
-                        <div style="text-align:center;">
-                            <a href="{{url('user/risks/disapprove?val='.$Rid)}}" class="btn btn-danger text-sm" style="margin-left:75%;">Disapprove</a>
+                        <div class="risk-form-actions"><a class="btn btn-outline-primary" href="{{ route('risk.detail', $dat->Rid) }}">Cancel</a>
+                            <a href="{{url('user/risks/disapprove?val='.$Rid)}}" class="btn btn-danger text-sm" style="">Disapprove</a>
                             <button type="submit" class="btn btn-primary text-sm" >Approve</button>
                         </div>
 

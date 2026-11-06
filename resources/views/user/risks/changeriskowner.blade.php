@@ -19,21 +19,11 @@
 </style>
 
 <!-- Page Content -->
-<div class="content risk-form-page">
+<div class="content risk-form-page risk-form-shell">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Change risk owners', 'formDescription' => 'Assign the people accountable for monitoring and responding to this risk.'])
     <!-- Horizontal -->
     <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
-        <nav aria-label="breadcrumb" style="display: flex; justify-content: space-between; background: #f6f7f9;">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item font-w700">
-                    <a class="link-fx" href="/user/riskmgmt" class="text-black">
-                        Enterprise Risk
-                    </a>
-                </li>
-                <li class="breadcrumb-item" aria-current="page">
-                    Change Risk Owner
-                </li>
-            </ol>
-        </nav>
+
         <div class="block-content block-content-full">
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12">
@@ -113,7 +103,7 @@
                         </div>
                         <div class="form-group row">
                             <div class="col-sm-8 ml-auto">
-                                <button type="submit" class="btn btn-primary" style="font-size:13px;margin-left:82.5%;" onclick="return confirm('Do you want to proceed ? ')">Submit</button>
+                                <button type="submit" class="btn btn-primary" style="font-size:13px;" onclick="return confirm('Do you want to proceed ? ')">Submit</button>
                             </div>
                         </div>
                     </form>

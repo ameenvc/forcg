@@ -2,7 +2,6 @@
     <label class="register-search"><i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">Search risk register</span><input type="search" id="risk-register-search" placeholder="Search risks, IDs, or owners…" autocomplete="off"></label>
     <div class="register-toolbar-actions">
         <button type="button" id="risk-register-ai-toggle" class="btn btn-primary" aria-expanded="false" aria-controls="risk-register-ai"><i class="fa fa-magic mr-1" aria-hidden="true"></i>AI review</button>
-        <button type="button" id="risk-toggle-filters" class="btn register-secondary" aria-controls="risk-register-filters" aria-expanded="false"><i class="fa fa-filter mr-1" aria-hidden="true"></i>Filters <span id="risk-filter-count" hidden></span></button>
         <details class="register-menu"><summary>Columns <i class="fa fa-chevron-down ml-1" aria-hidden="true"></i></summary><div class="register-menu-body">
             @foreach([1 => 'Row number', 5 => 'Risk group', 6 => 'Risk area', 9 => 'Risk owner', 10 => 'Response', 11 => 'Process stage'] as $column => $label)
                 <label><input type="checkbox" data-register-column="{{ $column }}" checked> {{ $label }}</label>
@@ -15,14 +14,6 @@
             @endforeach
         </div></details>
     </div>
-</div>
-<div id="risk-register-filters" class="register-filters" hidden>
-    <label>Risk group<select id="register-filter-group" data-filter-column="5"><option value="">All groups</option>@foreach($data->pluck('riskgroup')->filter()->unique()->sort() as $group)<option value="{{ $group }}">{{ $group }}</option>@endforeach</select></label>
-    <label>Risk area<select id="register-filter-area" data-filter-column="6"><option value="">All areas</option>@foreach($data->pluck('department.departmentname')->filter()->unique()->sort() as $area)<option value="{{ $area }}">{{ $area }}</option>@endforeach</select></label>
-    <label>Rating<select id="register-filter-rating" data-filter-column="7"><option value="">All ratings</option><option>High</option><option>Moderate</option><option>Low</option></select></label>
-    <label>Risk owner<select id="register-filter-owner" data-filter-column="9" data-match-owner="true"><option value="">All owners</option>@foreach($riskOwnerData as $owner)<option value="{{ $owner['employeeid'] }}">{{ $owner['name'] }} · {{ $owner['employeeid'] }}</option>@endforeach</select></label>
-    <label>Response<select id="register-filter-response" data-filter-column="10"><option value="">All responses</option>@foreach($data->pluck('risk_response')->filter()->unique()->sort() as $response)<option value="{{ $response }}">{{ $response }}</option>@endforeach</select></label>
-    <label>Process stage<select id="register-filter-stage" data-filter-column="11"><option value="">All stages</option>@foreach($data->pluck('action_status')->filter()->unique()->sort() as $stage)<option value="{{ $stage }}">{{ $stage }}</option>@endforeach</select></label>
 </div>
 <div class="register-view-options">
     @include('user.risks.register-rating-tabs')

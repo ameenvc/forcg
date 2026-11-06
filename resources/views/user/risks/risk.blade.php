@@ -45,13 +45,13 @@
                         <th class="d-none" data-searchable="false">Internal ID</th>
                         <th class="register-col-id">Risk ID</th>
                         <th>Risk name</th>
-                        <th>Risk group</th>
-                        <th>Risk area</th>
-                        <th>Rating</th>
+                        <th data-orderable="false" class="register-filter-heading"><select class="register-header-filter" aria-label="Filter by risk group" id="register-filter-group" data-filter-column="5"><option value="">Risk group</option>@foreach($data->pluck('riskgroup')->filter()->unique()->sort() as $group)<option value="{{ $group }}">{{ $group }}</option>@endforeach</select></th>
+                        <th data-orderable="false" class="register-filter-heading"><select class="register-header-filter" aria-label="Filter by risk area" id="register-filter-area" data-filter-column="6"><option value="">Risk area</option>@foreach($data->pluck('department.departmentname')->filter()->unique()->sort() as $area)<option value="{{ $area }}">{{ $area }}</option>@endforeach</select></th>
+                        <th data-orderable="false" class="register-filter-heading"><select class="register-header-filter" aria-label="Filter by rating" id="register-filter-rating" data-filter-column="7"><option value="">Rating</option><option>High</option><option>Moderate</option><option>Low</option></select></th>
                         <th class="d-none" data-orderable="false" data-searchable="false">Owner image</th>
-                        <th>Risk owner</th>
-                        <th>Response</th>
-                        <th>Process stage</th>
+                        <th data-orderable="false" class="register-filter-heading"><select class="register-header-filter" aria-label="Filter by risk owner" id="register-filter-owner" data-filter-column="9" data-match-owner="true"><option value="">Risk owner</option>@foreach($riskOwnerData as $owner)<option value="{{ $owner['employeeid'] }}">{{ $owner['name'] }} · {{ $owner['employeeid'] }}</option>@endforeach</select></th>
+                        <th data-orderable="false" class="register-filter-heading"><select class="register-header-filter" aria-label="Filter by response" id="register-filter-response" data-filter-column="10"><option value="">Response</option>@foreach($data->pluck('risk_response')->filter()->unique()->sort() as $response)<option value="{{ $response }}">{{ $response }}</option>@endforeach</select></th>
+                        <th data-orderable="false" class="register-filter-heading"><select class="register-header-filter" aria-label="Filter by process stage" id="register-filter-stage" data-filter-column="11"><option value="">Process stage</option>@foreach($data->pluck('action_status')->filter()->unique()->sort() as $stage)<option value="{{ $stage }}">{{ $stage }}</option>@endforeach</select></th>
                         <th data-orderable="false" data-searchable="false">Actions</th>
                     </tr>
                     </thead>

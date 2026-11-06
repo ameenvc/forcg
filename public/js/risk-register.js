@@ -71,13 +71,16 @@
             syncSelection();
             const total = table.rows().count(), matching = table.rows({search: 'applied'}).count();
             root.dataset.empty = String(matching === 0);
-            get('risk-register-empty').hidden = matching !== 0;
+            root.dataset.noRecords = String(total === 0);
+            get('risk-register-empty').hidden = total > 0 || matching !== 0;
             get('risk-empty-title').textContent = total ? 'No matching risks' : 'No risks in this view';
             get('risk-empty-description').textContent = total ? 'Try another search or clear the filters to see your risks.' : 'Add a risk or clear any page filters to see more records.';
             get('risk-match-count').textContent = `${matching} of ${total} risks in this view`;
             const count = filters.filter(field => field.value).length;
-            get('risk-filter-count').hidden = count === 0;
-            get('risk-filter-count').textContent = count;
+            filters.forEach(field => {
+                field.classList.toggle('is-filtered', Boolean(field.value));
+                field.title = `${field.getAttribute('aria-label')}: ${field.value ? field.options[field.selectedIndex].text : 'All'}`;
+            });
             get('risk-clear-filters').hidden = !count && !search.value;
             const rating = get('register-filter-rating').value;
             root.querySelectorAll('[data-register-rating]').forEach(card => card.setAttribute('aria-pressed', String(card.dataset.registerRating === rating)));
@@ -105,10 +108,9 @@
         table.on('draw.dt', refreshView);
         table.on('preDraw.dt', closeRowMenus);
         search.addEventListener('input', applyFilters);
-        filters.forEach(field => field.addEventListener('change', applyFilters));
-        get('risk-toggle-filters').addEventListener('click', () => {
-            const panel = get('risk-register-filters'); panel.hidden = !panel.hidden;
-            get('risk-toggle-filters').setAttribute('aria-expanded', String(!panel.hidden));
+        filters.forEach(field => {
+            field.addEventListener('change', applyFilters);
+            ['click', 'mousedown', 'keydown'].forEach(type => field.addEventListener(type, event => event.stopPropagation()));
         });
         get('risk-clear-filters').addEventListener('click', () => { if (busy) return; search.value = ''; filters.forEach(field => { field.value = ''; }); applyFilters(); });
         root.querySelectorAll('[data-register-rating]').forEach(card => card.addEventListener('click', () => { if (busy) return; get('register-filter-rating').value = card.dataset.registerRating; applyFilters(); }));

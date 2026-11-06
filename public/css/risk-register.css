@@ -937,3 +937,12 @@ html[data-risk-theme=dark] .register-rating-tabs .register-summary-card[aria-pre
 @media(max-width:420px) { #risk-register .register-toolbar-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:767px) { .register-navigation #learn { display:none; } .register-navigation #learn_btn { min-width:32px; min-height:32px; } .register-navigation #learn_btn i { margin:0!important; } #risk-register .register-sort select { max-width:116px; } }
 @media(max-width:420px) { #risk-register .register-rating-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; overflow:visible; } #risk-register .register-rating-tabs .register-summary-card { justify-content:space-between; } }
+/* Native column-header filters keep filtering beside the corresponding data. */
+html body #main-container #risk-register table.risk-module-table .register-header-filter { display:block; width:100%; min-width:0; max-width:100%; border:1px solid transparent; border-radius:5px; padding:3px 0!important; font-size:12px!important; font-weight:600; line-height:18px; color:inherit!important; background:transparent!important; text-overflow:ellipsis; cursor:pointer; }
+html body #main-container #risk-register table.risk-module-table .register-header-filter:hover { color:#365fc4!important; }
+html body #main-container #risk-register table.risk-module-table .register-header-filter.is-filtered { color:#365fc4!important; }
+html body #main-container #risk-register table.risk-module-table .register-header-filter:focus-visible { outline:2px solid #7564d9; outline-offset:3px; }
+#risk-register[data-no-records=false] .risk-table-scroll { display:block; }
+html[data-risk-theme=dark] body #main-container #risk-register table.risk-module-table .register-header-filter.is-filtered { color:#c5d4ff!important; }
+/* Three toolbar actions remain after moving filters to their column headers. */
+@media(max-width:767px) { #risk-register .register-toolbar-actions { grid-template-columns:repeat(3,minmax(0,1fr)); } }

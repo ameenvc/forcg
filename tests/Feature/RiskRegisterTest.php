@@ -107,6 +107,9 @@ class RiskRegisterTest extends TestCase
             libxml_clear_errors(); libxml_use_internal_errors($old);
             $xpath = new \DOMXPath($dom);
             $this->assertSame(13, $xpath->query('//table[@id="tabledata"]/thead/tr/th')->length);
+            $this->assertSame(6, $xpath->query('//table[@id="tabledata"]/thead/tr/th/select[@data-filter-column]')->length);
+            $this->assertStringNotContainsString('id="risk-toggle-filters"', $html);
+            $this->assertStringNotContainsString('id="risk-register-filters"', $html);
             foreach ($xpath->query('//table[@id="tabledata"]/tbody/tr') as $row) $this->assertSame(13, $row->getElementsByTagName('td')->length);
             $this->assertSame($empty ? 0 : 31, $xpath->query('//table[@id="tabledata"]/tbody/tr')->length);
             $this->assertStringContainsString('Clear search &amp; filters', $html);

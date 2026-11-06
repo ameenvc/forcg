@@ -1,85 +1,15 @@
 @extends('layouts.backend')
 @section('css_after')
-<link rel="stylesheet" href="{{ asset('css/user/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/user/organization-esg.css') }}?v=20261106-1">
 @endsection
 @section('content')
-<!doctype html>
-<html lang="en">
-<body>
-    {{-- <div>
-        <p>if_legal_requirements_identified_count : {{ $if_legal_requirements_identified_count }}</p>
-        <p>if_zero_legal_requirements_identified_count : {{ $if_zero_legal_requirements_identified_count }}</p>
-        <p>if_legal_requirements_fulfilled_count : {{ $if_legal_requirements_fulfilled_count }}</p>
-        <p>if_legal_requirements_not_fulfilled_count : {{ $if_legal_requirements_not_fulfilled_count }}</p>
-        <p>if_legal_evaluation_not_completed_count : {{ $if_legal_evaluation_not_completed_count }}</p>
-        <p>if_periodical_evaluation_due_that_year_count : {{ $if_periodical_evaluation_due_that_year_count }}</p>
-        <p>if_periodical_evaluation_completed_that_year_count : {{ $if_periodical_evaluation_completed_that_year_count }}</p>
-        <p>if_periodical_evaluation_did_after_due_that_year_count : {{ $if_periodical_evaluation_did_after_due_that_year_count }}</p>
-    </div> --}}
-    <div class="content">
-        <div class="row">
-            <div class="col-lg-4 col-md-12 col-12">
-                <div class="bg-pink p-1 global-height">
-                    <p class="text-white text-center font-shape mt-4">Global CG Score</p>
-                    <h1 class="text-white text-center cg-score-style">CG 10.1373</h1>
-                </div>
-                <div class="bg-white pr-1 pl-1 last-month-style">
-                    <p class="text-center mt-3 font-shape">Last Month: CG 10.1166</p>
-                </div>
-                <div class="bg-pink mt-1 p-2">
-                    <p class="text-white text-center font-shape mt-4 module-score-style">Module Scores</p>
-                </div>
-                {{-- Start: Modules --}}
-                @foreach($modules as $key => $item)
-                <div class="p-1 {{$item[1]}} ">
-                    <div class="text-white text-center mr-3 ml-3 font-shape">
-                        <div class="row">
-                            <div class="col-9 text-left text-font">{{ $key }}</div>
-                            <div class="col-3 text-right text-font">{{ $item[0] }}</div>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            <div class="col-lg-4 col-md-12 col-12"></div>
-            <div class="col-lg-4 col-md-12 col-12 mb-3" id="actions">
-                <div class="dropdown">
-                    <button type="button" class="btn btn-outline-danger dropdown-toggle" id="dropdown-default-outline-danger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Actions
-                    </button>
-                    <div class="dropdown-menu font-size-sm" aria-labelledby="dropdown-default-outline-danger">
-                        <a class="dropdown-item" href="javascript:void(0)">Share your CG score</a>
-                        <a class="dropdown-item" href="javascript:void(0)">Request CG score</a>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-</body>
-
-</html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script>
-    isMobile = function() {
-        const toMatch = [/Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i];
-
-        return toMatch.some(toMatchItem => {
-            return navigator.userAgent.match(toMatchItem);
-        });
-    };
-    if (isMobile()) {
-        $('#actions').addClass('text-center');
-        $('#actions').removeClass('text-right');
-    } else {
-        $('#actions').addClass('text-right');
-        $('#actions').removeClass('text-center');
-    }
-
-</script>
-
+<div class="content esg-page">
+    <header class="esg-hero"><div><span class="esg-eyebrow"><i class="fa fa-leaf" aria-hidden="true"></i> ORGANIZATION PERFORMANCE</span><h1>ESG & vendor readiness</h1><p>Environmental, social and governance evidence across your management system.</p></div><div class="esg-actions"><a href="{{ url('/user/score') }}?export=csv" class="esg-button"><i class="fa fa-download" aria-hidden="true"></i> Export evidence summary</a><button type="button" class="esg-button" onclick="window.print()"><i class="fa fa-print" aria-hidden="true"></i> Print / PDF</button></div></header>
+    <section class="esg-summary" aria-label="Organization readiness summary"><div class="esg-score"><span>Evidence-adjusted readiness</span><strong>{{ $scorecard['score'] === null ? '—' : $scorecard['score'] }}<small> / 100</small></strong><p>{{ $scorecard['score'] === null ? 'No connected evidence to calculate a score.' : 'Weighted performance with evidence gaps earning no points.' }}</p></div><div><span>Evidence coverage</span><strong>{{ $scorecard['coverage'] }}<small>%</small></strong><p>Share of model weight supported by connected records.</p></div><div class="esg-status"><span>Vendor qualification review</span><h2>{{ $scorecard['status'] }}</h2><p>Self-reported application evidence. Customer approval and independent verification are not recorded by this model.</p></div></section>
+    @if($scorecard['blockers'])<div class="esg-alert" role="status"><strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Compliance exception</strong>@foreach($scorecard['blockers'] as $blocker)<p>{{ $blocker }}. Resolve and verify before customer qualification review.</p>@endforeach</div>@endif
+    <section class="esg-pillars" aria-label="ESG pillars">@foreach($scorecard['pillars'] as $key=>$pillar)<article class="esg-pillar esg-{{ strtolower($key) }}"><div><span class="esg-letter">{{ $key }}</span><h2>{{ $pillar['name'] }}</h2><span>{{ $pillar['weight'] }}% of model</span></div><strong>{{ $pillar['score'] === null ? '—' : $pillar['score'] }}<small> / 100 observed</small></strong><div class="esg-meter" role="meter" aria-label="{{ $pillar['name'] }} evidence coverage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ $pillar['coverage'] }}"><span style="width:{{ $pillar['coverage'] }}%"></span></div><p>{{ $pillar['coverage'] }}% evidence coverage · {{ round($pillar['earned'],1) }} / 100 evidence-adjusted pillar points</p></article>@endforeach</section>
+    <section class="esg-panel"><div class="esg-panel-heading"><div><h2>Performance & evidence</h2><p>Current stored records · cancelled, archived and deleted records excluded · missing or blank states earn no credit.</p></div><span class="esg-tag">Model {{ $scorecard['version'] }}</span></div><div class="esg-table-wrap"><table><thead><tr><th scope="col">Indicator</th><th scope="col">Pillar / weight</th><th scope="col">Evidence</th><th scope="col">Performance</th><th scope="col">Next step</th></tr></thead><tbody>@foreach($scorecard['indicators'] as $item)<tr><td><strong>{{ $item['label'] }}</strong><details><summary>Scoring rule</summary><p>Satisfactory status records ÷ all eligible records × 100. This is a workflow readiness proxy, not a direct measure of ESG outcomes. @if($item['module']) Satisfactory states: {{ implode(', ', $item['satisfactory_states']) }}. Source module: {{ $item['module'] }}. @else A dedicated measurement source and verification are required. @endif</p></details></td><td>{{ $item['pillar'] }} · {{ $item['weight'] }}%</td><td><span class="esg-tag {{ $item['score'] !== null ? 'esg-connected' : '' }}">{{ $item['state'] }}</span>@if($item['total'])<small>{{ $item['passed'] }} satisfactory / {{ $item['total'] }} records @if($item['unknown'])· {{ $item['unknown'] }} without status @endif</small>@endif</td><td><strong>{{ $item['score'] === null ? '—' : $item['score'].' / 100' }}</strong></td><td>@if($item['url'])<a class="esg-link" href="{{ $item['url'] }}">Review records <i class="fa fa-arrow-right" aria-hidden="true"></i></a>@else<span class="esg-muted">Evidence connection required</span>@endif</td></tr>@endforeach</tbody></table></div></section>
+    <div class="esg-bottom"><section class="esg-panel"><h2>Qualification review checklist</h2><p>This score supports customer due diligence; it does not approve a vendor.</p><ol><li>Agree scope, reporting period, industry materiality and customer acceptance criteria.</li><li>Close non-compliance and assess outstanding safety or environmental incidents.</li><li>Supply GHG, energy, water, labour-rights and ethics evidence for the gaps shown above.</li><li>Have an authorized reviewer validate evidence, validity dates and any certifications.</li><li>Record each customer's approval separately; no customer decision is inferred here.</li></ol></section><section class="esg-panel"><h2>How the score works</h2><p>E 35% · S 35% · G 30%. Each pillar has fixed indicator weights totaling 100. Observed scores use connected indicators only; the headline score retains all weights, so missing evidence cannot inflate readiness.</p><p>No rewards for creating records or reporting fewer incidents. Completion is a workflow proxy and does not demonstrate control effectiveness or legal certification.</p><p>Snapshot: {{ $scorecard['at'] }} · All stored eligible records, not an annual ESG report. No historical trend or external assurance is claimed.</p></section></div>
+    <section class="esg-panel"><details><summary>All-module coverage</summary><p>Modules without a validated indicator remain visible here. They are not silently assigned ESG points.</p><div class="esg-modules">@foreach($scorecard['modules'] as $module)<div><strong>{{ $module['name'] }}</strong><span>{{ !$module['enabled'] ? 'Disabled' : ($module['indicators'] ? $module['connected'].' / '.$module['indicators'].' indicators connected' : 'Supplementary · indicator mapping required') }}</span></div>@endforeach</div></details></section>
+</div>
 @endsection

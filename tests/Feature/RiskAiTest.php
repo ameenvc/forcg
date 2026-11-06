@@ -84,6 +84,7 @@ class RiskAiTest extends TestCase
             config(['risk_ai.enabled' => $enabled]);
             $html = view('user.risks.ai-trigger')->render().view('user.risks.ai-assist')->render();
             $this->assertStringContainsString('AI Assist', $html);
+            $this->assertSame(1, substr_count($html, 'id="risk-ai-toggle"'));
             $this->assertStringContainsString('aria-controls="risk-ai-panel"', $html);
             if ($enabled) {
                 $this->assertStringContainsString('id="risk-ai-generate"', $html);
@@ -108,6 +109,8 @@ class RiskAiTest extends TestCase
                 'hml' => collect(['Low', 'Moderate', 'High'])->map(function ($name) { return (object) ['name' => $name]; }),
                 'riskreviewers' => collect(),
             ])->render();
+            $this->assertStringContainsString('rf-create-risk', $html);
+            $this->assertStringContainsString('rf-title-group', $html);
             foreach (['riskgroup', 'riskscr', 'riskarea', 'riskname', 'riskdec', 'riskdri', 'existing_controls', 'risk_response', 'impa', 'like', 'riskreviewer_id'] as $field) {
                 $this->assertStringContainsString('name="'.$field.'"', $html);
             }

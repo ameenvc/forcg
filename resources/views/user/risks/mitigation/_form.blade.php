@@ -28,7 +28,7 @@
     <div class="modal-dialog m-dialog" role="document">
         <div class="modal-content" style="text-align: left">
             <div class="modal-header" style="border-bottom: 1px solid #e1e6e9; padding: 0.75rem 1rem;">
-                <h5 class="modal-title">{{isset($mitigation)? 'Edit' : 'Add'}} Mitigation Action</h5>
+                <h5 class="modal-title"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-tasks"></i></span>{{isset($mitigation)? 'Edit' : 'Add'}} Mitigation Action</h5>
                 <div class="block-options">
                     <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
                         <i class="si si-close"></i>

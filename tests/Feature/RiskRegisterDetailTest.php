@@ -75,6 +75,8 @@ class RiskRegisterDetailTest extends TestCase
         foreach (['riskreview', 'resubmit', 'useredit', 'closure', 'reopenrisk', 'ownrespo'] as $page) {
             $legacy = view('user.risks.'.$page, $legacyVars)->render();
             $this->assertStringContainsString('rf-page-header', $legacy);
+            $this->assertStringContainsString('rf-title-group', $legacy);
+            $this->assertStringContainsString('rf-header-icon', $legacy);
             $this->assertStringContainsString('rf-section-break', $legacy);
         }
         if (getenv('RISK_INITIAL_REVIEW_PREVIEW_PATH')) file_put_contents(getenv('RISK_INITIAL_REVIEW_PREVIEW_PATH'), $form);

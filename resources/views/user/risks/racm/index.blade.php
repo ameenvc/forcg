@@ -590,12 +590,12 @@
         </div>
     </div>
     <div class="racm-area"></div>
-    <div id="add-request-review-approve" class="risk-module-form modal fadebd-example-modal-sm" aria-labelledby="exampleModalLabel" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="add-request-review-approve" class="risk-module-form modal fadebd-example-modal-sm" aria-labelledby="racm-review-assignment-title" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="block block-rounded block-transparent mb-0">
-                    <div class="block-header bg-primary-darker">
-                      <h3 class="block-title text-white">Add Request Review & Approval</h3>
+                    <div class="modal-header">
+                      <h3 class="modal-title" id="racm-review-assignment-title"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-user-edit"></i></span>Request review & approval</h3>
                       <div class="block-options">
                         <button type="button" class="btn-block-option" onclick="closeModal()" aria-label="Close">
                           <i class="fa fa-fw fa-times"></i>

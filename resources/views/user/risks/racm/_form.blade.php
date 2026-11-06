@@ -4,7 +4,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">{{ isset($racm) ? 'Edit assessment criteria' : 'Add assessment criteria' }}</h5>
+                <h5 class="modal-title" id="exampleModalLabel"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-sliders-h"></i></span>{{ isset($racm) ? 'Edit assessment criteria' : 'Add assessment criteria' }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

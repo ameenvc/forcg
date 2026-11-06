@@ -2,9 +2,10 @@
 <!-- Not fully implemented Modal -->
 <div class="risk-module-form modal not-fully-implemented-popup"
      id="not-fully-implemented-{{ $mitigation->id }}" tabindex="-1" role="dialog"
-     aria-hidden="true">
+     aria-labelledby="mitigation-not_fully_implemented_form-title-{{ $mitigation->id }}" aria-hidden="true">
     <div class="modal-dialog m-dialog modal-xl" role="document">
         <div class="modal-content" style="text-align: left">
+            <div class="modal-header"><h5 class="modal-title" id="mitigation-not_fully_implemented_form-title-{{ $mitigation->id }}"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-tasks"></i></span>Update action progress</h5><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
             <div class="modal-body m-body p-4">
                 <div class="form-group" style="display:inline-block;width:99%;">
                     <label style="color: red">

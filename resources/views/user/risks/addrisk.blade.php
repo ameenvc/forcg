@@ -7,17 +7,9 @@
 <link rel="stylesheet" href="{{ asset('css/risk-form.css') }}?v={{ filemtime(public_path('css/risk-form.css')) }}">
 <script src="{{ asset('js/risk-form.js') }}" defer></script>
 <!-- Page Content -->
-<div class="content risk-workspace cgbod-form">
-    <!-- Horizontal -->
-    <div class="block block-rounded risk-form-shell cgbod-form-card">
-        <header class="risk-page-header cgbod-form-header">
-            <div>
-                <a class="risk-back-link" href="{{ route('risk.index') }}"><i class="fa fa-arrow-left" aria-hidden="true"></i> Enterprise risk register</a>
-                <h1>Add a new risk</h1>
-                <p>Capture the concern, assess its significance, and assign a reviewer.</p>
-            </div>
-            @include('user.risks.ai-trigger')
-        </header>
+<div class="content risk-workspace cgbod-form risk-form-page risk-form-shell rf-create-risk">
+    @include('shared.forms.risk-page-header', ['formTitle' => 'Add a new risk', 'formDescription' => 'Capture the concern, assess its significance, and assign a reviewer.', 'formIcon' => 'fa-shield-alt', 'formAiAssist' => true, 'showRecord' => false])
+    <div class="block block-rounded rf-form-card cgbod-form-card">
         <nav class="risk-step-nav" aria-label="Form sections">
             <a href="#risk-context"><span>01</span> Context</a>
             <a href="#risk-details"><span>02</span> Risk details</a>

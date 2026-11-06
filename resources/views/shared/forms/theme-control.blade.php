@@ -1,1 +1,1 @@
-<label class="risk-theme-control"><i class="fa fa-adjust" aria-hidden="true"></i><span class="sr-only">Colour theme</span><select data-risk-theme-select aria-label="Colour theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+<label class="risk-theme-control"><i class="fa fa-adjust" aria-hidden="true"></i><span class="sr-only">Colour theme</span><select data-risk-theme-select aria-label="Colour theme"><option value="light">Light</option><option value="dark">Dark</option></select></label>

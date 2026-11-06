@@ -69,7 +69,7 @@ Validation covers the aggregate scope (including closed records, excluding delet
 
 The analysis page presents the complete snapshot on page load, with rating distribution, group selection, workflow stages, response strategies, owner/response gaps and department comparison. Date/period/year controls, refresh/polling controls and the registration timeline have been removed. Legacy date query strings do not silently filter the page. The snapshot service retains date helpers for other callers; they are not exposed by this page.
 
-System/Light/Dark is now one control in the application header, shared by user, admin and superadmin layouts and the alternate incident/context/OHS shells. Assets load once in the shared document head and the browser preference survives navigation across modules. Risk-local theme controls have been removed. Standalone export/PDF templates retain their own print styling.
+Light/Dark is now one control in the application header, shared by user, admin and superadmin layouts and the alternate incident/context/OHS shells. Assets load once in the shared document head and the browser preference survives navigation across modules. Risk-local theme controls have been removed. Standalone export/PDF templates retain their own print styling.
 
 The global compatibility layer covers common cards, forms, tables, modals, Select2/DataTables, editor toolbars, calendars, semantic status colours and legacy neutral inline backgrounds/text. Inline styles restore when returning to Light; deliberate status surfaces, images, embedded documents and canvas data colours are preserved. Chart.js axis/legend colours adapt to the theme, restore for print, and restore their original values in Light. The adapter observes dynamically added content without changing field values, text or record data.
 
@@ -78,3 +78,5 @@ Validation follows the inheritance chains of more than 400 user module views to 
 Organization AI is available from the risk navigation. Its approved profile/notes guide live form and review requests, and answer-level feedback can become shared knowledge only through an authorized, sourced review. See [organization-ai.md](organization-ai.md) for the one-time migration, permissions, organization namespace and persistence details.
 
 Shared font loading and the cross-module type scale are documented in [ui-typography.md](ui-typography.md). The UI now serves a single local Inter variable font and preserves the compact register row layout.
+
+The theme defaults to Light for new visitors. Existing System preferences resolve once to their current appearance and are stored as an explicit Light or Dark choice; operating-system changes no longer switch the application theme.

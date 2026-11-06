@@ -11,7 +11,7 @@
 .risk-workflow-page .workflow-table-scroll { overflow:auto; max-width:100%; border-top:1px solid var(--workflow-line); border-bottom:1px solid var(--workflow-line); }
 .risk-workflow-page .workflow-table-scroll:focus-visible { outline:2px solid #7467d9; outline-offset:2px; }
 /* Match the register: 48px rows, quiet grid, restrained type and blue actions. */
-.risk-workflow-page #tabledata { width:100%!important; min-width:1400px; table-layout:fixed; border-collapse:separate!important; border-spacing:0; margin:0!important; color:var(--cgbod-muted,#536781); }
+.risk-workflow-page #tabledata { width:100%!important; min-width:1000px; table-layout:fixed; border-collapse:separate!important; border-spacing:0; margin:0!important; color:var(--cgbod-muted,#536781); }
 .risk-workflow-page #tabledata thead th,.risk-workflow-page #tabledata thead td { position:sticky; top:0!important; z-index:2; width:auto!important; background:var(--workflow-soft); color:var(--workflow-muted); padding:12px 10px!important; border:0; border-bottom:1px solid var(--workflow-line); letter-spacing:0; text-transform:none!important; vertical-align:middle; font-size:12px!important; font-weight:600; white-space:nowrap; }
 .risk-workflow-page #tabledata tbody>tr>td { box-sizing:border-box; padding:6px 10px!important; height:48px; border:0; border-bottom:1px solid var(--workflow-line); font-size:12px!important; font-weight:400; line-height:18px; vertical-align:middle; white-space:normal; overflow-wrap:anywhere; background:var(--workflow-surface); }
 .risk-workflow-page #tabledata thead>tr>*+*,.risk-workflow-page #tabledata tbody>tr>td+td { border-left:1px solid rgba(106,130,168,.10); }
@@ -115,3 +115,9 @@
 [data-risk-theme=dark] .racm-thresholds [data-level=moderate] { background:#443b28; color:#f0d298; }
 [data-risk-theme=dark] .racm-thresholds [data-level=high] { background:#472e3c; color:#f1b8c5; }
 [data-risk-theme=dark] .racm-stage { background:#293b59; color:#c1d0ee; }
+
+/* Both workflow tables fill the same card instead of expanding to pixel column sums. */
+html body #main-container .risk-workflow-page>.block { width:100%; max-width:100%; min-width:0; box-sizing:border-box; }
+html body #main-container .risk-workflow-page>.block>.block-content { box-sizing:border-box; width:100%; padding:20px; }
+.risk-workflow-page #content,.risk-workflow-page .dataTables_wrapper,.risk-workflow-page .workflow-table-scroll { width:100%; max-width:100%; min-width:0; box-sizing:border-box; }
+@media(max-width:767px) { html body #main-container .risk-workflow-page>.block>.block-content { padding:12px; } }

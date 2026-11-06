@@ -290,7 +290,7 @@
             {!!Session::get('error')!!}
         </div>
     @endif
-    <div class="content risk-register-page risk-workflow-page workflow-racm risk-module-page" style="width:100%;">
+    <div class="content risk-register-page risk-workflow-page workflow-racm risk-module-page">
         @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Define and approve consistent thresholds for low, moderate, and high risk.'])
         <div class="racm-workbench">
             <p><i class="fa fa-sliders-h" aria-hidden="true"></i>Define assessment thresholds. Select criteria when ready to assign reviewers and an approver.</p>
@@ -306,7 +306,7 @@
                 <div class="table-responsive" id="content">
                     <!-- approved documents listing starts -->
                     <table class="risk-module-table table table-borderless table-striped table-vcenter js-dataTable-full" id="tabledata">
-                        <colgroup><col style="width:38px"><col style="width:42px"><col style="width:135px"><col style="width:255px"><col style="width:255px"><col style="width:175px"><col style="width:170px"><col style="width:80px"></colgroup>
+                        <colgroup><col style="width:3%"><col style="width:3%"><col style="width:12%"><col style="width:20%"><col style="width:22%"><col style="width:16%"><col style="width:15%"><col style="width:9%"></colgroup>
                         <thead class="border-top">
                             <tr>
                                 <th class="text-center" style="width: 1%;position:sticky;" id="firstColumn" data-orderable="false"><input type="checkbox" id="racm-select-visible" aria-label="Select criteria on this page"></th>

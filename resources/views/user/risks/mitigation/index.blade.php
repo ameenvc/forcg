@@ -167,7 +167,7 @@
     $data1 = [];
     $data2 = [];
     ?>
-    <div class="content risk-register-page risk-workflow-page workflow-mitigation risk-module-page" style="width:100%">
+    <div class="content risk-register-page risk-workflow-page workflow-mitigation risk-module-page">
         @include('user.risks.register-header', ['registerPage' => 'mitigation', 'registerTitle' => 'Mitigation actions', 'registerDescription' => 'Assign mitigation actions, monitor progress, and review completion.'])
         @if($riskId)<div class="workflow-scope" role="status">Showing actions for the selected risk. <a href="{{ route('risk.detail', $riskId) }}">Open risk details</a> to review the assessment and manage its actions. <a class="ml-2" href="{{ route('mitigations.index') }}">Show all actions</a></div>@endif
         <div class="block">
@@ -188,7 +188,7 @@
                     @endif
                     <input type="hidden" value="a1" id="tabselected">
                     <table class="risk-module-table table table-striped table-vcenter js-dataTable-full" id="tabledata">
-                        <colgroup><col style="width:38px"><col style="width:44px"><col style="width:100px"><col style="width:300px"><col style="width:180px"><col style="width:145px"><col style="width:95px"><col style="width:110px"><col style="width:160px"><col style="width:120px"></colgroup>
+                        <colgroup><col style="width:3%"><col style="width:3%"><col style="width:8%"><col style="width:24%"><col style="width:12%"><col style="width:10%"><col style="width:7%"><col style="width:8%"><col style="width:16%"><col style="width:9%"></colgroup>
                         <thead>
                             <tr>
                                 <td style="position:sticky;top:-1px; width: 5%"></td>

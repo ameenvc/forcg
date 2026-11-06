@@ -19,3 +19,4 @@ html body #main-container .risk-header-button:disabled { opacity:.6; cursor:not-
 html[data-risk-theme=dark] body #main-container .risk-header-button.btn-outline-primary { color:#bed0ff; border-color:#5b719c; background:transparent; }
 html[data-risk-theme=dark] body #main-container .risk-header-button.btn-outline-primary:hover { background:#2b3c5b; border-color:#8aa2d4; }
 @media(pointer:coarse) { html body #main-container .risk-header-button { min-height:44px; padding-top:11px; padding-bottom:11px; } }
+.risk-page-banner .risk-header-actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:8px; max-width:100%; }

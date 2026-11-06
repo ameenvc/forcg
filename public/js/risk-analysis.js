@@ -7,10 +7,14 @@
     let selectedGroup = '';
     const search = get('analysis-department-search'), sort = get('analysis-department-sort');
     function current() { return selectedGroup ? data.groups[selectedGroup] : {counts: data.totals, departments: data.departments, stages: data.stages, responses: data.responses, quality: data.quality}; }
-    function renderDepartments() {
+    function visibleDepartments() {
         const departments = Object.entries(current().departments), max = Math.max(1, ...departments.map(([, counts]) => counts.total));
         const matching = departments.filter(([name]) => name.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase()));
         matching.sort(([nameA, a], [nameB, b]) => sort.value === 'name' ? nameA.localeCompare(nameB) : ((sort.value === 'high' ? b.High - a.High : 0) || b.total - a.total || nameA.localeCompare(nameB)));
+        return {departments, matching, max};
+    }
+    function renderDepartments() {
+        const {departments, matching, max} = visibleDepartments();
         const chart = get('analysis-department-chart'); chart.replaceChildren();
         get('analysis-department-count').textContent = `${matching.length} of ${departments.length} departments · ${selectedGroup || 'All groups'}`;
         if (!matching.length) { const empty = document.createElement('p'); empty.className = 'analysis-empty'; empty.textContent = departments.length ? 'No matching departments. Try another search.' : 'No department data for this view yet.'; chart.append(empty); return; }
@@ -53,5 +57,29 @@
         if (!entries.length) { container.textContent = 'No records in this view.'; return; }
         entries.forEach(([label, count]) => { const row = document.createElement('div'), name = document.createElement('span'), number = document.createElement('strong'); name.textContent = label; number.textContent = count; row.append(name, number); container.append(row); });
     }
+    function csvCell(value) {
+        let text = String(value == null ? '' : value);
+        // Treat organization-supplied labels as text when opened in a spreadsheet.
+        if (typeof value === 'string' && /^[\s]*[=+\-@]/.test(text)) text = "'" + text;
+        return '"' + text.replace(/"/g, '""') + '"';
+    }
+    get('analysis-export').addEventListener('click', () => {
+        const snapshot = current(), scope = selectedGroup || 'All groups';
+        const rows = [['Section', 'Scope', 'Item', 'Total', 'High', 'Moderate', 'Low', 'Unassessed', 'Count', 'Percentage']];
+        const countsRow = (section, item, counts) => rows.push([section, scope, item, counts.total, counts.High, counts.Moderate, counts.Low, counts.Unassessed, '', '']);
+        countsRow('Summary', scope, snapshot.counts);
+        ratings.forEach(rating => rows.push(['Rating distribution', scope, rating, '', '', '', '', '', snapshot.counts[rating], snapshot.counts.total ? Math.round(snapshot.counts[rating] / snapshot.counts.total * 100) + '%' : '0%']));
+        Object.entries(data.groups).filter(([name]) => !selectedGroup || name === selectedGroup).forEach(([name, bucket]) => countsRow('Risk groups', name, bucket.counts));
+        visibleDepartments().matching.forEach(([name, counts]) => countsRow('Departments', name, counts));
+        [['Workflow stages', snapshot.stages], ['Response strategies', snapshot.responses]].forEach(([section, values]) => {
+            Object.entries(values).forEach(([name, count]) => rows.push([section, scope, name, '', '', '', '', '', count, '']));
+        });
+        const csv = '\uFEFF' + rows.map(row => row.map(csvCell).join(',')).join('\r\n');
+        const url = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'}));
+        const link = document.createElement('a'); link.href = url; link.download = 'risk-analysis.csv';
+        document.body.appendChild(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        get('analysis-export-status').textContent = 'Analysis exported for ' + scope + '. Department rows follow the current search and sort.';
+    });
     render();
 })();

@@ -16,6 +16,8 @@
     <button type="button" class="btn btn-primary register-add risk-header-button btn-add-racm"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add criteria</button>
     @elseif($registerPage === 'mitigation')
     <button type="button" class="btn btn-primary register-add risk-header-button btn-create-mitigation" data-route="{{ route('mitigations.create', array_filter(['riskId' => $riskId ?? null])) }}"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add mitigation action</button>
+    @elseif($registerPage === 'analysis')
+    <div class="risk-header-actions"><button type="button" id="analysis-export" class="btn btn-outline-primary risk-header-button" title="Export analysis as CSV"><i class="fa fa-download" aria-hidden="true"></i>Export analysis</button><a href="{{ route('risk.addrisk') }}" class="btn btn-primary register-add risk-header-button"><i class="fa fa-plus" aria-hidden="true"></i>Add Risk</a></div>
     @else
     <a href="{{ route('risk.addrisk') }}" class="btn btn-primary register-add risk-header-button"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add Risk</a>
     @endif

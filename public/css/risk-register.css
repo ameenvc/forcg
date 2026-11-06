@@ -954,3 +954,8 @@ html body #main-container .risk-page-banner .register-title-line h1 { margin:0; 
 .risk-page-banner .register-title-line+p { margin-top:7px; }
 html[data-risk-theme=dark] .register-title-icon { background:linear-gradient(135deg,#2b3d61,#373056); border-color:#465378; color:#c5cdf5; }
 @media(max-width:575px) { .register-title-icon { width:30px; height:30px; border-radius:8px; } .register-title-icon i { font-size:14px; } }
+
+/* Register header: one title row with the primary action. */
+.register-header.risk-page-banner.register-header-compact { padding:18px 24px; }
+.register-header-compact .register-title-line { margin-top:0; }
+@media(max-width:575px) { .register-header.risk-page-banner.register-header-compact { padding:16px 18px; } }

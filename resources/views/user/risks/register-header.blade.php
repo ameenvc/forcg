@@ -2,12 +2,16 @@
     $registerPage = $registerPage ?? 'register';
     $pageIcons = ['register' => 'fa-shield-alt', 'mitigation' => 'fa-tasks', 'analysis' => 'fa-chart-pie', 'closed' => 'fa-check-circle', 'criteria' => 'fa-sliders-h'];
 @endphp
-<header class="register-header cgbod-form-header risk-page-banner">
+<header class="register-header cgbod-form-header risk-page-banner{{ $registerPage === 'register' ? ' register-header-compact' : '' }}">
     <div class="register-header-main">
         <div class="register-header-copy">
+            @if($registerPage !== 'register')
             <span class="register-eyebrow">Enterprise risk management</span>
-            <div class="register-title-line"><span class="register-title-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span><h1>{{ $registerTitle ?? 'Risk register' }}</h1></div>
+            @endif
+            <div class="register-title-line"><span class="register-title-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span><h1>{{ $registerTitle ?? 'Enterprise risk register' }}</h1></div>
+            @if($registerPage !== 'register')
             <p>{{ $registerDescription ?? 'Review risk ratings, accountable owners, and mitigation priorities.' }}</p>
+            @endif
         </div>
     </div>
     @if($registerPage === 'criteria')

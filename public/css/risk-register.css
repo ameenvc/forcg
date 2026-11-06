@@ -858,44 +858,18 @@
         display:none;
     }
 }
-/* Rating counts belong to the table toolbar, not a separate dashboard. */
-.register-rating-tabs {
-    display:flex;
-    gap:8px;
-    align-items:stretch;
-    margin:-20px -22px 20px;
-    padding:0 18px;
-    border-bottom:1px solid #e6ebf3;
-}
-.register-rating-tabs .register-summary-card {
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    height:52px;
-    padding:0 14px;
-    border:0;
-    border-bottom:2px solid transparent;
-    border-radius:0;
-    background:none;
-    cursor:pointer;
-    white-space:nowrap;
-}
+/* Rating filters share the view-options row instead of forming another panel. */
+.register-rating-tabs { display:flex; gap:4px; align-items:center; margin:0; padding:0; border:0; }
+.register-rating-tabs .register-summary-card { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:32px; padding:0 10px; border:1px solid transparent; border-radius:7px; background:transparent; cursor:pointer; white-space:nowrap; }
 .register-rating-tabs .register-summary-label { font-size:12px; font-weight:500; color:#6b7c95; }
-.register-rating-tabs strong { font-size:11px; line-height:20px; min-width:23px; padding:0 5px; text-align:center; border-radius:5px; background:#f1f4f8; color:#65758e; font-weight:650; font-variant-numeric:tabular-nums; }
-.register-rating-tabs [data-tone=High] strong { background:#fff1f3; color:var(--cgbod-danger); }
-.register-rating-tabs [data-tone=Moderate] strong { background:#fff7e9; color:var(--cgbod-warning); }
-.register-rating-tabs [data-tone=Low] strong { background:#edf7f2; color:var(--cgbod-success); }
-.register-rating-tabs .register-summary-card:hover { background:#f9faff; }
-.register-rating-tabs .register-summary-card[aria-pressed=true] { border-bottom-color:var(--cgbod-primary); }
-.register-rating-tabs [aria-pressed=true] .register-summary-label { color:var(--cgbod-primary); font-weight:600; }
-.register-rating-tabs [data-tone=all][aria-pressed=true] strong { background:var(--cgbod-primary-soft); color:var(--cgbod-primary); }
-@media(max-width:767px) {
-    .register-rating-tabs { margin:-16px -14px 16px; padding:0 6px; gap:0; }
-    .register-rating-tabs .register-summary-card { flex:1; min-width:0; height:49px; padding:0 5px; gap:5px; }
-    .register-rating-tabs .register-summary-label { font-size:11px; }
-    .register-rating-tabs strong { font-size:10px; min-width:20px; padding:0 4px; }
-}
+.register-rating-tabs strong { font-size:11px; line-height:18px; min-width:20px; padding:0 4px; text-align:center; border-radius:4px; background:#f1f4f8; color:#65758e; font-weight:650; font-variant-numeric:tabular-nums; }
+.register-rating-tabs [data-tone=High] strong { background:#fff1f3; color:#b3445f; }
+.register-rating-tabs [data-tone=Moderate] strong { background:#fff7e8; color:#a16b1d; }
+.register-rating-tabs [data-tone=Low] strong { background:#eaf6f0; color:#27775c; }
+.register-rating-tabs .register-summary-card:hover { background:#f4f7fd; }
+.register-rating-tabs .register-summary-card[aria-pressed=true] { background:#edf3ff; border-color:#dce6fc; }
+.register-rating-tabs [aria-pressed=true] .register-summary-label { color:#365fd1; font-weight:600; }
+@media(max-width:767px) { .register-rating-tabs { width:100%; gap:2px; padding-bottom:2px; } .register-rating-tabs .register-summary-card { flex:1 0 auto; height:36px; padding:0 8px; gap:5px; } }
  .register-ai-modal {position:fixed;inset:0;z-index:1060;display:flex;align-items:flex-start;justify-content:center;padding:28px 18px;overflow:auto;background:rgba(25,40,67,.44);}
 .register-ai-dialog {position:relative;width:100%;max-width:900px;padding:30px!important;border-radius:16px;box-shadow:0 24px 80px #1626423d;}
 .register-ai-dialog .risk-review-heading {padding-right:28px;}
@@ -905,36 +879,61 @@
 .register-ai-scope {font-size:12px;font-weight:600;margin:12px 0 0;color:#405b87;}
 .register-toolbar-actions>#risk-register-ai-toggle {background:#3563db;border-color:#3563db;color:white;font-size:12px;border-radius:8px;white-space:nowrap;}
 @media(max-width:767px) {.register-toolbar-actions {flex-wrap:wrap;}}
-/* Shared page banner: clear page identity with restrained brand accents. */
-.register-header.risk-page-banner {
-    position:relative;
-    padding:24px 28px;
-    border-top:1px solid #dbe3f2;
-    background:linear-gradient(110deg,#fff 35%,#f8faff 76%,#f4f1fc);
-    overflow:hidden;
-}
-.risk-page-banner::before { content:""; position:absolute; top:20px; bottom:20px; left:0; width:4px; border-radius:0 4px 4px 0; background:linear-gradient(180deg,#3969db,#7961c8); }
-.register-header-main { display:flex; align-items:center; gap:18px; min-width:0; }
-.register-header-copy { min-width:0; }
-.register-page-icon { display:grid; place-items:center; flex:none; width:52px; height:52px; border-radius:15px; color:#4d65bd; background:linear-gradient(145deg,#edf3ff,#eeebfb); border:1px solid #dce3f7; box-shadow:0 3px 8px #405ba409; }
-.register-page-icon i { font-size:21px; }
-html body #main-container .risk-page-banner .register-eyebrow { display:block; color:#5e6f92; font-size:11px!important; font-weight:600; line-height:1.5; letter-spacing:.055em; text-transform:none; }
-html body #main-container .risk-page-banner h1 { color:#243c67; font-size:28px!important; font-weight:650; line-height:1.25; letter-spacing:-.6px; margin:5px 0 7px; }
-.risk-page-banner p { color:#667893; font-size:13px; line-height:1.6; max-width:680px; }
-.risk-page-banner .register-add { border-radius:10px; background:#365fd1; border-color:#365fd1; box-shadow:0 4px 10px #365fd11a; padding:10px 17px; }
+/* A compact workspace header, with a single brand accent and quiet navigation. */
+.register-header.risk-page-banner { position:relative; padding:20px 24px 18px; border-top:1px solid #dbe3f2; background:#fff; overflow:hidden; }
+.risk-page-banner::before { content:""; position:absolute; top:0; right:0; left:0; height:3px; background:linear-gradient(90deg,#3f6bd8,#7661bf 65%,#e2dcf5); }
+.register-header-main,.register-header-copy { min-width:0; }
+html body #main-container .risk-page-banner .register-eyebrow { display:flex; align-items:center; gap:7px; color:#667797; font-size:11px!important; font-weight:500; line-height:1.5; letter-spacing:.015em; text-transform:none; }
+.register-page-icon { display:inline-flex; color:#6072ba; }
+.register-page-icon i { font-size:12px; }
+html body #main-container .risk-page-banner h1 { color:#243b61; font-size:26px!important; font-weight:650; line-height:1.25; letter-spacing:-.55px; margin:5px 0 5px; }
+.risk-page-banner p { color:#6a7c95; font-size:12px; line-height:1.6; max-width:680px; margin:0; }
+.risk-page-banner .register-add { border-radius:8px; background:#365fd1; border-color:#365fd1; box-shadow:0 2px 5px #365fd110; padding:8px 15px; }
 .risk-page-banner .register-add:hover { background:#2c51bc; border-color:#2c51bc; }
-html[data-risk-theme=dark] .register-header.risk-page-banner { background:linear-gradient(110deg,#1b2b43 40%,#252b46 80%,#302a47)!important; border-color:#384c6d; }
-html[data-risk-theme=dark] .register-page-icon { color:#c7d3ff; border-color:#465379; background:linear-gradient(145deg,#293e63,#39315a); }
+.register-navigation { gap:6px; padding:8px 20px; border-top:1px solid #edf0f6; }
+.register-navigation a { padding:8px 12px; border:0; border-radius:6px; color:#64758f; font-size:12px; font-weight:500; }
+.register-navigation a:hover { background:#f4f6fb; }
+.register-navigation a[aria-current=page] { background:#edf2ff; color:#345dc7; border:0; font-weight:600; }
+.register-navigation button { font-size:11px; padding:8px 4px; }
+/* The main registers read as one surface: header, navigation, toolbar, then records. */
+#risk-register>.register-navigation,.closed-risk-register>.register-navigation { margin-bottom:0; border-radius:0; }
+#risk-register>.risk-register-card,.closed-risk-register>.risk-register-card { border-top:0; border-radius:0 0 14px 14px; }
+#risk-register .risk-register-card>.block-content,.closed-risk-register .risk-register-card>.block-content { padding-top:16px; }
+#risk-register .register-toolbar { gap:12px; }
+#risk-register .register-search { width:360px; border-radius:7px; background:#fafbfd; }
+#risk-register .register-search input { padding:9px 0; }
+#risk-register .register-toolbar-actions { gap:7px; }
+#risk-register .register-toolbar-actions>#risk-register-ai-toggle { background:#eef3ff; border:1px solid #dce6fb; color:#365fc4; box-shadow:none; padding:8px 12px; min-height:36px; }
+#risk-register .register-toolbar-actions>#risk-register-ai-toggle:hover { background:#e3ecff; border-color:#bccdf4; }
+#risk-register .register-secondary,#risk-register .register-menu>summary { padding:8px 11px; min-height:36px; }
+#risk-register .register-view-options { gap:12px; padding:10px 0 12px; }
+#risk-register .register-view-options #risk-match-count { margin-left:auto; font-size:11px; color:#7b89a0; }
+#risk-register .register-view-options label { gap:6px; font-weight:400; font-size:11px; }
+#risk-register .register-view-options select { padding:4px 6px; min-height:30px; }
+html[data-risk-theme=dark] .register-header.risk-page-banner { background:#17243a!important; border-color:#30415b; }
+html[data-risk-theme=dark] .register-page-icon { color:#aebce9; }
 html[data-risk-theme=dark] body #main-container .risk-page-banner h1 { color:#e2eafa; }
-html[data-risk-theme=dark] body #main-container .risk-page-banner .register-eyebrow { color:#acb9d4; }
-html[data-risk-theme=dark] .risk-page-banner p { color:#b5c3d9; }
+html[data-risk-theme=dark] body #main-container .risk-page-banner .register-eyebrow { color:#a7b6cd; }
+html[data-risk-theme=dark] .risk-page-banner p { color:#acbdd4; }
+html[data-risk-theme=dark] .register-navigation a[aria-current=page] { background:#283b60; color:#c6d3ff; }
+html[data-risk-theme=dark] .register-navigation a:hover { background:#23334e; }
+html[data-risk-theme=dark] #risk-register .register-toolbar-actions>#risk-register-ai-toggle { background:#24385b; border-color:#3c5177; color:#cad8ff; }
+html[data-risk-theme=dark] .register-rating-tabs .register-summary-card[aria-pressed=true] { background:#283b60; border-color:#40567e; }
+@media(max-width:1100px) { #risk-register .register-view-options #risk-match-count { margin-left:0; } #risk-register .register-toolbar { flex-wrap:wrap; } #risk-register .register-search { flex:1; } }
 @media(max-width:767px) {
-    .register-header.risk-page-banner { padding:20px; gap:18px; }
-    .register-header-main { gap:12px; align-items:flex-start; }
-    .register-page-icon { width:40px; height:40px; border-radius:12px; margin-top:2px; }
-    .register-page-icon i { font-size:17px; }
-    html body #main-container .risk-page-banner h1 { font-size:24px!important; letter-spacing:-.4px; }
-    html body #main-container .risk-page-banner .register-eyebrow { font-size:10px!important; letter-spacing:.025em; }
+    .register-header.risk-page-banner { padding:18px 18px 16px; gap:14px; }
+    html body #main-container .risk-page-banner h1 { font-size:23px!important; letter-spacing:-.4px; }
     .risk-page-banner p { font-size:12px; }
     .risk-page-banner .risk-header-actions { width:100%; }
+    .register-navigation { flex-wrap:wrap; gap:4px; padding:7px 10px; }
+    .register-navigation a { padding:8px; }
+    .register-navigation button { margin-left:0; padding:8px; }
+    #risk-register .register-search { width:100%; flex:auto; }
+    #risk-register .register-toolbar-actions { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); width:100%; }
+    #risk-register .register-toolbar-actions .btn,#risk-register .register-toolbar-actions .register-menu>summary { display:flex; align-items:center; justify-content:center; padding:9px 4px; min-height:40px; }
+    #risk-register .register-view-options { gap:10px; }
+    #risk-register .register-view-options #risk-match-count { width:100%; margin-left:0; }
 }
+@media(max-width:420px) { #risk-register .register-toolbar-actions { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:767px) { .register-navigation #learn { display:none; } .register-navigation #learn_btn { min-width:32px; min-height:32px; } .register-navigation #learn_btn i { margin:0!important; } #risk-register .register-sort select { max-width:116px; } }
+@media(max-width:420px) { #risk-register .register-rating-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; overflow:visible; } #risk-register .register-rating-tabs .register-summary-card { justify-content:space-between; } }

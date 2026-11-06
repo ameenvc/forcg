@@ -4,9 +4,8 @@
 @endphp
 <header class="register-header cgbod-form-header risk-page-banner">
     <div class="register-header-main">
-        <span class="register-page-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span>
         <div class="register-header-copy">
-            <span class="register-eyebrow">Enterprise risk management</span>
+            <span class="register-eyebrow"><span class="register-page-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span>Enterprise risk management</span>
             <h1>{{ $registerTitle ?? 'Risk register' }}</h1>
             <p>{{ $registerDescription ?? 'Review risk ratings, accountable owners, and mitigation priorities.' }}</p>
         </div>
@@ -27,6 +26,6 @@
     <a href="{{ route('risk.closedrisks') }}" @if($registerPage === 'closed') aria-current="page" @endif>Closed risks</a>
     <a href="{{ route('racm.index') }}" @if($registerPage === 'criteria') aria-current="page" @endif>Assessment criteria</a>
     @if($registerPage === 'register')
-    <button type="button" class="video-btn" id="learn_btn" data-toggle="modal" data-src="https://youtube.com/embed/M2qMFyvFPTI" data-target="#modal-learn-module"><i class="fa fa-video mr-1" aria-hidden="true"></i><span id="learn">Learn module</span></button>
+    <button type="button" class="video-btn" id="learn_btn" aria-label="Learn module" title="Learn module" data-toggle="modal" data-src="https://youtube.com/embed/M2qMFyvFPTI" data-target="#modal-learn-module"><i class="fa fa-video mr-1" aria-hidden="true"></i><span id="learn">Learn module</span></button>
     @endif
 </nav>

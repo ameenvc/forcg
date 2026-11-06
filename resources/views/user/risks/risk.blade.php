@@ -27,7 +27,6 @@
                     {!!Session::get('msg')!!}
                 </div>
             @endif
-            @include('user.risks.register-rating-tabs')
             @include('user.risks.register-toolbar')
             @include('user.risks.register-ai')
             <div id="risk-register-feedback" role="status" aria-live="polite"></div>

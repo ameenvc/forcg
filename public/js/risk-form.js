@@ -2,7 +2,6 @@
     'use strict';
     const form = document.getElementById('risk-entry-form');
     if (!form) return;
-    const ratings = {Low: 1, Moderate: 2, High: 3};
     function refreshAssessment() {
         const impact = document.getElementById('impact').value;
         const likelihood = document.getElementById('likelihood').value;
@@ -17,11 +16,7 @@
                 }
             });
         });
-        const score = ratings[impact] * ratings[likelihood];
-        const rating = score ? (score <= 2 ? 'Low' : score <= 4 ? 'Moderate' : 'High') : 'unassessed';
-        document.getElementById('risk-score-card').dataset.rating = rating;
-        document.getElementById('risk-score-value').textContent = score ? `${rating} risk · ${score} / 9` : 'Not assessed yet';
-        document.getElementById('risk-score-description').textContent = score ? `Impact ${ratings[impact]} × Likelihood ${ratings[likelihood]}. Confirm these selections against your approved criteria.` : 'Choose impact and likelihood to see your 3 × 3 matrix result.';
+        form.dispatchEvent(new CustomEvent('risk-assessment-change'));
     }
     form.addEventListener('click', event => {
         if (event.target.matches('.impactbtn, .likelihoodbtn')) {

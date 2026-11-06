@@ -107,3 +107,8 @@ html[data-risk-theme=dark] .closed-risk-register .register-search { background:v
 html[data-risk-theme=dark] .register-search input { background:transparent!important; color:var(--risk-text,#dee8f8)!important; caret-color:var(--risk-text,#dee8f8); color-scheme:dark; }
 html[data-risk-theme=dark] .register-search input::placeholder { color:var(--risk-muted,#a1b2cd)!important; opacity:1; }
 html[data-risk-theme=dark] .register-search:focus-within { border-color:#7897df!important; box-shadow:0 0 0 3px #7897df26; }
+/* AI assistant fields must stay dark even when later-loaded form styles set light surfaces. */
+html[data-risk-theme=dark] :is(.risk-ai-dialog-body,.risk-review-assist,.risk-ai-feedback) :is(input[type=text],input[type=search],textarea,select) { background:var(--risk-bg,#101a2b)!important; color:var(--risk-text,#dee8f8)!important; border-color:var(--risk-line,#30415b)!important; caret-color:var(--risk-text,#dee8f8); color-scheme:dark; }
+html[data-risk-theme=dark] :is(.risk-ai-dialog-body,.risk-review-assist,.risk-ai-feedback) :is(input,textarea)::placeholder { color:var(--risk-muted,#a1b2cd)!important; opacity:1; }
+html[data-risk-theme=dark] :is(.risk-ai-dialog-body,.risk-review-assist,.risk-ai-feedback) :is(input,textarea,select):focus { border-color:#7897df!important; box-shadow:0 0 0 3px #7897df26; }
+html[data-risk-theme=dark] :is(.risk-ai-dialog-body,.risk-review-assist,.risk-ai-feedback) :is(input,textarea,select):is(:disabled,[readonly]) { background:#17243a!important; color:var(--risk-muted,#a1b2cd)!important; }

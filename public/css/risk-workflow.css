@@ -74,3 +74,44 @@
 .workflow-more { flex:none; border-radius:8px; padding:0 5px; background:#edf0ff; color:#5654bd; font-size:11px; }
 .workflow-unassigned { color:var(--workflow-muted); }
 [data-risk-theme=dark] .risk-workflow-page .workflow-count,[data-risk-theme=dark] .workflow-more { background:#34365b; color:#c8bfff; }
+
+/* Criteria workbench: creation in the header, review actions in selection context. */
+.racm-workbench { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:16px 2px; }
+.racm-workbench p { margin:0; font-size:12px; line-height:1.6; color:var(--workflow-muted); max-width:720px; }
+.racm-workbench p i { color:#7161c1; margin-right:7px; }
+.racm-workbench label { margin:0; flex:none; }
+.racm-workbench select { font-size:12px; border:1px solid var(--workflow-line); border-radius:8px; min-height:36px; background:var(--workflow-surface); color:var(--workflow-muted); }
+.racm-selection-bar { display:flex; align-items:center; gap:10px; padding:12px 16px; margin:0 0 14px; border:1px solid #c8d5f4; border-radius:10px; background:#edf3ff; color:#36568e; font-size:13px; }
+.racm-selection-bar[hidden] { display:none!important; }
+.racm-selection-bar>span { margin-right:auto; }
+.racm-selection-bar .btn { font-size:12px; min-height:36px; border-radius:8px; padding:7px 12px; }
+.racm-selection-bar .btn-primary { background:#365fd1; border-color:#365fd1; }
+.workflow-racm #tabledata tbody>tr>td+td { border-left:0; }
+.workflow-racm #tabledata .workflow-description { -webkit-line-clamp:1; max-height:18px; margin-top:3px; }
+.workflow-racm #tabledata tbody tr:has([data-racm-select]:checked)>td { background:#edf3ff; }
+[data-risk-theme=dark] .racm-selection-bar { background:#233759; border-color:#486394; color:#c3d4ff; }
+[data-risk-theme=dark] .workflow-racm #tabledata tbody tr:has([data-racm-select]:checked)>td { background:#293c59; }
+@media(max-width:767px) { .racm-workbench { flex-wrap:wrap; gap:10px; } .racm-selection-bar { flex-wrap:wrap; } .racm-selection-bar>span { flex-basis:100%; } }
+.workflow-racm #tabledata { min-width:1000px; }
+.racm-thresholds { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
+.racm-thresholds>div { border-radius:6px; padding:6px; background:#f4f6fb; min-width:0; }
+.racm-thresholds span { display:block; font-size:10px; color:var(--workflow-muted); }
+.racm-thresholds strong { display:block; font-size:12px; font-weight:600; margin-top:2px; line-height:1.5; overflow-wrap:anywhere; }
+.racm-thresholds [data-level=low] { background:#edf7f1; color:#237553; }
+.racm-thresholds [data-level=moderate] { background:#fff5e6; color:#916115; }
+.racm-thresholds [data-level=high] { background:#fff0f3; color:#ad3850; }
+.racm-review-team>div { display:grid; grid-template-columns:55px minmax(0,1fr); align-items:baseline; column-gap:5px; }
+.racm-review-team>div+div { margin-top:4px; }
+.racm-review-team small,.racm-stage-cell small { display:block; font-size:10px; color:var(--workflow-muted); }
+.racm-review-team span { font-size:12px; }
+.racm-review-team b { font-size:10px; color:#6a60b2; }
+.racm-stage { display:inline-block; border-radius:5px; padding:3px 6px; background:var(--workflow-soft); color:var(--workflow-muted); font-size:11px; font-weight:600; }
+.racm-stage[data-stage="Review Requested"],.racm-stage[data-stage="Reviewed"] { background:#edf1ff; color:#4d64b4; }
+.racm-stage[data-stage="Awaiting Approval"],.racm-stage[data-stage="Review Awaiting"] { background:#fff3df; color:#916115; }
+.racm-stage[data-stage="Approved"] { background:#e7f5ed; color:#227650; }
+.racm-stage[data-stage="Rejected"],.racm-stage[data-stage="Review Rejected"] { background:#fcecf0; color:#ad3850; }
+.racm-stage-cell progress { display:block; width:100%; height:5px; margin-top:4px; accent-color:#596ed3; }
+[data-risk-theme=dark] .racm-thresholds [data-level=low] { background:#203f36; color:#a1e0c1; }
+[data-risk-theme=dark] .racm-thresholds [data-level=moderate] { background:#443b28; color:#f0d298; }
+[data-risk-theme=dark] .racm-thresholds [data-level=high] { background:#472e3c; color:#f1b8c5; }
+[data-risk-theme=dark] .racm-stage { background:#293b59; color:#c1d0ee; }

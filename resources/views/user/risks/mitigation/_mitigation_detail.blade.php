@@ -59,8 +59,9 @@
                         @if($mitigation->link_other_risk)
                             @php
                                 $linkOtherRisk = json_decode($mitigation->link_other_risk, true);
+                                $linkOtherRisk = is_array($linkOtherRisk) ? $linkOtherRisk : [];
                                 $riskIds = array_keys($linkOtherRisk);
-                                $nonDeletedRiskIds = App\Risk::withTrashed()->whereIn('Rid', $riskIds)->pluck('Rid')->toArray();
+                                $nonDeletedRiskIds = $existingLinkedRiskIds ?? App\Risk::withTrashed()->whereIn('Rid', $riskIds)->pluck('Rid')->toArray();
                             @endphp
                             @if(is_array($linkOtherRisk) || is_object($linkOtherRisk))
                                 @foreach($linkOtherRisk as $riskId => $riskItem)

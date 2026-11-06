@@ -52,6 +52,11 @@ class MitigationController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->get();
+        $linkedRiskIds = $mitigations->flatMap(function ($action) {
+            $links = json_decode($action->link_other_risk ?: '[]', true);
+            return is_array($links) ? array_keys($links) : [];
+        })->unique()->values();
+        $existingLinkedRiskIds = $linkedRiskIds->isEmpty() ? [] : Risk::withTrashed()->whereIn('Rid', $linkedRiskIds)->pluck('Rid')->all();
         $departments = $mitigations->pluck('department.departmentname');
         $owners = $mitigations->whereNotNull('owner')->pluck('user.name');
         $priorities = $mitigations->pluck('priority_level');
@@ -85,7 +90,7 @@ class MitigationController extends Controller
         }
 
         return view('user.risks.mitigation.index', compact(
-             'mitigations', 'model', 'riskId',
+             'mitigations', 'model', 'riskId', 'existingLinkedRiskIds',
             'allOwnerNames', 'allDeptNames', 'allPriorityLevel', 'allYears', 'allStatus',
             'allStatus', 'allResourceRequired', 'currentUserId', 'reviewerIds'
         ));

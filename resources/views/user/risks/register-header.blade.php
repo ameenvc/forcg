@@ -13,8 +13,7 @@
         </div>
     </div>
     @if($registerPage === 'criteria')
-    <div class="risk-header-actions"><button type="button" class="btn btn-outline-primary risk-header-button" id="request-review-approve"><i class="fa fa-user-edit mr-2" aria-hidden="true"></i>Request review & approval</button>
-    <button type="button" class="btn btn-primary register-add risk-header-button btn-add-racm"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add criteria</button></div>
+    <button type="button" class="btn btn-primary register-add risk-header-button btn-add-racm"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add criteria</button>
     @elseif($registerPage === 'mitigation')
     <button type="button" class="btn btn-primary register-add risk-header-button btn-create-mitigation" data-route="{{ route('mitigations.create', array_filter(['riskId' => $riskId ?? null])) }}"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add mitigation action</button>
     @else

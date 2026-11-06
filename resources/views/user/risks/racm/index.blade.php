@@ -292,36 +292,32 @@
     @endif
     <div class="content risk-register-page risk-workflow-page workflow-racm" style="width:100%;">
         @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Define and approve consistent thresholds for low, moderate, and high risk.'])
+        <div class="racm-workbench">
+            <p><i class="fa fa-sliders-h" aria-hidden="true"></i>Define assessment thresholds. Select criteria when ready to assign reviewers and an approver.</p>
+            <label for="racm-status-filter"><span class="sr-only">Filter criteria by status</span><select id="racm-status-filter" class="form-control"><option value="">All statuses</option>@foreach($riskAcms->pluck('status')->filter()->unique()->sort() as $criteriaStatus)<option>{{ $criteriaStatus }}</option>@endforeach</select></label>
+        </div>
+        <div class="racm-selection-bar" id="racm-selection-bar" hidden>
+            <span role="status" aria-live="polite"><strong id="racm-selection-count">0</strong> criteria selected</span>
+            <button type="button" class="btn btn-outline-primary" id="racm-clear-selection">Clear selection</button>
+            <button type="button" class="btn btn-primary" id="request-review-approve"><i class="fa fa-user-edit mr-1" aria-hidden="true"></i>Send for review</button>
+        </div>
         <div class="block block-rounded">
             <div class="block-content block-content-full">
                 <div class="table-responsive" id="content">
                     <!-- approved documents listing starts -->
                     <table class="risk-module-table table table-borderless table-striped table-vcenter js-dataTable-full" id="tabledata">
-                        <colgroup><col style="width:38px"><col style="width:44px"><col style="width:125px"><col style="width:310px"><col style="width:105px"><col style="width:110px"><col style="width:105px"><col style="width:110px"><col style="width:110px"><col style="width:140px"><col style="width:100px"></colgroup>
+                        <colgroup><col style="width:38px"><col style="width:42px"><col style="width:135px"><col style="width:255px"><col style="width:255px"><col style="width:175px"><col style="width:170px"><col style="width:80px"></colgroup>
                         <thead class="border-top">
                             <tr>
-                                <th class="text-center" style="width: 1%;position:sticky;" id="firstColumn"></th>
+                                <th class="text-center" style="width: 1%;position:sticky;" id="firstColumn" data-orderable="false"><input type="checkbox" id="racm-select-visible" aria-label="Select criteria on this page"></th>
                                 <th class="text-center" data-orderable="false" style="font-size:11px;width:1%;text-transform:capitalize;position:sticky;vertical-align: middle">#</th>
                                 <td id="deptselectdata" data-orderable="false" style="width:10%;text-transform:capitalize;position:sticky;font-size: 12px;top:2px;font-weight:600;"></td>
                                 {{--<th class="text-center" style="width: 15%;text-transform: capitalize;font-size: 13px;position:sticky;top:2px;font-weight:600;">--}}
                                 {{--Process name</th>--}}
                                 <th class="text-center" data-orderable="false" style="width:18%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
                                     Risk factor title</th>
-                                <th class="text-center" data-orderable="false" style="width: 6%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
-                                    <span class="p-2" style="background: #ff686a; color: white">High</span>
-                                </th>
-                                <th class="text-center" data-orderable="false" style="width: 6%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
-                                    <span class="p-2" style="background: #ffbf00; color: white">Moderate</span>
-                                </th>
-                                <th class="text-center" data-orderable="false" style="width: 6%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
-                                    <span class="p-2" style="background: #349967; color: white">Low</span>
-                                </th>
-                                <th class="text-center" data-orderable="false" style="width: 10%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
-                                    Reviewer
-                                </th>
-                                <th class="text-center" data-orderable="false" style="width: 8%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
-                                    Approver
-                                </th>
+                                <th data-orderable="false">Assessment thresholds</th>
+                                <th data-orderable="false">Review team</th>
                                 <th class="text-center" data-orderable="false" style="width: 8%;text-transform: capitalize;font-size: 12px;position:sticky;top:2px;font-weight:600;vertical-align: middle">
                                     Status
                                 </th>
@@ -344,18 +340,15 @@
                                 if ($riskAcm->unit == 4) {
                                     $unit = $riskAcm->unit_other ? $riskAcm->unit_other : 'Other';
                                 }
-                                $totalreviewers = App\RacmReviewerDetail::where('racm_id',$riskAcm->id)->pluck('reviewer_id')->unique()->toArray();
-                                $reviewedreviewers = App\RacmReviewerDetail::where('racm_id',$riskAcm->id)->where('reviewed_status',true)->where('racm_rejected',false)->pluck('reviewer_id')->unique()->toArray();
-                                $reviewers = App\RacmReviewerDetail::where('racm_id',$riskAcm->id)->pluck('reviewer_id')->unique()->toArray();
-                                $first_reviewer = null;
-                                if(count($reviewers)>0){
-                                    $first_reviewer = array_shift($reviewers);
-                                    $first_reviewer = App\User::where('id',$first_reviewer)->first();
-                                }
-                                $reviewers_details = App\User::whereIn('id',$reviewers)->get();
+                                $assignments = $riskAcm->reviewerAssignments;
+                                $totalreviewers = $assignments->pluck('reviewer_id')->unique()->all();
+                                $reviewedreviewers = $assignments->where('reviewed_status', true)->where('racm_rejected', false)->pluck('reviewer_id')->unique()->all();
+                                $reviewerPeople = $assignments->pluck('reviewerdetails')->filter()->unique('id')->values();
+                                $first_reviewer = $reviewerPeople->first();
+                                $reviewers_details = $reviewerPeople->slice(1);
                             @endphp
                             <tr>
-                                <td><input class="text-center font-size-sm" type="checkbox" id="{{ $riskAcm->id}}" name="id[]" aria-label="Select criteria {{ $riskAcm->risk_factor_title }}"></td>
+                                <td><input class="text-center font-size-sm" type="checkbox" id="{{ $riskAcm->id}}" name="id[]" data-racm-select aria-label="Select criteria {{ $riskAcm->risk_factor_title }}"></td>
                                 <td class="text-center" style="font-size:11px;">{{$no}}</td>
                                 <td style="font-size: 11px;" class="text-center">
                                     <span>{{ $riskAcm->department ? $riskAcm->department->departmentname : '--' }}</span>
@@ -364,58 +357,23 @@
                                     <span class="workflow-name" title="{{ $riskAcm->risk_factor_title }}">{{ $riskAcm->risk_factor_title }}</span>
                                     <span class="workflow-description" title="{{ $riskAcm->risk_factor_description }}">{{ $riskAcm->risk_factor_description }}</span>
                                 </td>
-                                <td style="font-size: 11px;" class="text-center">
-                                    @if($riskAcm->high)
-                                        {{ $riskAcm->high . $unit }}
+                                <td><div class="racm-thresholds">
+                                    @foreach(['low' => 'Low', 'moderate' => 'Moderate', 'high' => 'High'] as $level => $levelLabel)
+                                    <div data-level="{{ $level }}"><span>{{ $levelLabel }}</span><strong>{{ $riskAcm->$level !== null && $riskAcm->$level !== '' ? $riskAcm->$level . $unit : '—' }}</strong></div>
+                                    @endforeach
+                                </div></td>
+                                <td class="racm-review-team">
+                                    <div title="{{ $reviewerPeople->pluck('name')->implode(', ') }}"><small>Reviewers</small><span>{{ $first_reviewer->name ?? 'Unassigned' }}@if($reviewers_details->count()) <b>+{{ $reviewers_details->count() }}</b>@endif</span></div>
+                                    <div><small>Approver</small><span>{{ $riskAcm->approver->name ?? 'Unassigned' }}</span></div>
+                                </td>
+                                <td class="racm-stage-cell">
+                                    <span class="racm-stage" data-stage="{{ $riskAcm->status ?: 'Draft' }}">{{ $riskAcm->status ?: 'Draft' }}</span>
+                                    @if(count($totalreviewers) && in_array($riskAcm->status, ['Review Requested', 'Reviewed']))
+                                    <small>{{ count($reviewedreviewers) }} of {{ count($totalreviewers) }} reviewed</small>
+                                    <progress value="{{ count($reviewedreviewers) }}" max="{{ count($totalreviewers) }}" aria-label="Completed criteria reviews">{{ count($reviewedreviewers) }} / {{ count($totalreviewers) }}</progress>
                                     @endif
                                 </td>
-                                <td style="font-size: 11px;" class="text-center">
-                                    @if($riskAcm->moderate)
-                                        {{ $riskAcm->moderate . $unit }}
-                                    @endif
-                                </td>
-                                <td style="font-size: 11px;" class="text-center">
-                                    @if($riskAcm->low)
-                                        {{ $riskAcm->low . $unit }}
-                                    @endif
-                                </td>
-                                <td>
-                                    @php
-                                        $reviewerNames = collect([$first_reviewer])->filter()->merge($reviewers_details)->pluck('name')->implode(', ');
-                                    @endphp
-                                    <div class="workflow-owner" title="{{ $reviewerNames ?: 'Unassigned' }}">
-                                        @if($first_reviewer)
-                                            <span>{{ $first_reviewer->name }}</span>
-                                            @if($reviewers_details->count())<small class="workflow-more">+{{ $reviewers_details->count() }}</small>@endif
-                                        @else
-                                            <span class="workflow-unassigned">Unassigned</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="workflow-person-name" title="{{ $riskAcm->approver->name ?? 'Unassigned' }}">{{ $riskAcm->approver->name ?? 'Unassigned' }}</span>
-                                </td>
-
-                                <td class="text-center" style="font-size:10px;">
-                                    @if(($riskAcm->status=='Review Awaiting'))
-                                    <span style="color:#fe9c05;font-weight:500;">{{$riskAcm->status}}</span>
-                                    @elseif($riskAcm->status=='Review Requested')
-                                    <span style="color:#6aa84f;font-weight:500;">{{$riskAcm->status}}({{count($reviewedreviewers)}}/{{count($totalreviewers)}})</span>
-                                    @elseif($riskAcm->status=='Reviewed')
-                                    <span style="color:#0720fc;font-weight:500;">{{$riskAcm->status}}({{count($reviewedreviewers)}}/{{count($totalreviewers)}})</span>
-                                    @elseif($riskAcm->status=='Review Rejected')
-                                    <span style="color:red;font-weight:500;">{{$riskAcm->status}}</span>
-                                    @elseif($riskAcm->status=='Awaiting Approval')
-                                    <span style="color:#fe9e2d;font-weight:500;">{{$riskAcm->status}}</span>
-                                    @elseif($riskAcm->status=='Approved')
-                                    <span style="color:#6aa84f;font-weight:500;">{{$riskAcm->status}}</span>
-                                    @elseif($riskAcm->status=='Rejected')
-                                    <span style="color:red;font-weight:500;">{{$riskAcm->status}}</span>
-                                    @else
-                                    <span data-placement="top" data-toggle="tooltip" title="Unknown Status">--</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
+                                <td class="text-center" data-search="">
                                     <div class="btn-group m-auto d-flex justify-content-center">
                                         <!-- Action: Edit/Delete  -->
                                         <div class="dropdown">
@@ -446,12 +404,12 @@
                                             <i class="far fa-eye text-center" style="font-size:10px;cursor:pointer"></i>
                                         </a>
                                     </div>
-                                    <div id="viewModal{{$riskAcm->id}}"
+                                    <template id="racm-detail-template-{{ $riskAcm->id }}"><div id="viewModal{{$riskAcm->id}}"
                                          class="risk-module-form modal fadebd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="false">
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h2 class="modal-title">Detailed View</h2>
+                                                    <h2 class="modal-title"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-sliders-h"></i></span>Assessment criteria details</h2>
                                                 </div>
                                                 <table class="table table-bordered text-left">
                                                     <tr>
@@ -513,11 +471,9 @@
                                                         </td>
                                                     </tr>
                                                     @php 
-                                                        $reviewers_ids = App\RacmReviewerDetail::where('racm_id',$riskAcm->id)->pluck('reviewer_id')->unique()->toArray();
-                                                        $reviewers_names = App\User::whereIn('id',$reviewers_ids)->pluck('name')->toArray();
-                                                    
-                                                        $reviewed_by = App\RacmReviewerDetail::where('racm_id',$riskAcm->id)->where('reviewed_status',true)->with('reviewerdetails')->get()->unique();
-                                                        $last_reviewed_by = App\RacmReviewerDetail::where('racm_id',$riskAcm->id)->where('reviewed_status',true)->with('reviewerdetails')->orderBy('updated_at', 'DESC')->first();
+                                                        $reviewers_names = $reviewerPeople->pluck('name')->all();
+                                                        $reviewed_by = $assignments->where('reviewed_status', true)->unique('id');
+                                                        $last_reviewed_by = $reviewed_by->sortByDesc('updated_at')->first();
                                                     @endphp
                                                     @if(count($reviewers_names))
                                                     <tr>
@@ -577,7 +533,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div></template>
                                 </td>
                                 <?php $no++; ?>
                             </tr>
@@ -589,13 +545,13 @@
             </div>
         </div>
     </div>
-    <div class="racm-area"></div>
-    <div id="add-request-review-approve" class="risk-module-form modal fadebd-example-modal-sm" aria-labelledby="racm-review-assignment-title" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="racm-area"></div><div id="racm-detail-area"></div>
+    <div id="add-request-review-approve" class="risk-module-form modal fade" aria-labelledby="racm-review-assignment-title" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="block block-rounded block-transparent mb-0">
                     <div class="modal-header">
-                      <h3 class="modal-title" id="racm-review-assignment-title"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-user-edit"></i></span>Request review & approval</h3>
+                      <h3 class="modal-title" id="racm-review-assignment-title"><span class="rf-modal-icon" aria-hidden="true"><i class="fa fa-user-edit"></i></span>Assign review & approval</h3>
                       <div class="block-options">
                         <button type="button" class="btn-block-option" onclick="closeModal()" aria-label="Close">
                           <i class="fa fa-fw fa-times"></i>
@@ -603,10 +559,11 @@
                       </div>
                     </div>
                     <div class="block-content fs-sm">
+                        <p class="workflow-form-hint" id="racm-review-selection-summary"></p>
                         <input type="hidden" name="recordids" id="recordids" value="">
                         <div class="row">
                             <div class="form-group col-sm-12">
-                                <label class="col-sm-12 col-form-label" style="font-size:13px;padding-left:0;">Choose Reviewer <span class="text-danger">*</span></label>
+                                <label class="col-sm-12 col-form-label" style="font-size:13px;padding-left:0;" for="reviewers">Reviewers <span class="text-danger">*</span></label>
                                 <div class="col-sm-12 row">
                                     <select class="select2 form-control" id="reviewers" required
                                             name="reviewers" style="font-size: 13px;width:100%" multiple data-placeholder="Choose Reviewers name">
@@ -620,7 +577,7 @@
                                 </div>
                             </div>
                             <div class="form-group col-sm-12">
-                                <label class="col-sm-12 col-form-label" style="font-size:13px;padding-left:0;">Choose Approver <span class="text-danger">*</span></label>
+                                <label class="col-sm-12 col-form-label" style="font-size:13px;padding-left:0;" for="approver">Approver <span class="text-danger">*</span></label>
                                 <div class="col-sm-12 row">
                                     <select class="select2 form-control" id="approver" required
                                             name="approver" style="font-size: 13px;width:100%">
@@ -638,56 +595,23 @@
                     </div>
                     <div class="block-content block-content-full text-end bg-body text-right">
                       <button type="button" class="btn btn-sm btn-secondary me-1" onclick="closeModal()">Close</button>
-                      <button type="button" class="btn btn-sm btn-primary" id="save-request">Submit</button>
+                      <button type="button" class="btn btn-sm btn-primary" id="save-request">Send review request</button>
                     </div>
                   </div>
                 
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     {{-- --------edit  button ------------}}
+    <script defer src="{{ asset('js/racm-workspace.js') }}?v={{ filemtime(public_path('js/racm-workspace.js')) }}"></script>
     <script>
-        $("#request-review-approve").click(function() {
-            var dataArr = new Array();
-            var all;
-            if ($('#tabledata input[name="id[]"]:checked').length > 0) {
-                $('#tabledata input[name="id[]"]:checked').each(function() {
-                    dataArr.push($(this).attr('id'));
-                });
-                all = dataArr.join(",");
-                if(all){
-                    $('#add-request-review-approve').show();
-                    $('#recordids').val(all);
-                    $('.select2').select2();
-                }else{
-                    Swal.fire({
-                        text: "No Record Selected."
-                        , icon: "error"
-                        , showCancelButton: true
-                        , showConfirmButton: false
-                        , cancelButtonColor: "#d33"
-                        , cancelButtonText: "Close", 
-                    });
-                }
-
-            } else {
-                Swal.fire({
-                    text: "No Record Selected."
-                    , icon: "error"
-                    , showCancelButton: true
-                    , showConfirmButton: false
-                    , cancelButtonColor: "#d33"
-                    , cancelButtonText: "Close"
-                , });
-            }
-        });
-        function closeModal(){
-            $('#add-request-review-approve').hide();
-        }
-    </script>
-    <script>
+        function closeModal() { $('#add-request-review-approve').modal('hide'); }
         function ViewBtn(id) {
+            if (!document.getElementById('viewModal' + id)) {
+                const template = document.getElementById('racm-detail-template-' + id);
+                if (!template) return;
+                document.getElementById('racm-detail-area').append(template.content.cloneNode(true));
+            }
             $('#viewModal' + id).modal('show');
         }
         $(function () {

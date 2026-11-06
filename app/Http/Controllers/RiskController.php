@@ -403,10 +403,7 @@ class RiskController extends Controller
         $models = DB::table('modenadisable')->First();
 
         //--------------------Register------------
-        $departments = DB::table('departments')->get();
-        $mr = DB::table('representatives')->pluck('email');
         $email = DB::table('riskreviewers')->pluck('email');
-        $users = DB::table('users')->get();
         $data = Risk::with(['department', 'riskreviewer'])
             ->whereIn('action_status', ['Under review', 'Rejected', 'Active Risk', 'Action under review', 'Completed', 'Awaiting Periodic Review'])
             ->orderBy('created_at', 'desc')
@@ -459,8 +456,8 @@ class RiskController extends Controller
         return view('user.risks.risk', compact(
             'allRiskGroup', 'allRiskArea', 'allRank', 'allRiskOwner', 'allRiskResponse', 'allProcessStage'
         ))
-            ->with('model', $models)->withDepartments($departments)
-            ->withMr($mr)->withUsers($users)->with('data', $data)->with('email', $email)
+            ->with('model', $models)
+            ->with('data', $data)->with('email', $email)
             ->withRiskOwnerData($riskOwnerData);
     }
 

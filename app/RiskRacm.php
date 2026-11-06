@@ -26,6 +26,11 @@ class RiskRacm extends Model
         'reject_reason_by_approver'
     ];
 
+    public function reviewerAssignments()
+    {
+        return $this->hasMany(RacmReviewerDetail::class, 'racm_id');
+    }
+
     public function department()
     {
         return $this->belongsTo(Departments::class, 'process_id', 'id');

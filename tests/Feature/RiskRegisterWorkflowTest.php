@@ -108,4 +108,37 @@ class RiskRegisterWorkflowTest extends TestCase
         $this->assertStringNotContainsString('id="mitigation-primary-risk"', $bound);
     }
 
+    public function testPopulatedCriteriaRenderWithoutQueriesPerRowAndUseContextualReviewActions()
+    {
+        $person = new \App\User(['name' => 'Morgan Reed']);
+        $person->id = 7;
+        $criteria = collect();
+        foreach (range(1, 30) as $id) {
+            $record = new \App\RiskRacm(['risk_factor_title' => 'Capacity '.$id, 'risk_factor_description' => 'Production tolerance', 'low' => '0', 'moderate' => '1–2', 'high' => '>2', 'unit' => 2, 'status' => 'Review Requested']);
+            $record->id = $id;
+            $assignment = new \App\RacmReviewerDetail(['reviewer_id' => 7, 'reviewed_status' => true, 'racm_rejected' => false]);
+            $assignment->id = $id;
+            $assignment->setRelation('reviewerdetails', $person);
+            $record->setRelation('reviewerAssignments', collect([$assignment]));
+            foreach (['department', 'approvedBy', 'postedBy'] as $relation) $record->setRelation($relation, null);
+            $record->setRelation('approver', $person);
+            $criteria->push($record);
+        }
+        \Illuminate\Support\Facades\DB::enableQueryLog();
+        \Illuminate\Support\Facades\DB::flushQueryLog();
+        $html = view('user.risks.racm.index', ['riskAcms' => $criteria, 'users' => collect([$person]), 'allDeptNames' => '', 'model' => null, 'errors' => new \Illuminate\Support\ViewErrorBag()])->render();
+        $queries = \Illuminate\Support\Facades\DB::getQueryLog();
+        \Illuminate\Support\Facades\DB::disableQueryLog();
+        $this->assertCount(0, $queries, 'Rendering prefetched criteria must not query reviewers for each row.');
+        $this->assertStringContainsString('<strong>0%</strong>', $html);
+        $this->assertStringContainsString('Assessment thresholds', $html);
+        $this->assertStringContainsString('Review team', $html);
+        $this->assertSame(30, substr_count($html, '<template id="racm-detail-template-'));
+        $this->assertStringContainsString('id="racm-selection-bar" hidden', $html);
+        preg_match('/<header.*?<\/header>/s', $html, $header);
+        $this->assertStringNotContainsString('id="request-review-approve"', $header[0]);
+        $this->assertStringContainsString('Send for review', $html);
+        if (getenv('RISK_WORKFLOW_PREVIEW_DIR')) file_put_contents(getenv('RISK_WORKFLOW_PREVIEW_DIR').'/risk-criteria-populated-preview.html', $html);
+    }
+
 }

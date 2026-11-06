@@ -75,7 +75,7 @@ class RiskRegisterPagesTest extends TestCase
         $this->assertStringNotContainsString('CURRENT PORTFOLIO', $html);
         $this->assertStringNotContainsString('including closed records', $html);
         $this->assertStringNotContainsString('class="analysis-quality"', $html);
-        $this->assertStringContainsString('id="analysis-group"', $html);
+        $this->assertStringNotContainsString('id="analysis-group"', $html);
         $this->assertStringContainsString('data-analysis-count="total"', $html);
         $this->assertStringContainsString('Department comparison', $html);
         $this->assertStringNotContainsString('everything looks great', $html);

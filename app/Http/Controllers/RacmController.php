@@ -43,7 +43,7 @@ class RacmController extends Controller
     public function index(Request $request): View
     {
         $model = ModenaDisable::first();
-        $riskAcms = RiskRacm::with(['department', 'approver','approvedBy', 'postedBy'])->orderBy('created_at', 'DESC')->get();
+        $riskAcms = RiskRacm::with(['department', 'approver','approvedBy', 'postedBy', 'reviewerAssignments.reviewerdetails'])->orderBy('created_at', 'DESC')->get();
         $departments = $riskAcms->pluck('department.departmentname');
         $allDeptNames = implode(',', array_unique($departments->toArray()));
         $users = User::where('is_email_verified',true)->where('approved',true)->get();

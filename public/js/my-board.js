@@ -12,7 +12,12 @@
     }
     function icon(name) { const node = el('i', 'fa ' + name); node.setAttribute('aria-hidden', 'true'); return node; }
     function safeUrl(value) {
-        try { const url = new URL(value, location.origin); return url.origin === location.origin && /^https?:$/.test(url.protocol) ? url.href : null; }
+        try {
+            const url = new URL(value, location.origin);
+            // TLS may terminate at the deployment proxy while Laravel generates HTTP URLs.
+            if (location.protocol === 'https:' && url.protocol === 'http:' && url.hostname === location.hostname && !url.port) url.protocol = 'https:';
+            return url.origin === location.origin && /^https?:$/.test(url.protocol) ? url.href : null;
+        }
         catch (error) { return null; }
     }
     function taskRow(task) {
@@ -24,11 +29,11 @@
         if (task.priority) due.append(el('small', 'mb-priority-' + task.priority.toLowerCase(), task.priority + ' priority'));
         row.append(glyph, copy, due);
         const actions = el('div', 'mb-task-actions');
-        const actionUrl = task.action_url && safeUrl(task.action_url);
-        if (actionUrl) { const action = el('a', 'mb-task-action', task.action_label); action.href = actionUrl; action.setAttribute('aria-label', task.action_label + ' · ' + task.reference); actions.append(action); }
+        const actionUrl = safeUrl(task.action_url || task.url);
+        if (actionUrl) { const action = el('a', 'mb-task-action', task.action_label || 'Open task'); action.href = actionUrl; action.setAttribute('aria-label', (task.action_label || 'Open task') + ' · ' + task.reference); actions.append(action); }
         const url = task.url && safeUrl(task.url);
         if (url) { const link = el('a', 'mb-open'); link.href = url; link.title = task.direct ? 'View details' : 'View module'; link.setAttribute('aria-label', 'View ' + task.reference); link.append(icon('fa-eye')); actions.append(link); }
-        row.append(actions);
+        copy.append(actions);
         return row;
     }
     function renderTasks() {

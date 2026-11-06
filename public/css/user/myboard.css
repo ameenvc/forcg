@@ -147,3 +147,9 @@ html:has(.myboard-page) { scrollbar-gutter:stable; }
 @media(max-width:1100px) and (min-width:601px) { .mb-task-actions { margin-left:0; } }
 @media(max-width:600px) { .mb-task-copy { flex-basis:100%; } .mb-task-actions { order:4; width:100%; justify-content:flex-end; } }
 @media(pointer:coarse) { .mb-task-action { min-height:44px; } }
+
+/* Keep the task entry point beside its description, visible at every inbox width. */
+.myboard-page .mb-task-copy .mb-task-actions { display:flex; margin:9px 0 0; width:auto; justify-content:flex-start; flex-wrap:wrap; }
+.myboard-page .mb-task-action { background:#315de0; border-color:#315de0; color:#fff; }
+.myboard-page .mb-task-action:hover { background:#244bc1; color:#fff; }
+.myboard-page .mb-task-copy .mb-open { margin-left:0; }

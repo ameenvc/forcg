@@ -31,7 +31,7 @@ class OrganizationEsgTest extends TestCase
         $this->table('compliance','comp_status');
         foreach (['Complied','Not Complied',null] as $state) DB::table('compliance')->insert(['comp_status'=>$state]);
         $s=$this->snapshot(['compliance']);
-        $this->assertCount(1,$s['blockers']); $this->assertStringContainsString('blocked',$s['status']);
+        $this->assertCount(1,$s['blockers']); $this->assertStringContainsString('Compliance review required',$s['status']);
         $this->assertSame(33.3,$s['indicators'][9]['score']);$this->assertSame(1,$s['indicators'][9]['unknown']);
         $this->assertNull($this->snapshot([])['score']);
     }
@@ -60,7 +60,7 @@ class OrganizationEsgTest extends TestCase
         $this->assertStringContainsString('organization-esg-readiness.csv',$response->headers->get('Content-Disposition'));
         $content=$response->streamedContent();
         $this->assertStringContainsString('Model 1.0',$content);
-        $this->assertStringContainsString('Qualification blocked',$content);
+        $this->assertStringContainsString('Compliance review required',$content);
         $this->assertStringContainsString('Legal compliance',$content);
     }
     public function testViewHasTransparentRulesAndNoInventedGlobalOrHistoricalScore()
@@ -69,7 +69,7 @@ class OrganizationEsgTest extends TestCase
         app('events')->forget('composing: *');
         $html=view('user.userscore',['scorecard'=>$this->snapshot(),'model'=>null])->render();
         $this->assertStringContainsString('Evidence-adjusted readiness',$html);
-        $this->assertStringContainsString('not approve a vendor',$html);
+        $this->assertStringContainsString('organizational improvement',$html);
         $this->assertStringNotContainsString('10.1373',$html);
         $this->assertStringContainsString('GHG inventory',$html);
         if (getenv('ESG_PREVIEW_PATH')) file_put_contents(getenv('ESG_PREVIEW_PATH'), $html);

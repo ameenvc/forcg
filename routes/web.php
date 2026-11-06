@@ -68,6 +68,14 @@ Route::get('/admin/home', 'AdminController@index')->name('admin.successlogin');
 Route::get('/user/dashboard', 'UserController@userdashboardindex')->name('user.successlogin');
 Route::get('/user/home', 'UserController@index')->name('user');
 Route::get('/user/score', 'UserController@scoring')->name('user.score');
+Route::get('/user/score/evidence', 'EsgEvidenceController@index');
+Route::post('/user/score/evidence', 'EsgEvidenceController@store');
+Route::get('/user/score/evidence/template', 'EsgEvidenceController@template');
+Route::post('/user/score/evidence/import', 'EsgEvidenceController@import');
+Route::post('/user/score/evidence/{id}/review', 'EsgEvidenceController@review');
+Route::post('/user/score/evidence/{id}/withdraw', 'EsgEvidenceController@withdraw');
+Route::get('/user/score/evidence/{id}/download', 'EsgEvidenceController@download');
+
 Route::get('/superadmin/home', 'SuperAdminController@index')->name('superadmin.successlogin')->middleware('auth:superadmin');
 
 //logout for each type of user

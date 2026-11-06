@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
 
-/** Organization-wide self-reported readiness snapshot. Never grants vendor qualification. */
+/** Organization-wide self-reported readiness snapshot. External evidence remains separate from readiness calculations. */
 class OrganizationEsgService
 {
     public function snapshot(array $enabled): array
@@ -62,8 +62,15 @@ class OrganizationEsgService
             $matches=array_values(array_filter($indicators,function($i)use($key){return $i['module']===$key;}));
             $moduleCoverage[]=['name'=>$meta[0],'enabled'=>in_array($key,$enabled,true),'indicators'=>count($matches),'connected'=>count(array_filter($matches,function($i){return $i['score']!==null;}))];
         }
+        $evidence = ['ready'=>false,'pending'=>0,'accepted'=>0,'assured'=>0];
+        if ((new EsgEvidenceService)->ready()) {
+            $evidence['ready']=true;
+            $evidence['pending']=DB::table('esg_evidence')->where('status','pending')->count();
+            $evidence['accepted']=DB::table('esg_evidence')->where('status','accepted')->count();
+            $evidence['assured']=DB::table('esg_evidence')->where('status','accepted')->whereNotNull('assurance_path')->count();
+        }
         return ['version'=>$settings['version'],'at'=>now()->toIso8601String(),'pillars'=>$pillars,'indicators'=>$indicators,
-            'score'=>$observed ? round($overall,1) : null,'coverage'=>round($coverage,1),'blockers'=>$blockers,'modules'=>$moduleCoverage,
-            'status'=>$blockers ? 'Qualification blocked — compliance review required' : 'Provisional — customer review required'];
+            'score'=>$observed ? round($overall,1) : null,'coverage'=>round($coverage,1),'blockers'=>$blockers,'modules'=>$moduleCoverage,'evidence'=>$evidence,
+            'status'=>$blockers ? 'Compliance review required' : 'Internal assessment — evidence review required'];
     }
 }

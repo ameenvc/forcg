@@ -1,17 +1,12 @@
 @php
     $registerPage = $registerPage ?? 'register';
+    $pageTitles = ['register' => 'Enterprise risk register', 'mitigation' => 'Risk mitigation actions', 'analysis' => 'Enterprise risk analysis', 'closed' => 'Closed risk register', 'criteria' => 'Risk assessment criteria matrix (RACM)'];
     $pageIcons = ['register' => 'fa-shield-alt', 'mitigation' => 'fa-tasks', 'analysis' => 'fa-chart-pie', 'closed' => 'fa-check-circle', 'criteria' => 'fa-sliders-h'];
 @endphp
-<header class="register-header cgbod-form-header risk-page-banner{{ $registerPage === 'register' ? ' register-header-compact' : '' }}">
+<header class="register-header cgbod-form-header risk-page-banner register-header-compact">
     <div class="register-header-main">
         <div class="register-header-copy">
-            @if($registerPage !== 'register')
-            <span class="register-eyebrow">Enterprise risk management</span>
-            @endif
-            <div class="register-title-line"><span class="register-title-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span><h1>{{ $registerTitle ?? 'Enterprise risk register' }}</h1></div>
-            @if($registerPage !== 'register')
-            <p>{{ $registerDescription ?? 'Review risk ratings, accountable owners, and mitigation priorities.' }}</p>
-            @endif
+            <div class="register-title-line"><span class="register-title-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span><h1>{{ $pageTitles[$registerPage] ?? ($registerTitle ?? 'Enterprise risk register') }}</h1></div>
         </div>
     </div>
     @if($registerPage === 'criteria')

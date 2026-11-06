@@ -143,3 +143,9 @@ html body #main-container .rf-assessment-preview p { margin:5px 0 0; color:var(-
 .rf-create-risk .risk-step-nav { border-top:0; }
 .rf-create-risk .risk-form-section .form-group>label.col-sm-12,
 .rf-create-risk .risk-form-section .form-group>div.col-sm-12 { padding-left:0; padding-right:0; }
+
+/* Compact page titles retain back navigation and record context. */
+.risk-form-shell>.rf-page-header { padding:18px 24px; }
+.rf-page-header .rf-title-group { align-items:center; }
+html body #main-container .rf-page-header .rf-title-group h1 { margin:0; }
+@media(max-width:767px) { .risk-form-shell>.rf-page-header { padding:16px 18px; } }

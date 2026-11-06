@@ -7,7 +7,7 @@
 <header class="rf-page-header">
     <a class="rf-back" href="{{ $formRecordId ? route('risk.detail', $formRecordId) : route('risk.index') }}"><i class="fa fa-arrow-left mr-1" aria-hidden="true"></i>{{ $formRecordId ? 'Back to risk' : 'Risk register' }}</a>
     <div class="rf-page-heading">
-        <div class="rf-title-group"><span class="rf-header-icon" aria-hidden="true"><i class="fa {{ $formIcon }}"></i></span><div><span class="rf-eyebrow">ENTERPRISE RISK MANAGEMENT</span><h1>{{ $formTitle }}</h1><p>{{ $formDescription }}</p></div></div>
+        <div class="rf-title-group"><span class="rf-header-icon" aria-hidden="true"><i class="fa {{ $formIcon }}"></i></span><div><h1>{{ $formTitle }}</h1></div></div>
         @if($formAiAssist ?? false)<div class="rf-header-actions">@include('user.risks.ai-trigger')</div>@endif
     </div>
     @if($formRecordId)<div class="rf-record-context"><span>{{ $formRecord->grp_id }}</span><strong>{{ $formRecord->riskname }}</strong></div>@endif

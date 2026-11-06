@@ -12,8 +12,7 @@
 <div class="content rh-workspace" id="risk-history-workspace">
     <header class="rh-header">
         <div class="rh-topline"><a href="{{ route('risk.index') }}" class="rh-back"><i class="fa fa-arrow-left mr-1" aria-hidden="true"></i>Risk register</a><div class="rh-header-actions"><button type="button" class="btn rh-button" onclick="window.print()"><i class="fa fa-print mr-1" aria-hidden="true"></i>Print</button><a class="btn rh-button rh-primary" href="{{ route('risk.detail', $riskdata->Rid) }}">Open risk <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i></a></div></div>
-        <span class="rh-eyebrow">ENTERPRISE RISK MANAGEMENT</span>
-        <div class="rh-title"><span class="rh-icon" aria-hidden="true"><i class="fa fa-history"></i></span><div><h1>Risk history</h1><p>Follow recorded reviews, assessment changes, and mitigation updates.</p></div></div>
+        <div class="rh-title"><span class="rh-icon" aria-hidden="true"><i class="fa fa-history"></i></span><div><h1>Risk history</h1></div></div>
         <div class="rh-record"><span class="rh-id">{{ $riskdata->grp_id }}</span><strong>{{ $riskdata->riskname }}</strong></div>
         <dl class="rh-summary"><div><dt>Risk group</dt><dd>{{ $riskdata->riskgroup ?: 'Not assigned' }}</dd></div><div><dt>Risk area</dt><dd>{{ $riskdata->department->departmentname ?? 'Not assigned' }}</dd></div><div><dt>Current rating</dt><dd><span class="rh-badge rh-tone-{{ $toneFor($riskdata->rank) }}">{{ $riskdata->rank ?: 'Unassessed' }}</span></dd></div><div><dt>History entries</dt><dd>{{ $riskhistory->count() }}</dd></div></dl>
         <details class="rh-description"><summary>Current risk description</summary><p>{{ strip_tags($riskdata->riskdec ?: 'No description has been recorded.') }}</p></details>

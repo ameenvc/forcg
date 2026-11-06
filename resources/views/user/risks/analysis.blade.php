@@ -13,7 +13,7 @@
     $highShare = $counts['total'] ? round(100 * $counts['High'] / $counts['total']) : 0;
 @endphp
 <div class="content cgbod-form risk-register risk-analysis" id="risk-analysis" data-analysis="{{ json_encode($analysisData) }}">
-    @include('user.risks.register-header', ['registerPage' => 'analysis', 'registerTitle' => 'Risk analysis', 'registerDescription' => 'Understand your risk profile, spot concentration, and focus the next review.'])
+    @include('user.risks.register-header', ['registerPage' => 'analysis', 'registerTitle' => 'Risk analysis', 'registerDescription' => 'Compare risk ratings across departments and identify areas that need attention.'])
     <div class="analysis-context"><div><span class="analysis-eyebrow">CURRENT PORTFOLIO</span><p>All recorded risks, including closed records. Deleted records are excluded. Counts reflect stored ratings.</p></div><label>Risk group<select id="analysis-group"><option value="">All groups</option>@foreach($analysisData['groups'] as $group => $groupData)<option>{{ $group }}</option>@endforeach</select></label></div>
     <div class="analysis-rating-strip" aria-label="Risk counts for the selected group">
         @foreach(['total' => 'Total risks', 'High' => 'High', 'Moderate' => 'Moderate', 'Low' => 'Low', 'Unassessed' => 'Unassessed'] as $rating => $label)

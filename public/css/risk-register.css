@@ -905,3 +905,36 @@
 .register-ai-scope {font-size:12px;font-weight:600;margin:12px 0 0;color:#405b87;}
 .register-toolbar-actions>#risk-register-ai-toggle {background:#3563db;border-color:#3563db;color:white;font-size:12px;border-radius:8px;white-space:nowrap;}
 @media(max-width:767px) {.register-toolbar-actions {flex-wrap:wrap;}}
+/* Shared page banner: clear page identity with restrained brand accents. */
+.register-header.risk-page-banner {
+    position:relative;
+    padding:24px 28px;
+    border-top:1px solid #dbe3f2;
+    background:linear-gradient(110deg,#fff 35%,#f8faff 76%,#f4f1fc);
+    overflow:hidden;
+}
+.risk-page-banner::before { content:""; position:absolute; top:20px; bottom:20px; left:0; width:4px; border-radius:0 4px 4px 0; background:linear-gradient(180deg,#3969db,#7961c8); }
+.register-header-main { display:flex; align-items:center; gap:18px; min-width:0; }
+.register-header-copy { min-width:0; }
+.register-page-icon { display:grid; place-items:center; flex:none; width:52px; height:52px; border-radius:15px; color:#4d65bd; background:linear-gradient(145deg,#edf3ff,#eeebfb); border:1px solid #dce3f7; box-shadow:0 3px 8px #405ba409; }
+.register-page-icon i { font-size:21px; }
+html body #main-container .risk-page-banner .register-eyebrow { display:block; color:#5e6f92; font-size:11px!important; font-weight:600; line-height:1.5; letter-spacing:.055em; text-transform:none; }
+html body #main-container .risk-page-banner h1 { color:#243c67; font-size:28px!important; font-weight:650; line-height:1.25; letter-spacing:-.6px; margin:5px 0 7px; }
+.risk-page-banner p { color:#667893; font-size:13px; line-height:1.6; max-width:680px; }
+.risk-page-banner .register-add { border-radius:10px; background:#365fd1; border-color:#365fd1; box-shadow:0 4px 10px #365fd11a; padding:10px 17px; }
+.risk-page-banner .register-add:hover { background:#2c51bc; border-color:#2c51bc; }
+html[data-risk-theme=dark] .register-header.risk-page-banner { background:linear-gradient(110deg,#1b2b43 40%,#252b46 80%,#302a47)!important; border-color:#384c6d; }
+html[data-risk-theme=dark] .register-page-icon { color:#c7d3ff; border-color:#465379; background:linear-gradient(145deg,#293e63,#39315a); }
+html[data-risk-theme=dark] body #main-container .risk-page-banner h1 { color:#e2eafa; }
+html[data-risk-theme=dark] body #main-container .risk-page-banner .register-eyebrow { color:#acb9d4; }
+html[data-risk-theme=dark] .risk-page-banner p { color:#b5c3d9; }
+@media(max-width:767px) {
+    .register-header.risk-page-banner { padding:20px; gap:18px; }
+    .register-header-main { gap:12px; align-items:flex-start; }
+    .register-page-icon { width:40px; height:40px; border-radius:12px; margin-top:2px; }
+    .register-page-icon i { font-size:17px; }
+    html body #main-container .risk-page-banner h1 { font-size:24px!important; letter-spacing:-.4px; }
+    html body #main-container .risk-page-banner .register-eyebrow { font-size:10px!important; letter-spacing:.025em; }
+    .risk-page-banner p { font-size:12px; }
+    .risk-page-banner .risk-header-actions { width:100%; }
+}

@@ -1,6 +1,16 @@
-@php $registerPage = $registerPage ?? 'register'; @endphp
-<header class="register-header cgbod-form-header">
-    <div><span class="register-eyebrow">ENTERPRISE RISK MANAGEMENT</span><h1>{{ $registerTitle ?? 'Risk register' }}</h1><p>{{ $registerDescription ?? 'A clear view of your risks, owners, and next steps.' }}</p></div>
+@php
+    $registerPage = $registerPage ?? 'register';
+    $pageIcons = ['register' => 'fa-shield-alt', 'mitigation' => 'fa-tasks', 'analysis' => 'fa-chart-pie', 'closed' => 'fa-check-circle', 'criteria' => 'fa-sliders-h'];
+@endphp
+<header class="register-header cgbod-form-header risk-page-banner">
+    <div class="register-header-main">
+        <span class="register-page-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span>
+        <div class="register-header-copy">
+            <span class="register-eyebrow">Enterprise risk management</span>
+            <h1>{{ $registerTitle ?? 'Risk register' }}</h1>
+            <p>{{ $registerDescription ?? 'Review risk ratings, accountable owners, and mitigation priorities.' }}</p>
+        </div>
+    </div>
     @if($registerPage === 'criteria')
     <div class="risk-header-actions"><button type="button" class="btn btn-outline-primary" id="request-review-approve"><i class="fa fa-user-edit mr-2" aria-hidden="true"></i>Request review & approval</button>
     <button type="button" class="btn btn-primary register-add btn-add-racm"><i class="fa fa-plus mr-2" aria-hidden="true"></i>Add criteria</button></div>

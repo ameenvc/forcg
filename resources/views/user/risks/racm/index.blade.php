@@ -291,7 +291,7 @@
         </div>
     @endif
     <div class="content risk-register-page risk-workflow-page workflow-racm" style="width:100%;">
-        @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Agree on what low, moderate, and high mean before assessing a risk.'])
+        @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Define and approve consistent thresholds for low, moderate, and high risk.'])
         <div class="block block-rounded">
             <div class="block-content block-content-full">
                 <div class="table-responsive" id="content">

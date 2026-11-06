@@ -24,7 +24,7 @@ class OrganizationDashboardTest extends TestCase
         $this->table();$this->row();$this->row(['status'=>'Closed']);$this->row(['status'=>'Cancelled']);$this->row(['deleted_at'=>'2026-11-01']);
         $this->row(['status'=>'Review Pending','due_date'=>'2026-11-06']);$this->row(['due_date'=>'31/02/2026']);$this->row(['status'=>null]);$this->row(['due_date'=>'2026-11-13']);
         $d=$this->snapshot();$this->assertSame(6,$d['totals']['records']);$this->assertSame(4,$d['totals']['open']);$this->assertSame(1,$d['totals']['closed']);
-        $this->assertSame(1,$d['totals']['overdue']);$this->assertSame(2,$d['totals']['due_soon']);$this->assertSame(1,$d['totals']['unknown']);$this->assertSame(1,$d['totals']['decisions']);
+        $this->assertSame(1,$d['totals']['overdue']);$this->assertSame(2,$d['totals']['due_soon']);$this->assertSame(1,$d['totals']['unknown']);$this->assertSame(1,$d['totals']['decisions']);$this->assertSame(2,$d['upcoming'][0]['count']);$this->assertSame('Mitigation actions',$d['upcoming'][0]['name']);
         $this->assertStringNotContainsString('Private task title',json_encode($d));
         $this->assertSame('Partial coverage',$d['modules'][0]['state']);
     }
@@ -74,6 +74,16 @@ class OrganizationDashboardTest extends TestCase
         $this->assertSame(1,$d['closure'][0]['closed']);$this->assertSame(2,$d['closure'][0]['total']);$this->assertSame(2,$d['areas'][0]['modules']);
         $this->assertFalse($d['evidence']['available']);
     }
+    public function testPendingDecisionsUseDefinedStagesAndCompletionProgressRatherThanWordMatches()
+    {
+        $this->table();Schema::table('mitigations',function(Blueprint $t){$t->integer('progress')->default(0);});
+        $this->row(['status'=>'Action Reviewed, OK','progress'=>0]);
+        $this->row(['status'=>'Review completed','progress'=>0]);
+        $this->row(['status'=>'Awaiting Approval','progress'=>0]);
+        $this->row(['status'=>'Open','progress'=>100]);
+        $this->row(['status'=>'Closed','progress'=>100]);
+        $d=$this->snapshot();$this->assertSame(2,$d['totals']['decisions']);
+    }
     public function testDashboardRouteIsAuthenticated()
     {
         $this->withoutExceptionHandling();$this->expectException(\Illuminate\Auth\AuthenticationException::class);$this->getJson('/user/dashboard');
@@ -90,7 +100,7 @@ class OrganizationDashboardTest extends TestCase
     }
     public function testPageRendersCompanyAndEnabledModulesSafely()
     {
-        view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));app('events')->forget('composing: *');$this->table();$this->row();
+        view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));app('events')->forget('composing: *');$this->table();$this->row();$this->row(['due_date'=>'2026-11-10']);
         Schema::create('risks',function(Blueprint $t){$t->increments('Rid');$t->string('action_status');$t->string('rank');});
         DB::table('risks')->insert([['action_status'=>'Active Risk','rank'=>'High'],['action_status'=>'Active Risk','rank'=>'Moderate'],['action_status'=>'Active Risk','rank'=>'Low']]);
         Schema::create('compliance',function(Blueprint $t){$t->increments('id');$t->string('pro_status');$t->string('comp_status');});
@@ -99,7 +109,7 @@ class OrganizationDashboardTest extends TestCase
         $html=view('user.userdashboard',['dashboard'=>$dashboard,'company'=>'<script>bad()</script>','model'=>null])->render();
         $this->assertStringContainsString('&lt;script&gt;bad()&lt;/script&gt;',$html);$this->assertStringNotContainsString('<script>bad()</script>',$html);
         $this->assertStringContainsString('Enterprise risk',$html);$this->assertStringNotContainsString('Waste management',$html);$this->assertStringNotContainsString('Private task title',$html);
-        $this->assertStringContainsString('Management overview',$html);$this->assertStringContainsString('data-dashboard-tab="od-modules"',$html);
+        $this->assertStringContainsString('1 due',$html);$this->assertStringContainsString('Open register',$html);$this->assertStringContainsString('Management overview',$html);$this->assertStringContainsString('data-dashboard-tab="od-modules"',$html);
         if(getenv('DASHBOARD_PREVIEW_PATH'))file_put_contents(getenv('DASHBOARD_PREVIEW_PATH'),$html);
     }
 }

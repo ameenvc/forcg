@@ -17,7 +17,7 @@
         border-bottom-left-radius: 0;
     }
 </style>
-<div class="content risk-form-page risk-form-shell">
+<div class="content risk-form-page risk-form-shell risk-module-page">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Add linked opportunity', 'formDescription' => 'Capture a potential opportunity arising from this risk and assign responsibility.'])
     <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">
 

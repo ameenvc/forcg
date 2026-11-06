@@ -8,7 +8,7 @@
 
 
                 <!-- Page Content -->
-                <div class="content risk-form-page risk-form-shell">
+                <div class="content risk-form-page risk-form-shell risk-module-page">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Owner response', 'formDescription' => 'Review the risk and record the response from the accountable owner.'])
 
 

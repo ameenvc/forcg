@@ -29,7 +29,7 @@
     </style>
 
 <!-- Page Content -->
-<div class="content risk-form-page risk-form-shell">
+<div class="content risk-form-page risk-form-shell risk-module-page">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Initial risk review', 'formDescription' => 'Confirm the risk description and assessment, then assign owners before approval.'])
     <!-- Horizontal -->
     <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">

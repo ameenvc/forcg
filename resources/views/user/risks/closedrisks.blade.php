@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/risk-pages.css') }}?v={{ filemtime(public_path('css/risk-pages.css')) }}">
 <script src="{{ asset('js/risk-closed-register.js') }}?v={{ filemtime(public_path('js/risk-closed-register.js')) }}" defer></script>
-<div class="content cgbod-form risk-register closed-risk-register" id="risk-closed-register" data-density="compact">
+<div class="content cgbod-form risk-register closed-risk-register risk-module-page" id="risk-closed-register" data-density="compact">
     @include('user.risks.register-header', ['registerPage' => 'closed', 'registerTitle' => 'Closed risks', 'registerDescription' => 'Review closed risks and reopen a record when its circumstances change.'])
     <div class="block block-rounded risk-register-card"><div class="block-content block-content-full">
         @include('user.risks.notification-warning')

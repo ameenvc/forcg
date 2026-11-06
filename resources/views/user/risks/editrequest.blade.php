@@ -14,7 +14,7 @@
 
 
                 <!-- Page Content -->
-    <div class="content risk-form-page risk-form-shell"style="width:100%">
+    <div class="content risk-form-page risk-form-shell risk-module-page"style="width:100%">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Request risk changes', 'formDescription' => 'Review the selected records and prepare the changes for review.'])
          <!-- Horizontal -->
         <div class="block block-rounded">

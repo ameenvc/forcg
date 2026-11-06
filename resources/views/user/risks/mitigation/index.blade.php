@@ -167,7 +167,7 @@
     $data1 = [];
     $data2 = [];
     ?>
-    <div class="content risk-register-page risk-workflow-page workflow-mitigation" style="width:100%">
+    <div class="content risk-register-page risk-workflow-page workflow-mitigation risk-module-page" style="width:100%">
         @include('user.risks.register-header', ['registerPage' => 'mitigation', 'registerTitle' => 'Mitigation actions', 'registerDescription' => 'Assign mitigation actions, monitor progress, and review completion.'])
         @if($riskId)<div class="workflow-scope" role="status">Showing actions for the selected risk. <a href="{{ route('risk.detail', $riskId) }}">Open risk details</a> to review the assessment and manage its actions. <a class="ml-2" href="{{ route('mitigations.index') }}">Show all actions</a></div>@endif
         <div class="block">

@@ -290,7 +290,7 @@
             {!!Session::get('error')!!}
         </div>
     @endif
-    <div class="content risk-register-page risk-workflow-page workflow-racm" style="width:100%;">
+    <div class="content risk-register-page risk-workflow-page workflow-racm risk-module-page" style="width:100%;">
         @include('user.risks.register-header', ['registerPage' => 'criteria', 'registerTitle' => 'Assessment criteria (RACM)', 'registerDescription' => 'Define and approve consistent thresholds for low, moderate, and high risk.'])
         <div class="racm-workbench">
             <p><i class="fa fa-sliders-h" aria-hidden="true"></i>Define assessment thresholds. Select criteria when ready to assign reviewers and an approver.</p>

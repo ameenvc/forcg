@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="{{ asset('css/risk-form.css') }}?v={{ filemtime(public_path('css/risk-form.css')) }}">
 <script src="{{ asset('js/risk-form.js') }}" defer></script>
 <!-- Page Content -->
-<div class="content risk-workspace cgbod-form risk-form-page risk-form-shell rf-create-risk">
+<div class="content risk-workspace cgbod-form risk-form-page risk-form-shell rf-create-risk risk-module-page">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Add a new risk', 'formDescription' => 'Capture the concern, assess its significance, and assign a reviewer.', 'formIcon' => 'fa-shield-alt', 'formAiAssist' => true, 'showRecord' => false])
     <div class="block block-rounded rf-form-card cgbod-form-card">
         <nav class="risk-step-nav" aria-label="Form sections">

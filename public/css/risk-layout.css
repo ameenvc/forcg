@@ -1,0 +1,14 @@
+/* Single page-width contract for every risk module screen. */
+:root { --risk-page-max-width:1600px; --risk-page-gutter:24px; }
+html body #main-container .content.risk-module-page {
+    box-sizing:border-box;
+    width:100%; max-width:var(--risk-page-max-width);
+    min-width:0; margin:0 auto;
+    padding:24px var(--risk-page-gutter) 36px;
+}
+@media(max-width:767px) {
+    :root { --risk-page-gutter:12px; }
+    html body #main-container .content.risk-module-page { padding-top:16px; padding-bottom:24px; }
+}
+/* Keep centered edges steady when moving between short and long pages. */
+html:has(.risk-module-page) { scrollbar-gutter:stable; }

@@ -15,7 +15,7 @@
     $impactValue = $matrixValues[$risk->impa ?? ''] ?? null;
     $likelihoodValue = $matrixValues[$risk->like ?? ''] ?? null;
 @endphp
-<div class="content risk-detail-page rd-workspace" id="risk-detail-workspace">
+<div class="content risk-detail-page rd-workspace risk-module-page" id="risk-detail-workspace">
     <header class="rd-hero">
         <div class="rd-hero-top">
 <a href="{{ route('risk.index') }}" class="rd-back">

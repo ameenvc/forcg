@@ -8,7 +8,7 @@
 
 
                 <!-- Page Content -->
-                <div class="content risk-form-page risk-form-shell">
+                <div class="content risk-form-page risk-form-shell risk-module-page">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Risk closure review', 'formDescription' => 'Review the final assessment and identify whether further action is required.'])
 
 

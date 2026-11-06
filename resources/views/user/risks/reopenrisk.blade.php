@@ -9,7 +9,7 @@
 
 
                 <!-- Page Content -->
-                <div class="content risk-form-page risk-form-shell">
+                <div class="content risk-form-page risk-form-shell risk-module-page">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Reopen risk', 'formDescription' => 'Reassess the risk and confirm why monitoring should resume.'])
 
 

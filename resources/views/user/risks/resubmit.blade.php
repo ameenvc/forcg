@@ -28,7 +28,7 @@
     </style>
 
     <!-- Page Content -->
-    <div class="content risk-form-page risk-form-shell">
+    <div class="content risk-form-page risk-form-shell risk-module-page">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Resubmit risk', 'formDescription' => 'Address reviewer feedback and confirm the information before resubmitting.'])
         <!-- Horizontal -->
         <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">

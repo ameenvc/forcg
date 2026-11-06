@@ -156,7 +156,7 @@
             {!!Session::get('error')!!}
         </div>
     @endif
-    <div class="content" style="width:100%;">
+    <div class="content risk-module-page" style="width:100%;">
         <!-- heading part starts -->
         <div class="block block-rounded">
             <div class="block-content block-content-full">

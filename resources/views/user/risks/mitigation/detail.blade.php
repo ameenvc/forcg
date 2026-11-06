@@ -450,7 +450,7 @@
         }
     </style>
     <!-- Page Content -->
-    <div class="content px-0" style="-webkit-print-color-adjust: exact">
+    <div class="content risk-module-page" style="-webkit-print-color-adjust: exact">
         <!-- Horizontal -->
         <div class="block block-rounded" style="box-shadow: 0 0 15px;background-color: #ffffff;">
             <div class="d-flex justify-content-between align-items-center d-block-643" style="background: #F5F5F5;">

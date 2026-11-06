@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/risk-organization.css') }}?v={{ filemtime(public_path('css/risk-organization.css')) }}">
 <script src="{{ asset('js/risk-organization.js') }}?v={{ filemtime(public_path('js/risk-organization.js')) }}" defer></script>
-<div class="content cgbod-form risk-register organization-ai">
+<div class="content cgbod-form risk-register organization-ai risk-module-page">
     @include('user.risks.register-header', ['registerPage' => 'organization', 'registerTitle' => 'Organization AI', 'registerDescription' => 'Give your assistant the business context it needs, and improve its guidance through reviewed feedback.'])
     @if(Session::has('msg'))<div class="alert alert-success mt-3" role="status">{{ Session::get('msg') }}</div>@endif
     @if(isset($errors) && $errors->any())<div class="alert alert-danger mt-3">{{ $errors->first() }}</div>@endif

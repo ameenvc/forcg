@@ -39,7 +39,7 @@
 
 
     <!-- Page Content -->
-    <div class="content risk-form-page risk-form-shell">
+    <div class="content risk-form-page risk-form-shell risk-module-page">
 @include('shared.forms.risk-page-header', ['formTitle' => 'Reopen mitigation action', 'formDescription' => 'Review responsibilities and dates before resuming this mitigation action.', 'formRecord' => $risk ?? null])
         <!-- Horizontal -->
         <div class="block block-rounded" style="box-shadow: 0 0 15px;background-color: #ffffff;">

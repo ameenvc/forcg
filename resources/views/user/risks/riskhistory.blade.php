@@ -9,7 +9,7 @@
     $formatDate = function ($value) { if (!$value) return 'Date not recorded'; try { return \Carbon\Carbon::parse($value)->format('d M Y · H:i'); } catch (\Exception $exception) { return 'Date not recorded'; } };
     $eventTypes = $riskhistory->map(function ($event) use ($eventLabel) { return $eventLabel($event->action); })->unique()->sort();
 @endphp
-<div class="content rh-workspace" id="risk-history-workspace">
+<div class="content rh-workspace risk-module-page" id="risk-history-workspace">
     <header class="rh-header">
         <div class="rh-topline"><a href="{{ route('risk.index') }}" class="rh-back"><i class="fa fa-arrow-left mr-1" aria-hidden="true"></i>Risk register</a><div class="rh-header-actions"><button type="button" class="btn rh-button" onclick="window.print()"><i class="fa fa-print mr-1" aria-hidden="true"></i>Print</button><a class="btn rh-button rh-primary" href="{{ route('risk.detail', $riskdata->Rid) }}">Open risk <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i></a></div></div>
         <div class="rh-title"><span class="rh-icon" aria-hidden="true"><i class="fa fa-history"></i></span><div><h1>Risk history</h1></div></div>

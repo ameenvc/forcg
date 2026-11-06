@@ -19,7 +19,7 @@
 </style>
 
 <!-- Page Content -->
-<div class="content risk-form-page risk-form-shell">
+<div class="content risk-form-page risk-form-shell risk-module-page">
     @include('shared.forms.risk-page-header', ['formTitle' => 'Change risk owners', 'formDescription' => 'Assign the people accountable for monitoring and responding to this risk.'])
     <!-- Horizontal -->
     <div class="block block-rounded" style="box-shadow: 0px 0px 15px;background-color: #ffffff;">

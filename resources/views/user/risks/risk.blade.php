@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="{{ asset('css/risk-register.css') }}?v={{ filemtime(public_path('css/risk-register.css')) }}">
 <script src="{{ asset('js/risk-register-ai.js') }}?v={{ filemtime(public_path('js/risk-register-ai.js')) }}" defer></script>
 <script src="{{ asset('js/risk-register.js') }}?v={{ filemtime(public_path('js/risk-register.js')) }}" defer></script>
-<div class="content cgbod-form risk-register" id="risk-register" data-density="compact"
+<div class="content cgbod-form risk-register risk-module-page" id="risk-register" data-density="compact"
      data-edit-url="{{ route('risk.editrisk') }}" data-delete-url="{{ route('risk.deleterisk') }}">
     @include('user.risks.register-header')
     <div class="block block-rounded risk-register-card">

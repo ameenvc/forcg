@@ -149,3 +149,42 @@ html body #main-container .rf-assessment-preview p { margin:5px 0 0; color:var(-
 .rf-page-header .rf-title-group { align-items:center; }
 html body #main-container .rf-page-header .rf-title-group h1 { margin:0; }
 @media(max-width:767px) { .risk-form-shell>.rf-page-header { padding:16px 18px; } }
+
+/* Shared control tokens: risk workflows inherit one interaction language. */
+.risk-module-form,.risk-form-page { --rf-primary:#365fd5; --rf-focus:#6b5ac7; --rf-error:#b42d4d; --rf-radius:10px; }
+html body #main-container .risk-module-form :is(input.form-control,select.form-control,textarea.form-control) { border-radius:var(--rf-radius); min-height:44px; padding:10px 13px; transition:border-color .15s,box-shadow .15s; }
+html body #main-container .risk-module-form select.form-control:not([multiple]) { padding-right:34px; }
+html body #main-container .risk-module-form .form-control:hover:not(:disabled):not([readonly]) { border-color:#9caed0; }
+html body #main-container .risk-module-form .form-control:focus { border-color:var(--rf-focus); box-shadow:0 0 0 3px #7462cd20; }
+html body #main-container .risk-module-form textarea.form-control { min-height:120px; line-height:1.7; }
+.risk-module-form :is(input[type=checkbox],input[type=radio]) { accent-color:var(--rf-primary); }
+.risk-module-form :is(input,textarea,select):disabled { cursor:not-allowed; opacity:.75; }
+.risk-module-form .select2-container .select2-selection { min-height:44px; border-radius:var(--rf-radius); }
+.risk-module-form .select2-container .select2-selection__rendered { min-height:42px; }
+.risk-module-form .select2-container .select2-selection__arrow { height:42px; }
+.risk-module-form .select2-container .select2-selection--multiple .select2-selection__rendered { padding:5px 9px; }
+.risk-module-form .select2-selection__choice { margin:4px 5px 4px 0; padding:2px 7px; }
+.rf-select-dropdown { background:#fff; color:#293d61; border:1px solid #a7b5d0; border-radius:10px; box-shadow:0 12px 32px #20334e1a; overflow:hidden; font-size:14px; }
+.rf-select-dropdown .select2-search__field { background:#fff; color:#293d61; border:1px solid #dce3f0!important; border-radius:6px; padding:8px!important; }
+.rf-select-dropdown .select2-results__option { padding:10px 12px; line-height:1.5; }
+.rf-select-dropdown .select2-results__option--highlighted[aria-selected] { background:#365fd5; color:#fff; }
+.risk-module-form .rf-field-error { color:var(--rf-error); font-size:12px; margin:7px 0 0; line-height:1.5; }
+.risk-module-form .rf-validation-summary { padding:13px 16px; margin:0 0 22px; color:var(--rf-error); background:#fff3f5; border:1px solid #ecc4ce; border-left:3px solid var(--rf-error); border-radius:9px; font-size:13px; }
+html body #main-container .risk-module-form .form-control:is(.rf-invalid,.is-invalid),.risk-module-form select.rf-invalid+.select2 .select2-selection { border-color:var(--rf-error); box-shadow:0 0 0 2px #b42d4d10; }
+.risk-module-form :is(.invalid-feedback,.label-invalid) { color:var(--rf-error); }
+.rf-editor-section { scroll-margin-top:24px; }
+.rf-section-heading { border-left:3px solid #8171cf; padding-left:13px; }
+.rf-context { background:var(--rf-soft); border-radius:12px; }
+html body #main-container .risk-module-form .rf-rating-options input { min-height:46px; }
+.risk-module-form :is(.risk-form-actions,.modal-footer) .btn { min-height:42px; border-radius:9px; font-size:13px!important; font-weight:600; display:inline-flex; align-items:center; justify-content:center; gap:5px; text-decoration:none; }
+.risk-module-form :is(.risk-form-actions,.modal-footer) .btn-primary { background:var(--rf-primary); border-color:var(--rf-primary); color:#fff; }
+.risk-module-form :is(.risk-form-actions,.modal-footer) .btn-primary:hover { background:#294dbb; border-color:#294dbb; }
+.risk-module-form :is(.risk-form-actions,.modal-footer) :is(.btn-secondary,.btn-outline-primary) { background:var(--rf-panel); color:var(--rf-muted); border:1px solid var(--rf-line); }
+.risk-module-form :is(button,a,input,select,textarea):focus-visible { outline:2px solid var(--rf-focus); outline-offset:3px; }
+[data-risk-theme=dark] .risk-module-form,[data-risk-theme=dark] .risk-form-page { --rf-error:#ffa6bb; --rf-focus:#b1a2ff; }
+[data-risk-theme=dark] .rf-select-dropdown { background:#1b2a40; color:#e0e8f6; border-color:#516586; }
+[data-risk-theme=dark] .rf-select-dropdown .select2-search__field { background:#223148; color:#e0e8f6; border-color:#516586!important; }
+[data-risk-theme=dark] .rf-select-dropdown .select2-results__option[aria-selected=true] { background:#354666; }
+[data-risk-theme=dark] .risk-module-form .rf-validation-summary { background:#3c2939; border-color:#755063; }
+@media(max-width:575px) { .risk-form-actions { flex-wrap:wrap; } .risk-form-actions>.btn { flex:1 1 auto; } .risk-module-form .modal-footer { flex-wrap:wrap; } }
+@media(prefers-reduced-motion:reduce) { html body #main-container .risk-module-form .form-control { transition:none; } }

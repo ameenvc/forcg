@@ -14,7 +14,7 @@
     $counts = $analysisData['totals'];
     $highShare = $counts['total'] ? round(100 * $counts['High'] / $counts['total']) : 0;
 @endphp
-<div class="content cgbod-form risk-register risk-analysis risk-module-page" id="risk-analysis" data-pptx-library="{{ asset('js/vendor/pptxgenjs/pptxgen.bundle.js') }}?v={{ filemtime(public_path('js/vendor/pptxgenjs/pptxgen.bundle.js')) }}" data-analysis="{{ json_encode($analysisData) }}">
+<div class="content cgbod-form risk-register risk-analysis risk-module-page" id="risk-analysis" data-pptx-library="{{ asset('js/pptxgen.bundle.js') }}?v=4.0.1" data-analysis="{{ json_encode($analysisData) }}">
     @include('user.risks.register-header', ['registerPage' => 'analysis', 'registerTitle' => 'Risk analysis', 'registerDescription' => 'Compare risk ratings across departments and identify areas that need attention.'])
     <span class="analysis-export-status" id="analysis-export-status" role="status" aria-live="polite" hidden></span>
     <div class="analysis-rating-strip" aria-label="Risk counts for the selected group">

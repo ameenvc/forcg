@@ -97,4 +97,30 @@ class RiskRegisterPagesTest extends TestCase
         $this->assertStringContainsString('No risk groups to display yet.', $empty->render());
         if (getenv('RISK_ANALYSIS_EMPTY_PREVIEW_PATH')) file_put_contents(getenv('RISK_ANALYSIS_EMPTY_PREVIEW_PATH'), $empty->render());
     }
+    public function testAnalysisStillRendersWhenOptionalPowerPointBundleIsNotDeployed()
+    {
+        $original = public_path();
+        $temporary = sys_get_temp_dir().'/cgbod-analysis-public-'.uniqid();
+        mkdir($temporary.'/js', 0777, true);
+        symlink($original.'/css', $temporary.'/css');
+        foreach (glob($original.'/js/*') as $asset) {
+            if (basename($asset) !== 'pptxgen.bundle.js') symlink($asset, $temporary.'/js/'.basename($asset));
+        }
+        app()->instance('path.public', $temporary);
+        try {
+            $this->assertFileDoesNotExist(public_path('js/pptxgen.bundle.js'));
+            $html = view('user.risks.analysis', ['analysisData' => [
+                'totals' => ['total' => 0, 'High' => 0, 'Moderate' => 0, 'Low' => 0, 'Unassessed' => 0],
+                'groups' => [], 'departments' => [], 'stages' => [], 'responses' => [], 'quality' => []
+            ]])->render();
+            $this->assertStringContainsString('data-pptx-library="'.asset('js/pptxgen.bundle.js').'?v=4.0.1"', $html);
+            $this->assertStringContainsString('Rating distribution', $html);
+            $this->assertStringContainsString('id="analysis-export-csv"', $html);
+            $this->assertStringContainsString('id="analysis-export-print"', $html);
+        } finally {
+            app()->instance('path.public', $original);
+            (new \Illuminate\Filesystem\Filesystem())->deleteDirectory($temporary);
+        }
+    }
+
 }

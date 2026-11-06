@@ -57,6 +57,23 @@ class OrganizationDashboardTest extends TestCase
         foreach(range(1,100) as $i)$this->row();DB::flushQueryLog();$d=$this->snapshot();$large=count(DB::getQueryLog());DB::disableQueryLog();
         $this->assertSame($small,$large);$this->assertSame(101,$d['totals']['records']);
     }
+    public function testExecutiveRiskExposureExcludesClosedDeletedAndCancelledRecords()
+    {
+        Schema::create('risks',function(Blueprint $t){$t->increments('Rid');$t->string('action_status');$t->string('rank')->nullable();$t->softDeletes();});
+        foreach([['Active Risk','High',null],['Closed','High',null],['Cancelled','High',null],['Active Risk','High','2026-01-01'],['Under review','Moderate',null],['Active Risk',null,null]] as $values)DB::table('risks')->insert(array_combine(['action_status','rank','deleted_at'],$values));
+        $d=$this->snapshot();$this->assertTrue($d['risk']['available']);$this->assertSame(1,$d['risk']['High']);$this->assertSame(1,$d['risk']['Moderate']);$this->assertSame(1,$d['risk']['Unassessed']);
+        $this->assertFalse($this->snapshot([])['risk']['available']);
+    }
+    public function testExecutiveSummariesKeepAreasClosureAndComplianceDenominatorsVisible()
+    {
+        $this->table();$this->row();$this->row(['status'=>'Closed']);
+        Schema::create('compliance',function(Blueprint $t){$t->increments('id');$t->string('pro_status');$t->string('comp_status')->nullable();});
+        foreach([['Approved','Complied'],['Approved','Not Complied'],['Approved',null],['Cancelled','Not Complied']] as $values)DB::table('compliance')->insert(array_combine(['pro_status','comp_status'],$values));
+        $d=$this->snapshot(['riskmanagement','compliance']);
+        $this->assertSame(1,$d['compliance']['Complied']);$this->assertSame(1,$d['compliance']['Not Complied']);$this->assertSame(1,$d['compliance']['Other']);$this->assertSame(1,$d['exceptions']);
+        $this->assertSame(1,$d['closure'][0]['closed']);$this->assertSame(2,$d['closure'][0]['total']);$this->assertSame(2,$d['areas'][0]['modules']);
+        $this->assertFalse($d['evidence']['available']);
+    }
     public function testDashboardRouteIsAuthenticated()
     {
         $this->withoutExceptionHandling();$this->expectException(\Illuminate\Auth\AuthenticationException::class);$this->getJson('/user/dashboard');
@@ -74,10 +91,15 @@ class OrganizationDashboardTest extends TestCase
     public function testPageRendersCompanyAndEnabledModulesSafely()
     {
         view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));app('events')->forget('composing: *');$this->table();$this->row();
-        $dashboard=$this->snapshot(['riskmanagement','auditmanagement','hr','occhealth','customer_satisfaction']);
+        Schema::create('risks',function(Blueprint $t){$t->increments('Rid');$t->string('action_status');$t->string('rank');});
+        DB::table('risks')->insert([['action_status'=>'Active Risk','rank'=>'High'],['action_status'=>'Active Risk','rank'=>'Moderate'],['action_status'=>'Active Risk','rank'=>'Low']]);
+        Schema::create('compliance',function(Blueprint $t){$t->increments('id');$t->string('pro_status');$t->string('comp_status');});
+        foreach(['Complied','Not Complied','Partially Complied'] as $state)DB::table('compliance')->insert(['pro_status'=>'Approved','comp_status'=>$state]);
+        $dashboard=$this->snapshot(['riskmanagement','auditmanagement','compliance','hr','occhealth','customer_satisfaction']);
         $html=view('user.userdashboard',['dashboard'=>$dashboard,'company'=>'<script>bad()</script>','model'=>null])->render();
         $this->assertStringContainsString('&lt;script&gt;bad()&lt;/script&gt;',$html);$this->assertStringNotContainsString('<script>bad()</script>',$html);
         $this->assertStringContainsString('Enterprise risk',$html);$this->assertStringNotContainsString('Waste management',$html);$this->assertStringNotContainsString('Private task title',$html);
+        $this->assertStringContainsString('Management overview',$html);$this->assertStringContainsString('data-dashboard-tab="od-modules"',$html);
         if(getenv('DASHBOARD_PREVIEW_PATH'))file_put_contents(getenv('DASHBOARD_PREVIEW_PATH'),$html);
     }
 }

@@ -39,7 +39,7 @@ class OrganizationDashboardService
         foreach($registry['modules'] as $key=>$meta){if(!in_array($key,$enabled,true))continue;
             $modules[$key]=['key'=>$key,'name'=>$meta[0],'area'=>$meta[3],'icon'=>$meta[2],'url'=>Route::has($meta[1])?route($meta[1]):null,'feeds'=>[],'connected'=>0,'expected'=>0,'counts'=>array_fill_keys(array_keys($totals),0),'state'=>'Directory only'];
         }
-        $seen=[];$today=now()->toDateString();$soon=now()->addDays(7)->toDateString();$exceptions=0;
+        $seen=[];$today=now()->toDateString();$soon=now()->addDays(7)->toDateString();$exceptions=0;$risk=['available'=>false,'High'=>0,'Moderate'=>0,'Low'=>0,'Unassessed'=>0];$compliance=['available'=>false,'Complied'=>0,'Partially Complied'=>0,'Not Complied'=>0,'Other'=>0];
         foreach($registry['sources'] as $key=>$source){
             $module=$source['module'];if(!isset($modules[$module]) || !isset($labels[$key]) || isset($seen[$source['table']]))continue;
             $seen[$source['table']]=true;$modules[$module]['expected']++;
@@ -48,6 +48,8 @@ class OrganizationDashboardService
                 $columns=$this->columns($source['table']);
                 if(!in_array($source['stage'],$columns,true)){$modules[$module]['feeds'][]=$feed;continue;}
                 $fields=array_values(array_unique(array_merge([$source['stage']],array_intersect($source['due'],$columns))));
+                if($key==='risks' && in_array('rank',$columns,true)){$fields[]='rank';$risk['available']=true;}
+                if($key==='compliance' && in_array('comp_status',$columns,true)){$fields[]='comp_status';$fields=array_values(array_unique($fields));$compliance['available']=true;}
                 $query=DB::table($source['table']);
                 if(in_array('deleted_at',$columns,true))$query->whereNull('deleted_at');
                 if(in_array('is_deleted',$columns,true))$query->where(function($q){$q->whereNull('is_deleted')->orWhere('is_deleted',0);});
@@ -57,28 +59,48 @@ class OrganizationDashboardService
                     $row=(array)$group;$state=strtolower(trim((string)$row[$source['stage']]));$count=(int)$row['dashboard_count'];
                     if(in_array($state,['cancelled','canceled','archived','deleted'],true))continue;
                     $feed['counts']['records']+=$count;
+                    if($key==='compliance' && $compliance['available']){
+                        $value=strtolower(trim((string)($row['comp_status']??'')));$bucket='Other';
+                        foreach(['Complied','Partially Complied','Not Complied'] as $name)if(strtolower($name)===$value)$bucket=$name;
+                        $compliance[$bucket]+=$count;
+                    }
                     if($state===''){$feed['counts']['unknown']+=$count;continue;}
                     if(in_array($state,$closed,true)){$feed['counts']['closed']+=$count;continue;}
                     $feed['counts']['open']+=$count;
+                    if($key==='risks' && $risk['available']){
+                        $value=ucfirst(strtolower(trim((string)($row['rank']??''))));$risk[in_array($value,['High','Moderate','Low'],true)?$value:'Unassessed']+=$count;
+                    }
                     if(strpos($state,'review')!==false || strpos($state,'approval')!==false)$feed['counts']['decisions']+=$count;
                     $due=null;foreach($source['due'] as $field){$due=$this->date($row[$field]??null);if($due)break;}
                     if(!$due)$feed['undated']+=$count;
                     elseif($due<$today)$feed['counts']['overdue']+=$count;
                     elseif($due<=$soon)$feed['counts']['due_soon']+=$count;
                 }
-                if($key==='compliance' && in_array('comp_status',$columns,true)){
-                    $q=DB::table($source['table'])->whereRaw('LOWER(TRIM(comp_status)) = ?', ['not complied']);
-                    if(in_array('deleted_at',$columns,true))$q->whereNull('deleted_at');
-                    if(in_array('is_deleted',$columns,true))$q->where(function($q){$q->whereNull('is_deleted')->orWhere('is_deleted',0);});
-                    $exceptions=$q->count();
-                }
-            }catch(\Throwable $e){$feed['connected']=false;Log::warning('Organization dashboard feed unavailable',['source'=>$key,'exception'=>get_class($e)]);}
+                if($key==='compliance' && $compliance['available'])$exceptions=$compliance['Not Complied'];
+            }catch(\Throwable $e){$feed['connected']=false;if($key==='risks')$risk['available']=false;if($key==='compliance'){$compliance['available']=false;$exceptions=0;}Log::warning('Organization dashboard feed unavailable',['source'=>$key,'exception'=>get_class($e)]);}
             $modules[$module]['feeds'][]=$feed;
             if($feed['connected']){$modules[$module]['connected']++;foreach($totals as $metric=>$unused){$modules[$module]['counts'][$metric]+=$feed['counts'][$metric];$totals[$metric]+=$feed['counts'][$metric];}}
         }
         foreach($modules as &$module){$module['state']=$module['expected']===0?'Directory only':($module['connected']===$module['expected']?'Connected':($module['connected']?'Partial coverage':'Data unavailable'));}unset($module);
         $attention=array_values(array_filter($modules,function($m){return $m['counts']['overdue'] || $m['counts']['decisions'];}));
         usort($attention,function($a,$b){return ($b['counts']['overdue']<=>$a['counts']['overdue'])?:($b['counts']['decisions']<=>$a['counts']['decisions']);});
-        return ['modules'=>array_values($modules),'totals'=>$totals,'attention'=>array_slice($attention,0,6),'exceptions'=>$exceptions,'at'=>now()->toIso8601String(),'connected'=>count(array_filter($modules,function($m){return $m['connected']>0;}))];
+        $areas=[];$closure=[];
+        foreach($modules as $module){
+            $area=$module['area'];if(!isset($areas[$area]))$areas[$area]=['name'=>$area,'modules'=>0,'connected'=>0,'overdue'=>0,'decisions'=>0];
+            $areas[$area]['modules']++;if($module['connected'])$areas[$area]['connected']++;
+            $areas[$area]['overdue']+=$module['counts']['overdue'];$areas[$area]['decisions']+=$module['counts']['decisions'];
+            foreach($module['feeds'] as $feed)if($feed['connected'] && in_array($feed['name'],['Mitigation actions','Corrective actions','Audit findings','HSE observations','Near misses'],true)){
+                $closure[]=['name'=>$feed['name'],'closed'=>$feed['counts']['closed'],'total'=>$feed['counts']['records'],'url'=>$module['url']];
+            }
+        }
+        $evidence=['available'=>false,'accepted'=>0,'pending'=>0,'assured'=>0];
+        if(count($modules) && !array_diff(['status','assurance_path'],$this->columns('esg_evidence'))){
+            $evidence['available']=true;
+            foreach(DB::table('esg_evidence')->select('status')->selectRaw('COUNT(*) AS record_count, SUM(CASE WHEN assurance_path IS NOT NULL THEN 1 ELSE 0 END) AS assured_count')->groupBy('status')->get() as $group){
+                if(in_array($group->status,['accepted','pending'],true))$evidence[$group->status]=(int)$group->record_count;
+                if($group->status==='accepted')$evidence['assured']=(int)$group->assured_count;
+            }
+        }
+        return ['modules'=>array_values($modules),'totals'=>$totals,'attention'=>array_slice($attention,0,6),'exceptions'=>$exceptions,'risk'=>$risk,'compliance'=>$compliance,'closure'=>$closure,'areas'=>array_values($areas),'evidence'=>$evidence,'at'=>now()->toIso8601String(),'connected'=>count(array_filter($modules,function($m){return $m['connected']>0;}))];
     }
 }

@@ -86,7 +86,7 @@ Route::get('admin/update_profile', 'AdminController@profile')->name('admin.profi
 Route::post('/admin/updateProfile', 'AdminController@updateProfile');
 Route::get('admin/profile/remove-avatar/{id}', 'AdminController@remove_avatar')->name('admin.remove.avatar');
 //My Board
-Route::get('user/my-board',[App\Http\Controllers\UserController::class,'myBoard']);
+Route::get('user/my-board',[App\Http\Controllers\UserController::class,'myBoard'])->name('user.my-board');
 
 //for admin to login as user using user privilege button
 Route::get('/admin/user', function () {

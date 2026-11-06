@@ -18,7 +18,7 @@ case "${1:-test}" in
             "$image" install --no-interaction --prefer-source --no-scripts --no-plugins
         ;;
     test)
-        docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit --filter 'RiskAi|RiskSubmission|RiskRegister'
+        docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit --filter 'RiskAi|RiskSubmission|RiskRegister|MyBoard'
         ;;
     migrate-learning)
         docker run "${common[@]}" --entrypoint php "$image" artisan migrate --path=database/migrations/2026_11_05_200000_create_risk_ai_organization_learning_tables.php --force

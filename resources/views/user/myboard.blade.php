@@ -1,201 +1,36 @@
-@extends('layouts.multiselect')
+@extends('layouts.backend')
 @section('content')
-<link rel="stylesheet" href="{{asset('css/user/myboard.css')}}">
-<div class="wrap-content" style="background-color: #F6F7F9">
-    <div class="textwc">
-        <h4 class="mb-2" style="font-size:16px;">My Board</h4>
-        <p>Welcome <a href="{{ route('user.profile') }}" class="font-w600">{{ auth()->user()->name }}</a>, this is your dashboard where you can view all your pending actions and action history.</p>
-    </div>
-    <div>
-        <div class="profile-btn-wrap">
-            @php
-                $user_details= App\User::where('email',Auth::user()->email)->first();
-                $profilePicture =  $user_details ? $user_details->profile_picture : '';
-            @endphp
-            @if ($profilePicture && file_exists(public_path('/storage/profile/'. $profilePicture)))
-                <img class="profile-img"
-                     src="{{ asset("storage/profile/". $profilePicture) }}"
-                     alt="{{ auth()->user()->name }}">
-            @else
-                <img class="profile-img"
-                     style="border: 1px solid #ccc;"
-                     src="{{ asset('/images/avatar10.jpg') }}"
-                     alt="{{ auth()->user()->name }}">
-            @endif
-            <a href="{{ route('user.profile') }}" class="update-profile-btn">Update Profile</a>
-        </div>
-    </div>
+<link rel="stylesheet" href="{{ asset('css/user/myboard.css') }}?v=20261106-1">
+<script defer src="{{ asset('js/my-board.js') }}?v=20261106-1"></script>
+@php
+    $firstName = explode(' ', trim($user->name))[0];
+    $score = $board['score'];
+    $gaps = array_filter($board['modules'], function ($module) { return $module['state'] !== 'connected'; });
+@endphp
+<div class="content myboard-page" id="my-board" data-refresh-url="{{ url('/user/my-board') }}">
+    <header class="mb-hero"><div><div class="mb-eyebrow"><span class="mb-brand-icon" aria-hidden="true"><i class="fa fa-th-large"></i></span>Your personal workspace</div><h1>My Board</h1><p>Welcome, {{ $firstName }}. Focus on what needs you next.</p></div><div class="mb-hero-actions"><a href="{{ route('user.profile') }}" class="mb-button"><i class="fa fa-user-circle" aria-hidden="true"></i>My profile</a><button type="button" class="mb-button mb-button-primary" id="mb-refresh"><i class="fa fa-sync-alt" aria-hidden="true"></i>Update board</button><small id="mb-updated">Updated {{ \Carbon\Carbon::parse($board['updated_at'])->format('g:i A') }}</small></div></header>
+    <div class="mb-feedback" id="mb-feedback" role="status" aria-live="polite" hidden></div>
+    <section class="mb-metrics" aria-label="Your pending work">
+        @foreach(['all'=>['Pending work','fa-inbox'], 'overdue'=>['Overdue','fa-clock'], 'due_soon'=>['Due in 7 days','fa-calendar-alt'], 'decisions'=>['Reviews & approvals','fa-user-check']] as $key=>$metric)
+        <button type="button" class="mb-metric {{ $key==='all'?'is-active':'' }}" data-board-filter="{{ $key }}" aria-pressed="{{ $key==='all'?'true':'false' }}"><span class="mb-metric-label"><i class="fa {{ $metric[1] }}" aria-hidden="true"></i>{{ $metric[0] }}</span><strong data-board-count="{{ $key }}">{{ $key==='decisions' ? $board['counts']['review']+$board['counts']['approval'] : $board['counts'][$key] }}</strong><span class="mb-metric-note">{{ ['all'=>'Actions assigned to you','overdue'=>'Start with these','due_soon'=>'Prepare your next steps','decisions'=>'Your decision is needed'][$key] }}</span></button>
+        @endforeach
+    </section>
+    <p class="mb-scope-note" id="mb-scope-note" {{ $board['coverage']['has_gaps']?'':'hidden' }}><i class="fa fa-info-circle" aria-hidden="true"></i>Showing connected work feeds. <a href="#mb-coverage">Check coverage for remaining workflows.</a></p>
+    <div class="mb-grid"><div class="mb-main">
+        <section class="mb-card mb-inbox" aria-labelledby="mb-inbox-title"><div class="mb-card-heading"><div><h2 id="mb-inbox-title">Your action inbox</h2><p>Prioritized by overdue work, due date, and urgency.</p></div><span class="mb-live-label"><span aria-hidden="true"></span>Recorded assignments</span></div>
+            <div class="mb-toolbar"><label class="mb-search"><i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">Search your work</span><input id="mb-search" type="search" placeholder="Search actions, references, or modules…"></label><label><span class="sr-only">Filter by module</span><select id="mb-module"><option value="">All modules</option>@foreach($board['modules'] as $module)<option value="{{ $module['key'] }}">{{ $module['name'] }} ({{ $module['pending'] }})</option>@endforeach</select></label></div>
+            <div class="mb-tabs" role="group" aria-label="Work type">@foreach(['all'=>'All work','action'=>'Actions','review'=>'Reviews','approval'=>'Approvals'] as $key=>$label)<button type="button" data-board-kind="{{ $key }}" aria-pressed="{{ $key==='all'?'true':'false' }}">{{ $label }}</button>@endforeach<button type="button" id="mb-clear" class="mb-clear" hidden>Clear filters</button></div>
+            <ol class="mb-tasks" id="mb-tasks">@foreach(array_slice($board['tasks'],0,10) as $task)@include('user.myboard._task', ['task'=>$task])@endforeach</ol>
+            <div class="mb-empty" id="mb-empty" {{ count($board['tasks'])?'hidden':'' }}><i class="fa fa-check-circle" aria-hidden="true"></i><h3>No connected actions pending</h3><p>New assignments, reviews, and approvals will appear here. Check module coverage below for work outside this feed.</p></div>
+            <footer class="mb-inbox-footer"><span id="mb-matches" role="status" aria-live="polite">{{ min(10,count($board['tasks'])) }} of {{ count($board['tasks']) }} pending items</span><div><button type="button" id="mb-prev" class="mb-button" disabled aria-label="Previous actions"><i class="fa fa-chevron-left" aria-hidden="true"></i></button><span id="mb-page">1</span><button type="button" id="mb-next" class="mb-button" {{ count($board['tasks'])<=10?'disabled':'' }} aria-label="Next actions"><i class="fa fa-chevron-right" aria-hidden="true"></i></button></div></footer>
+        </section>
+        <section class="mb-card" aria-labelledby="mb-modules-title"><div class="mb-card-heading"><div><h2 id="mb-modules-title">Your modules</h2><p>Jump into your work without searching through menus.</p></div></div><div class="mb-modules" id="mb-modules">@foreach($board['modules'] as $module)@if($module['url'])<a href="{{ $module['url'] }}"><span class="mb-module-icon"><i class="fa {{ $module['icon'] }}" aria-hidden="true"></i></span><span>{{ $module['name'] }}<small>{{ $module['area'] }}</small></span>@if($module['pending'])<b>{{ $module['pending'] }}</b>@endif<i class="fa fa-chevron-right mb-module-arrow" aria-hidden="true"></i></a>@endif @endforeach</div></section>
+        <details class="mb-coverage" id="mb-coverage"><summary><i class="fa fa-info-circle" aria-hidden="true"></i><span id="mb-coverage-summary">{{ $board['coverage']['connected'] }} of {{ $board['coverage']['total'] }} modules have connected task feeds</span></summary><p>Only work assigned to your account is included. Some modules have no personal task feed or use workflows that are not connected yet. Check those modules directly; an empty inbox does not confirm that they have no pending work.</p><ul id="mb-coverage-list">@foreach($board['modules'] as $module)<li><span>{{ $module['name'] }}</span><span class="mb-coverage-{{ $module['state'] }}">{{ ['connected'=>'Connected','partial'=>'Some workflows connected','unavailable'=>'Check module directly'][$module['state']] }}</span></li>@endforeach</ul></details>
+    </div><aside class="mb-aside">
+        <section class="mb-card mb-contribution" aria-labelledby="mb-score-title"><div class="mb-card-heading"><div><span class="mb-small-label">YOUR FOLLOW-THROUGH</span><h2 id="mb-score-title">Contribution score</h2></div><i class="fa fa-seedling mb-score-icon" aria-hidden="true"></i></div><div class="mb-score-wrap"><div class="mb-score-ring" id="mb-score-ring" role="img" aria-label="Contribution score {{ $score['value'] ?? 'not yet available' }} out of 100" style="--mb-score:{{ $score['value'] ?? 0 }}"><div><strong id="mb-score-value">{{ $score['value'] ?? '—' }}</strong><span>out of 100</span></div></div><p id="mb-score-caption">{{ $score['value']===null?'Your score starts when connected work is recorded.':($score['timeliness_percent']===null?'Based on recorded completion; timing evidence is unavailable.':'Based on recorded delivery and timeliness.') }}</p></div><div class="mb-score-stats"><div><strong id="mb-completed">{{ $score['completed'] }}</strong><span>Completed</span></div><div><strong id="mb-on-time">{{ $score['on_time'] }}</strong><span>On time</span></div><div><strong id="mb-score-pending">{{ $score['pending'] }}</strong><span>Eligible pending</span></div></div><details class="mb-score-method"><summary>How your score is calculated</summary><p>70% completion of assigned work and recorded reviews/approvals; 30% on-time delivery where due and completion dates are known. Overdue open work counts against timeliness. If timing evidence is unavailable, only completion is used.</p><p>Continuous oversight and unverified activities do not earn completion credit. This is an activity indicator across connected records, not an ESG rating, certification, or rewards balance.</p><p>Score coverage follows the task feeds listed below. Completing work in its module updates your score when the board updates.</p></details></section>
+        <section class="mb-card mb-updates" aria-labelledby="mb-updates-title"><div class="mb-card-heading"><div><h2 id="mb-updates-title">Notifications & updates</h2><p>Changes to records connected to your work.</p></div><i class="fa fa-bell mb-muted" aria-hidden="true"></i></div><div class="mb-alerts" id="mb-alerts">@if($board['counts']['overdue'])<button type="button" data-board-filter="overdue"><i class="fa fa-clock" aria-hidden="true"></i><span>{{ $board['counts']['overdue'] }} overdue items need attention</span><i class="fa fa-arrow-right" aria-hidden="true"></i></button>@endif @if($board['counts']['review']+$board['counts']['approval'])<button type="button" data-board-filter="decisions"><i class="fa fa-user-check" aria-hidden="true"></i><span>{{ $board['counts']['review']+$board['counts']['approval'] }} reviews or approvals await you</span><i class="fa fa-arrow-right" aria-hidden="true"></i></button>@endif</div><ol class="mb-update-list" id="mb-update-list">@foreach(array_slice($board['updates'],0,6) as $update)<li><span class="mb-update-dot" aria-hidden="true"></span><div>@if($update['url'])<a href="{{ $update['url'] }}">{{ $update['reference'] }} · {{ $update['module_name'] }}</a>@else<strong>{{ $update['module_name'] }}</strong>@endif<p>{{ $update['status'] }}</p><small>{{ $update['time_label'] }}</small></div></li>@endforeach</ol><p class="mb-update-empty" id="mb-update-empty" {{ count($board['updates'])?'hidden':'' }}>No recent record updates available.</p><button type="button" class="mb-text-button" id="mb-more-updates" {{ count($board['updates'])<=6?'hidden':'' }}>Show more updates</button></section>
+    </aside></div>
+    <noscript><p class="mb-feedback">Enable JavaScript to search, filter, and page through all pending items. You can still open the records and modules above.</p></noscript>
+    <script type="application/json" id="my-board-data">{!! json_encode($board, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT) !!}</script>
 </div>
-<div class="row content-section">
-    <div class="col-sm-12">
-        <h5 style="font-size:15px;">User Profile Overview</h5>
-        <div class="mt-3 mb-4" style="background: white; padding: 15px 15px; border-radius: 8px">
-            <div class="d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="d-flex module-item" data-parent="" style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;">
-                        <dl class="mb-0">
-                            <dt class="fw-bold mb-2 action-name" style="font-size:13px;color:#000;">Pending Reviews</dt>
-                            <dd class="text-dark font-weight-bold mb-0">
-                                <img src="{{ asset('images/icons/pending_reviews.png') }}" class="mr-1" style="width: 30px;height: 30px;border-radius: 5px;">&nbsp;&nbsp;<span class="number-of-action" style="font-size:17px;">{{100}}</span>
-                            </dd>
-                        </dl>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex module-item" data-parent="" style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;">
-                        <dl class="mb-0">
-                            <dt class="fw-bold mb-2 action-name" style="font-size:13px;color:#000;">Pending Approvals</dt>
-                            <dd class="text-dark font-weight-bold mb-0">
-                                <img src="{{ asset('images/icons/pending_approval.png') }}" class="mr-1" style="width: 30px;height: 30px;border-radius: 5px;">&nbsp;&nbsp;<span class="number-of-action" style="font-size:17px;">{{100}}</span>
-                            </dd>
-                        </dl>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex module-item" data-parent="" style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;">
-                        <dl class="mb-0">
-                            <dt class="fw-bold mb-2 action-name" style="font-size:13px;color:#000;">Pending Actions</dt>
-                            <dd class="text-dark font-weight-bold mb-0">
-                                <img src="{{ asset('images/icons/pending_action.png') }}" class="mr-1" style="width: 30px;height: 30px;border-radius: 5px;">&nbsp;&nbsp;<span style="font-size:17px;" class="number-of-action">{{100}}</span>
-                            </dd>
-                        </dl>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex module-item" data-parent="" style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;">
-                        <dl class="mb-0">
-                            <dt class="fw-bold mb-2 action-name" style="font-size:13px;color:#000;">Total Actions</dt>
-                            <dd class="text-dark font-weight-bold mb-0">
-                                <img src="{{ asset('images/icons/total_action.png') }}" class="mr-1" style="width: 30px;height: 30px;border-radius: 5px;">&nbsp;&nbsp;<span class="number-of-action" style="font-size:17px;">{{100}}</span>
-                            </dd>
-                        </dl>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex module-item mb-1 custom-bottom-margin" data-parent="" style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;">
-                        <dl class="mb-0">
-                            <dt class="fw-bold mb-2 action-name" style="font-size:13px;color:#000;">Total Points Earned</dt>
-                            <dd class="text-dark font-weight-bold mb-0">
-                                <img src="{{ asset('images/icons/total_points_earn.png') }}" class="mr-1" style="width: 30px;height: 30px;border-radius: 5px;">&nbsp;&nbsp;<span class="number-of-action" style="font-size:17px;">{{100}}</span>
-                            </dd>
-                        </dl>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex module-item mb-1 custom-bottom-margin" data-parent="" style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;">
-                        <dl class="mb-0">
-                            <dt class="fw-bold mb-2 action-name" style="font-size:13px;color:#000;">Previous Redeemed Points</dt>
-                            <dd class="text-dark font-weight-bold mb-0">
-                                <img src="{{ asset('images/icons/previous_redeemed_points.png') }}" class="mr-1" style="width: 30px;height: 30px;border-radius: 5px;">&nbsp;&nbsp;<span class="number-of-action" style="font-size:17px;">{{100}}</span>
-                            </dd>
-                        </dl>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex module-item mb-1 custom-bottom-margin" data-parent="" style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;">
-                        <dl class="mb-0">
-                            <dt class="fw-bold mb-2 action-name" style="font-size:13px;color:#000;">Reward Rank</dt>
-                            <dd class="text-dark font-weight-bold mb-0">
-                                <img src="{{ asset('images/icons/reward_rank.png') }}" class="mr-1" style="width: 30px;height: 30px;border-radius: 5px;">&nbsp;&nbsp;<span class="number-of-action" style="font-size:17px;">{{12}}/{{100}}</span>
-                            </dd>
-                        </dl>
-                    </a>
-                    <a href="javascript:void(0)" class="d-flex module-item mb-1 custom-bottom-margin" data-parent="" style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; background-color:#252945; color:#fff; justify-content: center; align-items: center;">
-                        <span class="action-name">Redeem Points</span>
-                        <div class="module-icon">
-                            <i class="fas fa-arrow-up" style="transform: rotate(45deg);"></i>
-                        </div>
-                    </a>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row content-section mt-0">
-    <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
-        <h5 style="font-size:15px;">Recently Used Modules</h5>
-        <div class="mt-3 mb-4" style="background: white; padding: 15px 15px; border-radius: 8px; max-height: 400px; overflow-y: auto;">
-            <div class="flex-wrap">
-                @forelse($modules as $key => $item)
-                <a href="{{ $item[4] ? route($item[4]) : 'javascript:void(0)' }}"
-                    class="d-flex module-item"
-                    style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; width: 100%;">
-                    <div class="module-icon" style="background: {{ $item[0] }};"><img src="{{ asset('images/icons/' . $item[1]) }}" alt="{{ $key }}"></div>
-                    <div>
-                        <h5>{{ $item[2] }}</h5>
-                        <span class="module-desc">{{ $item[3] }}</span>
-                    </div>
-                </a>
-                @empty
-                    <div class="text-danger pt-4" style="text-align: center;">
-                        <p>No Activity Found</p>
-                    </div>
-                @endforelse
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">
-        <h5 style="font-size:15px;">Pending Actions</h5>
-        <div class="mt-3 mb-4" style="background: white; padding: 15px 15px; border-radius: 8px;max-height: 400px; overflow-y: auto;">
-            <div class="flex-wrap">
-                @forelse($items as $item)
-                <a href='{{$item['redirectPage']}}'
-                    class="d-flex module-item mb-0"
-                    style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;width:100%;border-radius:0;border-left: 2px solid {{$item['borderColorCode']}};">
-                    <dl>
-                        <dd class="module-image">
-                            <img src="{{asset($item['iconPath'])}}" class="mr-4 mt-4" style="width: 50px;height: 50px;border-radius: 5px;">
-                        </dd>
-                    </dl>
-                    <dl class="mb-0" style="width:100%;">
-                        <dt class="fw-bold mb-2 d-flex justify-content-between date-and-flag-status" style="font-size:12px;color:#3d3d3d;">
-                            <span>{{$item['taskType']}}</span>
-                            <span>{{$item['time']}}</span>
-                        </dt>
-                        <dt class="text-dark font-weight-bold mb-0 date-and-flag-status">
-                           <span style="font-size:13px;">
-                            {!!$item['message']!!}
-                           </span>
-                        </dt>
-                        <dt class="mt-2 date-and-flag-status" style="font-size:12px;color:#3d3d3d;">
-                            <span>
-                                <i class="far fa-calendar-alt date-and-flag-status" style="font-size:13px;color:#af1e1e; visibility: {{$item['dueDate']=='dd/mm/yyyy' ? 'hidden':''}}"></i>
-                                &nbsp;&nbsp;
-                                <span style="font-weight:lighter;visibility: {{$item['dueDate']=='dd/mm/yyyy' ? 'hidden' : '' }};" class="date-and-flag-status mr-7">{{$item['dueDate']}}</span>
-                                @if($item['priorityColor'] && $item['priorityType'])
-                                <i class="fas fa-flag date-and-flag-status" style="font-size:13px;color:{{$item['priorityColor']}};"></i>
-                                &nbsp;&nbsp;
-                                <span style="font-weight:lighter;font-size:13px;" class="date-and-flag-status">{{$item['priorityType']}}</span>
-                                @endif
-                            </span>
-                        </dt>
-                    </dl>
-                </a>
-                @empty
-                    <div class="text-danger pt-4" style="text-align: center;">
-                        <p>No Pending Actions Found!</p>
-                    </div>
-                @endforelse
-                {{-- <a href='javascript:void(0)'
-                    class="d-flex module-item mb-0"
-                    style="transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;width:100%;border-radius:0;border-left: 2px solid #176044;">
-                    <dl>
-                        <dd class="module-image">
-                            <img src="{{ asset('images/icons/pending_approval.png') }}" class="mr-4 mt-4" style="width: 50px;height: 50px;border-radius: 5px;">
-                        </dd>
-                    </dl>
-                    <dl class="mb-0" style="width:100%;">
-                        <dt class="fw-bold mb-2 d-flex justify-content-between date-and-flag-status" style="font-size:12px;color:#3d3d3d;">
-                            <span>Pending Approval </span>
-                            <span>2 hours ago</span>
-                        </dt>
-                        <dt class="text-dark font-weight-bold mb-0 date-and-flag-status">
-                           <span style="font-size:13px;">
-                            Your approval is needed for a new risk entry <b style="color:#25499c;">APR021</b> in the <u>Risk Register</u>.
-                           </span>
-                        </dt>
-                        <dt class="mt-2 date-and-flag-status" style="font-size:12px;color:#3d3d3d;">
-                            <span>
-                                <i class="far fa-calendar-alt date-and-flag-status" style="font-size:13px;color:#af1e1e;"></i>
-                                &nbsp;&nbsp;
-                                <span style="font-weight:lighter;" class="date-and-flag-status">{{date('d/m/Y', strtotime('2021-09-01'))}}</span>
-                            
-                                <i class="fas fa-flag ml-6 date-and-flag-status" style="font-size:13px;color:#176044;"></i>
-                                &nbsp;&nbsp;
-                                <span style="font-weight:lighter;font-size:13px;" class="date-and-flag-status">Low</span>
-                            </span>
-                        </dt>
-                    </dl>
-                </a> --}}
-            </div>
-        </div>
-    </div>
-</div>
-<script src="{{ asset('js/jquery.min.js') }}"></script>
 @endsection

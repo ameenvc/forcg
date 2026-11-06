@@ -1428,76 +1428,18 @@ class UserController extends Controller
             'error' => null,
         ];
     }
-    public function myBoard()
+    public function myBoard(Request $request, \App\Services\MyBoard\MyBoardService $service)
     {
-        $activeModule = getModuleNames();
-        $user = User::where('email', FacadesAuth::user()->email)->first();
-        $models = DB::table('modenadisable')->First();
-        $recentModules = ModuleActivity::where('user_id', $user->id)->orderByDesc('last_accessed_at')->pluck('module_name')->toArray();
-        $module_arr = [];
-        $moduleDetails = [
-            'auditmanagement' => ['#4A148C3D', 'fact_check.png', 'Audit Management', 'Internal Audit Scheduling & Reporting', 'action.viewlist', 'governance_compliance'],
-            'managementreview' => ['#6A1B9A3D', 'analytics.png', 'Management Review', 'Management Review in Minutes', 'management.meetings', 'governance_compliance'],
-            'riskmanagement' => ['#B71C1C3D', 'warning.png', 'Enterprise Risk', 'Risk Assessment & Identification', 'risk.index', 'governance_compliance'],
-            'compliance' => ['#0D47A13D', 'verified_user.png', 'Compliance Management', 'Identification of Legal Requirements', 'compliance.register', 'governance_compliance'],
-            'documentmanagement' => ['#00695C3D', 'folder.png', 'Document Management', 'Governance Hub', 'doc.governancehub', 'governance_compliance'],
-            'objectives' => ['#1E3A8A3D', 'flag.png', 'Objectives', 'Objectives & Performance Reporting', 'user.objectives.folders', 'governance_compliance'],
-            'opportunity' => ['#F9A8253D', 'trending_up_org.png', 'Opportunity', 'Opportunity Action Plan & Identification', 'opportunity.oppindex', 'governance_compliance'],
-            'correctiveaction' => ['#33691E3D', 'settings_backup_restore.png', 'NCR & Corrective Actions', 'Actions, Register & Open/Closed Issues', 'corrective.viewlist', 'quality'],
-            'ohsrisk' => ['#D32F2F3D', 'health_and_safety.png', 'Health & Safety Risks', 'Occupational Health & Safety Risks', 'ohsrisk.folder', 'hse_sustainability'],
-            'enviaspects' => ['#1B5E203D', 'nest_eco_leaf.png', 'Environmental Aspects', 'Env. Aspect & Impact Identification', 'enviaspect.folder', 'hse_sustainability'],
-            'contextmanagement' => ['#0288D13D', 'notes.png', 'Context Management', 'Context & Change Management', 'user.context.index', 'governance_compliance'],
-            'customer_satisfaction' => ['#2E7D323D', 'thumb_up.png', 'Customer Satisfaction', 'Customers List & Survey Analysis', 'customer.register', 'quality'],
-            'elearning' => ['#3949AB3D', 'school.png', 'e-Learning', 'E-Learning', 'elearning.courses', 'people_culture'],
-            'complaintmanagement' => ['#FF70433D', 'support_agent.png', 'Customer Complaint', 'Customer List, My Complaints, Closed', 'user.compliancemgmt', 'quality'],
-            'vendormanagement' => ['#004D403D', 'store.png', 'Vendor Management', 'Vendor Register & Evaluation', 'vendor.index', 'operations'],
-            'incidentreport' => ['#E651003D', 'report.png', 'Incident Reporting', 'Incident Reporting & Identification', 'incidentregister', 'hse_sustainability'],
-            'hr' => ['#303F9F3D', 'groups.png', 'Human Resource', 'Job Description & Training Schedule', 'hr.register', 'people_culture'],
-            'maintainance' => ['#2E7D323D', 'build.png', 'Maintenance', 'Maintenance Reporting & Scheduling', 'maintenance.total', 'operations'],
-            'hse' => ['#FF8F003D', 'visibility_org.png', 'HSE Observations', 'HSE Observation & Corrective Action', 'hseobservation.index', 'hse_sustainability'],
-            'emergencyresponse' => ['#C628283D', 'fire_extinguisher.png', 'Emergency Response', 'Emergency Reporting & Actions', 'emergency.register', 'hse_sustainability'],
-            'calibration' => ['#8277173D', 'tune.png', 'Calibration Management', 'Instrument Log & Calibration Reporting', 'calibration.index', 'operations'],
-            'occhealth' => ['#D843153D', 'local_hospital.png', 'Occupational Health', 'Industrial Clinic Management', 'employeehealthrecords', 'hse_sustainability'],
-            'wastemanagement' => ['#558B2F3D', 'delete_sweep.png', 'Waste Management', 'Waste Reporting & Review Approval', 'waste.register', 'hse_sustainability'],
-            'nearmiss' => ['#D32F2F3D', 'priority_high.png', 'Near Miss', 'Near Miss Reporting & Action', 'nearmiss.index', 'hse_sustainability']
-        ];
-
-        foreach ($recentModules as $module) {
-            if (in_array($module, $activeModule) && isset($moduleDetails[$module])) {
-                $module_arr[$module] = $moduleDetails[$module];
-            }
-        }
-        /**-------------------------------END RECENT MODULE PART------------------------------------- */
-        /**--------------------------------CORRECTIVE MODULE ACTIONS--------------------------------- */
-        $correctiveItems = Corrective::where('processstage', '!=', 'Accomplished')
-                            ->orderByRaw("
-                                CASE
-                                    WHEN updated_at LIKE '%AM%' OR updated_at LIKE '%PM%'
-                                        THEN
-                                            CASE
-                                                WHEN updated_at LIKE '__-__-____ %AM%' OR updated_at LIKE '__-__-____ %PM%'
-                                                    THEN STR_TO_DATE(updated_at, '%d-%m-%Y %h:%i:%s %p')
-                                                ELSE STR_TO_DATE(updated_at, '%d-%m-%Y %h:%i:%s %p')
-                                            END
-                                    ELSE STR_TO_DATE(updated_at, '%Y-%m-%d %H:%i:%s')
-                                END DESC
-                            ")->with('typ')
-                            ->get(
-                                [
-                                    'id','correction_responsibility','responsibility',
-                                    'issueid','updated_at','correction_target_date',
-                                    'processstage','type', 'created_at','team_lead_id',
-                                    'postedby','is_reopened','target_date','is_team_changed',
-                                    'is_responsible_person_changed','investigation_date'
-                                ]
-                            );
-        $items = $this->correctiveAction($user,$correctiveItems);
-        /**--------------------------------END CORRECTIVE MODULE ACTIONS--------------------------------- */
-        return view('user.myboard')->with([
-            'model' => $models,
-            'modules' => $module_arr,
-            'items' => $items
-        ]);
+        $account = FacadesAuth::user();
+        $user = User::where('email', $account->email)->firstOrFail();
+        $model = DB::table('modenadisable')->first();
+        $settings = config('my_board') ?: require config_path('my_board.php');
+        $active = array_values(array_filter(array_keys($settings['modules']), function ($key) use ($model) {
+            return !$model || !isset($model->$key) || (bool) $model->$key;
+        }));
+        $board = $service->snapshot($user, $active);
+        if ($request->expectsJson()) return response()->json($board)->header('Cache-Control', 'private, no-store');
+        return response()->view('user.myboard', compact('model', 'user', 'board'))->header('Cache-Control', 'private, no-store');
     }
     public function correctiveAction(object $user, object $data)
     {

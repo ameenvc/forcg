@@ -14,13 +14,12 @@
 @endphp
 <div class="content cgbod-form risk-register risk-analysis" id="risk-analysis" data-analysis="{{ json_encode($analysisData) }}">
     @include('user.risks.register-header', ['registerPage' => 'analysis', 'registerTitle' => 'Risk analysis', 'registerDescription' => 'Compare risk ratings across departments and identify areas that need attention.'])
-    <div class="analysis-context"><div><span class="analysis-eyebrow">CURRENT PORTFOLIO</span><p>All recorded risks, including closed records. Deleted records are excluded. Counts reflect stored ratings.</p></div><label>Risk group<select id="analysis-group"><option value="">All groups</option>@foreach($analysisData['groups'] as $group => $groupData)<option>{{ $group }}</option>@endforeach</select></label></div>
+    <div class="analysis-context analysis-context-filter"><label>Risk group<select id="analysis-group"><option value="">All groups</option>@foreach($analysisData['groups'] as $group => $groupData)<option>{{ $group }}</option>@endforeach</select></label></div>
     <div class="analysis-rating-strip" aria-label="Risk counts for the selected group">
         @foreach(['total' => 'Total risks', 'High' => 'High', 'Moderate' => 'Moderate', 'Low' => 'Low', 'Unassessed' => 'Unassessed'] as $rating => $label)
         <div data-tone="{{ $rating }}"><span>{{ $label }}</span><strong data-analysis-count="{{ $rating }}">{{ $counts[$rating] }}</strong></div>
         @endforeach
     </div>
-    <div class="analysis-quality" aria-label="Information coverage"><div><span>Without an owner</span><strong data-analysis-quality="unassigned_owner">{{ $analysisData['quality']['unassigned_owner'] }}</strong></div><div><span>Response not recorded</span><strong data-analysis-quality="missing_response">{{ $analysisData['quality']['missing_response'] }}</strong></div></div>
     <div class="analysis-overview">
         <section class="analysis-card"><div class="analysis-card-heading"><div><h2>Rating distribution</h2><p id="analysis-selected-scope">All groups</p></div><span class="analysis-current">Current snapshot</span></div>
             <div class="analysis-distribution"><div class="analysis-donut" id="analysis-donut" role="img" aria-label="Risk distribution"><div><strong id="analysis-donut-total">{{ $counts['total'] }}</strong><span>recorded risks</span></div></div><div class="analysis-legend">

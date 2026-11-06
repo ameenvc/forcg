@@ -72,7 +72,11 @@ class RiskRegisterPagesTest extends TestCase
         $this->assertArrayNotHasKey('FIN', $data['departments']);
         $this->assertSame($data['totals']['total'], array_sum(array_column($data['departments'], 'total')));
         $html = $view->render();
-        $this->assertStringContainsString('including closed records', $html);
+        $this->assertStringNotContainsString('CURRENT PORTFOLIO', $html);
+        $this->assertStringNotContainsString('including closed records', $html);
+        $this->assertStringNotContainsString('class="analysis-quality"', $html);
+        $this->assertStringContainsString('id="analysis-group"', $html);
+        $this->assertStringContainsString('data-analysis-count="total"', $html);
         $this->assertStringContainsString('Department comparison', $html);
         $this->assertStringNotContainsString('everything looks great', $html);
         if (getenv('RISK_ANALYSIS_PREVIEW_PATH')) file_put_contents(getenv('RISK_ANALYSIS_PREVIEW_PATH'), $html);

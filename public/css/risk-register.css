@@ -946,3 +946,11 @@ html body #main-container #risk-register table.risk-module-table .register-heade
 html[data-risk-theme=dark] body #main-container #risk-register table.risk-module-table .register-header-filter.is-filtered { color:#c5d4ff!important; }
 /* Three toolbar actions remain after moving filters to their column headers. */
 @media(max-width:767px) { #risk-register .register-toolbar-actions { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+/* Small page-specific identity icon, aligned with the title rather than the module label. */
+.register-title-line { display:flex; align-items:center; gap:10px; margin-top:5px; }
+.register-title-icon { display:grid; place-items:center; flex:none; width:34px; height:34px; border:1px solid #e0e4f6; border-radius:10px; color:#5a68bb; background:linear-gradient(135deg,#eef3ff,#eeebfa); }
+.register-title-icon i { font-size:16px; }
+html body #main-container .risk-page-banner .register-title-line h1 { margin:0; }
+.risk-page-banner .register-title-line+p { margin-top:7px; }
+html[data-risk-theme=dark] .register-title-icon { background:linear-gradient(135deg,#2b3d61,#373056); border-color:#465378; color:#c5cdf5; }
+@media(max-width:575px) { .register-title-icon { width:30px; height:30px; border-radius:8px; } .register-title-icon i { font-size:14px; } }

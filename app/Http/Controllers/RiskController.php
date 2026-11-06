@@ -3138,19 +3138,15 @@ class RiskController extends Controller
         }
     }
 
-    public function riskhistory()
+    public function riskhistory(Request $request)
     {
-        if (isset($_GET['val'])) {
-
-            $riskhistory = DB::table('riskhistory')->where('Rid', '=', $_GET['val'])
-                ->get();
-            $models = DB::table('modenadisable')->First();
-            $riskdata = Risk::where('Rid', $_GET['val'])->first();
-            return view('user.risks.riskhistory')
-                ->with('riskhistory', $riskhistory)
-                ->with('riskdata', $riskdata)
-                ->with('model', $models);
-        }
+        $id = $request->query('val');
+        abort_unless(filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]), 404);
+        $riskdata = Risk::with('department')->where('Rid', $id)->firstOrFail();
+        $riskhistory = RiskHistory::with('riskOwner')->where('Rid', $id)
+            ->orderByDesc('created_at')->orderByDesc('id')->get();
+        $model = DB::table('modenadisable')->first();
+        return view('user.risks.riskhistory', compact('riskhistory', 'riskdata', 'model'));
     }
 
     //addopportunity

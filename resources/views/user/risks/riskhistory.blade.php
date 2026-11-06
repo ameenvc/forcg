@@ -1,312 +1,58 @@
 @extends('layouts.backend')
-
 @section('content')
-
-<style>
-    body {
-        margin: 0px;
-    }
-
-    table {
-
-        border-collapse: collapse;
-        margin: 0px;
-        padding: 0px;
-    }
-
-    td {
-        border: 1px solid #D0D0D0;
-    }
-
-</style>
-
-<div class="bg-body-light">
-    <div class="content content-full">
-        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center" style="height:0px;">
-
-            <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
-                <ol class="breadcrumb breadcrumb-alt">
-                    <li class="breadcrumb-item">Enterprise Risk</li>
-                    <li class="breadcrumb-item" aria-current="page">
-                        <a class="link-fx" href=""> Risk History</a>
-                    </li>
-                    <li class="breadcrumb-item" aria-current="page">
-                        <a class="link-fx" href="/user/riskmgmt">Back</a>
-                    </li>
-                </ol>
-            </nav>
-        </div>
-    </div>
+<link rel="stylesheet" href="{{ asset('css/risk-history.css') }}?v={{ filemtime(public_path('css/risk-history.css')) }}">
+<script defer src="{{ asset('js/risk-history.js') }}?v={{ filemtime(public_path('js/risk-history.js')) }}"></script>
+@php
+    $ratingLabel = function ($value) { return [1=>'Low',2=>'Moderate',3=>'High'][$value ?? ''] ?? $value; };
+    $toneFor = function ($value) { return ['High'=>'high','Moderate'=>'moderate','Low'=>'low'][$value ?? ''] ?? 'neutral'; };
+    $eventLabel = function ($value) { return $value === 'Intial Review' ? 'Initial Review' : ($value ?: 'Assessment snapshot'); };
+    $formatDate = function ($value) { if (!$value) return 'Date not recorded'; try { return \Carbon\Carbon::parse($value)->format('d M Y · H:i'); } catch (\Exception $exception) { return 'Date not recorded'; } };
+    $eventTypes = $riskhistory->map(function ($event) use ($eventLabel) { return $eventLabel($event->action); })->unique()->sort();
+@endphp
+<div class="content rh-workspace" id="risk-history-workspace">
+    <header class="rh-header">
+        <div class="rh-topline"><a href="{{ route('risk.index') }}" class="rh-back"><i class="fa fa-arrow-left mr-1" aria-hidden="true"></i>Risk register</a><div class="rh-header-actions"><button type="button" class="btn rh-button" onclick="window.print()"><i class="fa fa-print mr-1" aria-hidden="true"></i>Print</button><a class="btn rh-button rh-primary" href="{{ route('risk.detail', $riskdata->Rid) }}">Open risk <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i></a></div></div>
+        <span class="rh-eyebrow">ENTERPRISE RISK MANAGEMENT</span>
+        <div class="rh-title"><span class="rh-icon" aria-hidden="true"><i class="fa fa-history"></i></span><div><h1>Risk history</h1><p>Follow recorded reviews, assessment changes, and mitigation updates.</p></div></div>
+        <div class="rh-record"><span class="rh-id">{{ $riskdata->grp_id }}</span><strong>{{ $riskdata->riskname }}</strong></div>
+        <dl class="rh-summary"><div><dt>Risk group</dt><dd>{{ $riskdata->riskgroup ?: 'Not assigned' }}</dd></div><div><dt>Risk area</dt><dd>{{ $riskdata->department->departmentname ?? 'Not assigned' }}</dd></div><div><dt>Current rating</dt><dd><span class="rh-badge rh-tone-{{ $toneFor($riskdata->rank) }}">{{ $riskdata->rank ?: 'Unassessed' }}</span></dd></div><div><dt>History entries</dt><dd>{{ $riskhistory->count() }}</dd></div></dl>
+        <details class="rh-description"><summary>Current risk description</summary><p>{{ strip_tags($riskdata->riskdec ?: 'No description has been recorded.') }}</p></details>
+    </header>
+    <section class="rh-history" aria-labelledby="rh-history-heading">
+        <div class="rh-section-heading"><div><h2 id="rh-history-heading">Recorded activity</h2><p>Times shown in {{ config('app.timezone', 'UTC') }}. Current risk information appears above.</p></div></div>
+        @if($riskhistory->count())
+        <div class="rh-toolbar"><label class="rh-search"><i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">Search history</span><input id="history-search" type="search" placeholder="Search changes, events, or reviewers…" autocomplete="off"></label><label class="rh-filter"><span class="sr-only">Filter event type</span><select id="history-event-type"><option value="">All events</option>@foreach($eventTypes as $type)<option>{{ $type }}</option>@endforeach</select></label><label class="rh-filter"><span class="sr-only">Sort history</span><select id="history-sort"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label></div>
+        <div class="rh-view-info"><span id="history-match-count" role="status" aria-live="polite">{{ $riskhistory->count() }} entries</span><button type="button" id="history-clear" hidden>Clear search & filters</button></div>
+        <ol class="rh-timeline" id="history-timeline">
+            @foreach($riskhistory as $index => $event)
+            @php
+                $changes = [];
+                foreach (['impa'=>'Impact','like'=>'Likelihood','rank'=>'Risk rating','mitigating_action'=>'Mitigation action'] as $field=>$label) {
+                    $before = $event->{$field}; $after = $event->{$field.'_updated'};
+                    if ($before === null && $after === null) continue;
+                    if ($field === 'rank') { $before = $ratingLabel($before); $after = $ratingLabel($after); }
+                    $changes[] = ['label'=>$label,'before'=>$before,'after'=>$after,'rating'=>$field !== 'mitigating_action'];
+                }
+                $type = $eventLabel($event->action);
+            @endphp
+            <li class="rh-event" data-history-event data-event-type="{{ $type }}" data-event-order="{{ $index }}">
+                <span class="rh-event-marker" aria-hidden="true"><i class="fa {{ stripos($type, 'review') !== false ? 'fa-clipboard-check' : 'fa-history' }}"></i></span>
+                <article class="rh-event-card"><div class="rh-event-heading"><div><h3>{{ $type }}</h3><span class="rh-actor"><i class="fa fa-user mr-1" aria-hidden="true"></i>{{ $event->riskOwner->name ?? 'User not recorded' }}</span></div><time>{{ $formatDate($event->created_at) }}</time></div>
+                    @if(count($changes))<dl class="rh-changes">@foreach($changes as $change)<div class="rh-change"><dt>{{ $change['label'] }}</dt><dd>
+                        @if($change['before'] !== null)<span class="rh-change-value {{ $change['rating'] ? 'rh-badge rh-tone-'.$toneFor($change['before']) : 'rh-text-value' }}">{{ $change['before'] }}</span>@endif
+                        @if($change['after'] !== null)
+                            @if($change['before'] !== null && $change['before'] !== $change['after'])<span class="rh-change-arrow"><span class="sr-only">changed to</span><i class="fa fa-arrow-right" aria-hidden="true"></i></span>@endif
+                            @if($change['before'] !== $change['after'])<span class="rh-change-value {{ $change['rating'] ? 'rh-badge rh-tone-'.$toneFor($change['after']) : 'rh-text-value' }}">{{ $change['after'] }}</span>@else<small>Unchanged</small>@endif
+                            @if($change['before'] === null)<small>Recorded value</small>@endif
+                        @else<small>{{ $event->action ? 'Updated value not recorded' : 'Recorded value' }}</small>@endif
+                    </dd></div>@endforeach</dl>@else<p class="rh-no-changes">No assessment changes were recorded for this event.</p>@endif
+                </article>
+            </li>
+            @endforeach
+        </ol>
+        <div class="rh-empty" id="history-no-matches" hidden><i class="fa fa-search" aria-hidden="true"></i><h3>No matching history</h3><p>Try another search or clear the event filter.</p></div>
+        @else<div class="rh-empty"><i class="fa fa-history" aria-hidden="true"></i><h3>No history recorded yet</h3><p>This risk's reviews and assessment changes will appear here when recorded.</p><a href="{{ route('risk.detail', $riskdata->Rid) }}" class="rh-back">View current risk</a></div>@endif
+    </section>
+    <div class="modal fade rh-navigation-modal" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="history-module-navigation" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="history-module-navigation">Risk module</h2><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="modal-body rh-module-links"><a href="{{ route('risk.index') }}"><i class="fa fa-list-alt mr-2" aria-hidden="true"></i>Register</a><a href="{{ route('risk.closedrisks') }}"><i class="fa fa-check-circle mr-2" aria-hidden="true"></i>Closed risks</a><a href="{{ route('risk.analysis') }}"><i class="fa fa-chart-pie mr-2" aria-hidden="true"></i>Analysis</a></div></div></div></div>
 </div>
-
-
-<!-- END Hero -->
-
-<!-- Page Content -->
-<div class="content">
-    <!-- Horizontal -->
-    <div class="block block-rounded">
-        <div class="block-content block-content-full">
-            <div class="row">
-                <div class="col-md-12">
-                    @if(count($riskhistory) > 0)
-                    <table width="100%" cellpadding="8">
-                        <tr>
-                            <td colspan="4" class="bg-info text-white" style="font-size:20px;height:35px;font-family:Arial, Helvetica, sans-serif;">
-                                <center>Risk History</center>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="4" width="100%">
-                                <table width="100%" cellpadding="8">
-
-                                    <tr>
-                                        <td class="text-left col-form-label" style="font-size:15px;background:#ededed;font-family:Arial, Helvetica, sans-serif;width:15%">Risk ID</td>
-                                        <td style="font-size:13px;text-transform:capitalize;"><a href="#">{{$riskdata->grp_id}}</a></td>
-                                        <td class="text-left col-form-label" style="font-size:15px;background:#ededed;font-family:Arial, Helvetica, sans-serif;">Risk Name </td>
-                                        <td style="font-size:13px;text-transform:capitalize;">{{$riskdata->riskname}}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="text-left col-form-label" style="font-size:15px;background:#ededed;font-family:Arial, Helvetica, sans-serif;">Risk Area</td>
-                                        <td style="font-size:13px;text-transform:capitalize;">{{$riskdata->department ? $riskdata->department->departmentname : '-'}}</td>
-                                        <td class="text-left col-form-label" style="font-size:15px;background:#ededed;font-family:Arial, Helvetica, sans-serif;">Risk group</td>
-                                        <td style="font-size:13px;text-transform:capitalize;">
-                                            {{$riskdata->riskgroup}}
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="text-left col-form-label" style="font-size:15px;background:#ededed;font-family:Arial, Helvetica, sans-serif;">Risk Description</td>
-                                        <td colspan="3" style="font-size:13px;text-transform:capitalize;">{{$riskdata->riskdec}}</td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <!-- <tr><td colspan="11" class="bg-gray text-white" style="font-size:15px;height:5px;font-family:Arial, Helvetica, sans-serif;"></td></tr> -->
-                        <tr>
-                            <td colspan="4" class="text-white" style="font-size:15px;height:5px;font-family:Arial, Helvetica, sans-serif;background:#c1c1c1;"></td>
-                        </tr>
-
-                        <tr style="background:#ededed;">
-                            <td class="text-center" style="font-size:14px;width:0.5%">#</td>
-                            <td class="text-center" style="font-size:14px;width: 15%">Description</td>
-
-                            <td class="text-center" style="font-size:14px;width: 2%">Date</td>
-                            <td class="text-center" style="font-size:14px;width: 2%">Action</td>
-                        </tr>
-                        <?php $no=0;?>
-                        @foreach($riskhistory as $value)
-                        <tr>
-                            <td class="text-center" style="font-size:14px;">{{$no=$no+1}}</td>
-
-                            <td class="d-none d-sm-table-cell" style="font-size:12px;">
-                                @if($value->impa==NULL && $value->like==NULL && $value->rank==NULL && $value->mitigating_action==NULL)
-                                --
-                                @endif
-                                @if($value->impa!=NULL && $value->action!=NULL)
-                                Impact changed from
-                                @if($value->impa=="High")
-                                <span class="badge badge-danger">{{$value->impa }}</span>
-                                @elseif($value->impa=="Moderate")
-                                <span class="badge badge-warning">{{$value->impa }}</span>
-                                @else
-                                <span class="badge badge-success">{{$value->impa }}</span>
-                                @endif
-                                to
-                                @if($value->impa_updated=="High")
-                                <span class="badge badge-danger">{{$value->impa_updated }}</span>
-                                @elseif($value->impa_updated=="Moderate")
-                                <span class="badge badge-warning">{{$value->impa_updated }}</span>
-                                @else
-                                <span class="badge badge-success">{{$value->impa_updated }}</span>
-                                @endif
-
-                                @elseif($value->impa!=NULL && $value->action==NULL)
-                                Impact changed from
-                                @if($value->impa=="High")
-                                <span class="badge badge-danger">{{$value->impa }}</span>
-                                @elseif($value->impa=="Moderate")
-                                <span class="badge badge-warning">{{$value->impa }}</span>
-                                @else
-                                <span class="badge badge-success">{{$value->impa }}</span>
-                                @endif
-
-                                @endif
-
-                                @if($value->like!=NULL && $value->action!=NULL)
-                                <br>
-                                Likelihood changed from
-                                @if($value->like=="High")
-                                <span class="badge badge-danger">{{$value->like }}</span>
-                                @elseif($value->like=="Moderate")
-                                <span class="badge badge-warning">{{$value->like }}</span>
-                                @else
-                                <span class="badge badge-success">{{$value->like }}</span>
-                                @endif
-                                to
-                                @if($value->like_updated=="High")
-                                <span class="badge badge-danger">{{$value->like_updated }}</span>
-                                @elseif($value->like_updated=="Moderate")
-                                <span class="badge badge-warning">{{$value->like_updated }}</span>
-                                @else
-                                <span class="badge badge-success">{{$value->like_updated }}</span>
-                                @endif
-                                @elseif($value->like!=NULL && $value->action==NULL)
-                                <br>
-                                Likelihood changed from
-                                @if($value->like=="High")
-                                <span class="badge badge-danger">{{$value->like }}</span>
-                                @elseif($value->like=="Moderate")
-                                <span class="badge badge-warning">{{$value->like }}</span>
-                                @else
-                                <span class="badge badge-success">{{$value->like }}</span>
-                                @endif
-
-                                @endif
-
-                                @if($value->rank!=NULL && $value->action!=NULL)
-                                <br>
-                                Risk changed from
-                                @if($value->rank == 3)
-                                <span class="badge badge-danger">High</span>
-                                @elseif($value->rank == 2)
-                                <span class="badge badge-warning">Moderate</span>
-                                @else
-                                <span class="badge badge-success">Low</span>
-                                @endif
-                                to
-                                @if($value->rank_updated == 3)
-                                <span class="badge badge-danger">High</span>
-                                @elseif($value->rank_updated == 2)
-                                <span class="badge badge-warning">Moderate</span>
-                                @else
-                                <span class="badge badge-success">Low</span>
-                                @endif
-                                @elseif($value->rank!=NULL && $value->action==NULL)
-                                <br>
-                                Risk changed from
-                                @if($value->rank == 3)
-                                <span class="badge badge-danger">High</span>
-                                @elseif($value->rank == 2)
-                                <span class="badge badge-warning">Moderate</span>
-                                @else
-                                <span class="badge badge-success">Low</span>
-                                @endif
-
-                                @endif
-
-                                @if($value->mitigating_action!=NULL && $value->action!=NULL)
-                                <br>
-                                Mitigating Action changed from <br>{{$value->mitigating_action}} <br>to <br>{{$value->mitigating_action_updated}}
-                                @elseif($value->mitigating_action!=NULL && $value->action==NULL)
-                                <br>
-                                Mitigating Action changed from <br> {{$value->mitigating_action}}
-                                @endif
-                                <br>
-
-                            </td>
-
-                            <td class="text-center" style="font-size:12px;text-transform:capitalize;">{{date('d-m-Y',strtotime($value->created_at))}}</td>
-
-                            <td class="text-center" style="font-size:12px;text-transform:capitalize;">
-                                @if($value->action==NULL)
-                                --
-                                @else
-                                <span class="text-danger"><b>{{$value->action}}</b></span>
-                                @endif
-                            </td>
-
-                        </tr>
-                        @endforeach
-
-                    </table>
-                    @else
-                    <div class="text-danger text-center">No data</div>
-                    @endif
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Apps Modal -->
-    <!-- Opens from the modal toggle button in the header -->
-    <!-- Opens from the modal toggle button in the header -->
-    <!-- Opens from the modal toggle button in the header -->
-    <div class="modal fade" id="one-modal-apps" tabindex="-1" role="dialog" aria-labelledby="one-modal-apps" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content">
-                <div class="block block-rounded block-themed block-transparent mb-0">
-                    <div class="block-header bg-primary-dark">
-                        <h3 class="block-title">More</h3>
-                        <div class="block-options">
-                            <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
-                                <i class="si si-close"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="block-content block-content-full">
-                        <div class="row gutters-tiny">
-
-                            <!-- <div class="col-6">
-
-                                        <a class="block block-rounded block-link-shadow bg-body" href="/user/risks/addrisk">
-                                            <div class="block-content text-center">
-                                                <i class="far fa-list-alt fa-2x text-primary"></i>
-                                                <p class="font-w600 font-size-sm mt-2 mb-3">
-                                                    Add Risk
-                                                </p>
-                                            </div>
-                                        </a>
-
-                                    </div> -->
-                            <div class="col-6">
-                                <!-- Products -->
-                                <a class="block block-rounded block-link-shadow bg-body" href="/user/riskmgmt">
-                                    <div class="block-content text-center">
-                                        <i class="far fa-list-alt fa-2x text-primary"></i>
-                                        <p class="font-w600 font-size-sm mt-2 mb-3">
-                                            Register
-                                        </p>
-                                    </div>
-                                </a>
-                                <!-- END Products -->
-                            </div>
-                            <div class="col-6">
-                                <!-- Products -->
-                                <a class="block block-rounded block-link-shadow bg-body" href="/user/risks/closedrisks">
-                                    <div class="block-content text-center">
-                                        <i class="far fa-list-alt fa-2x text-primary"></i>
-                                        <p class="font-w600 font-size-sm mt-2 mb-3">
-                                            Closed Risks
-                                        </p>
-                                    </div>
-                                </a>
-                                <!-- END Products -->
-                            </div>
-
-                            <div class="col-6">
-                                <!-- Products -->
-                                <a class="block block-rounded block-link-shadow bg-body" href="/user/risks/analysis">
-                                    <div class="block-content text-center">
-                                        <i class="far fa-list-alt fa-2x text-primary"></i>
-                                        <p class="font-w600 font-size-sm mt-2 " style="margin-bottom:60px">
-                                            Analysis
-                                        </p>
-                                    </div>
-                                </a>
-                                <!-- END Products -->
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- END Apps Modal -->
-
-
-    @endsection
+@endsection

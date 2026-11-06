@@ -5,8 +5,8 @@
 <header class="register-header cgbod-form-header risk-page-banner">
     <div class="register-header-main">
         <div class="register-header-copy">
-            <span class="register-eyebrow"><span class="register-page-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span>Enterprise risk management</span>
-            <h1>{{ $registerTitle ?? 'Risk register' }}</h1>
+            <span class="register-eyebrow">Enterprise risk management</span>
+            <div class="register-title-line"><span class="register-title-icon" aria-hidden="true"><i class="fa {{ $pageIcons[$registerPage] ?? 'fa-shield-alt' }}"></i></span><h1>{{ $registerTitle ?? 'Risk register' }}</h1></div>
             <p>{{ $registerDescription ?? 'Review risk ratings, accountable owners, and mitigation priorities.' }}</p>
         </div>
     </div>

@@ -139,7 +139,7 @@
 <td>{{ $displayDate($mitigation->due_date) }}</td>
 <td>@include('user.risks.mitigation._status')</td>
 <td>
-<a class="rd-text-link" href="{{ route('mitigations.detail', $mitigation->id) }}" aria-label="View action {{ $mitigation->action_name }}">View</a>
+<a class="rd-text-link" href="{{ route('mitigations.detail', $mitigation->id) }}" aria-label="View action {{ $mitigation->action_name }}" title="View action"><i class="far fa-eye" aria-hidden="true"></i></a>
 </td>
 </tr>@endforeach</tbody>
 </table>

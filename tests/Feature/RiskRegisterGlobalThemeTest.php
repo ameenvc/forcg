@@ -10,10 +10,10 @@ class RiskRegisterGlobalThemeTest extends TestCase
         view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));
         app('events')->forget('composing: *');
         $html = view('theme-compatibility')->render();
-        $this->assertSame(1, substr_count($html, 'data-risk-theme-select'));
+        $this->assertSame(1, substr_count($html, 'data-risk-theme-toggle'));
         $this->assertStringNotContainsString('<option value="system">', $html);
-        $this->assertStringContainsString('<option value="light">Light</option>', $html);
-        $this->assertStringContainsString('<option value="dark">Dark</option>', $html);
+        $this->assertStringContainsString('aria-label="Switch to dark theme"', $html);
+        $this->assertStringNotContainsString('data-risk-theme-select', $html);
         $this->assertSame(1, substr_count($html, 'js/risk-theme.js'));
         $this->assertSame(1, substr_count($html, 'js/app-theme.js'));
         $this->assertSame(1, substr_count($html, 'css/app-typography.css'));

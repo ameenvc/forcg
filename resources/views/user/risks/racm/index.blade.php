@@ -442,7 +442,7 @@
                                         </div>
                                         <a href="#" class="btn btn-sm btn-alt-primary"
                                            data-id="{{ $riskAcm->id }}" data-toggle="tooltip" data-placement="top"
-                                           title="View" onclick="ViewBtn('{{$riskAcm->id}}')">
+                                           title="View assessment criteria" aria-label="View assessment criteria" onclick="ViewBtn('{{$riskAcm->id}}')">
                                             <i class="far fa-eye text-center" style="font-size:10px;cursor:pointer"></i>
                                         </a>
                                     </div>

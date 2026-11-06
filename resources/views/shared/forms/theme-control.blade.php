@@ -1,1 +1,1 @@
-<label class="risk-theme-control"><i class="fa fa-adjust" aria-hidden="true"></i><span class="sr-only">Colour theme</span><select data-risk-theme-select aria-label="Colour theme"><option value="light">Light</option><option value="dark">Dark</option></select></label>
+<button type="button" class="risk-theme-control" data-risk-theme-toggle aria-label="Switch to dark theme" title="Switch to dark theme" aria-pressed="false"><i class="fa fa-moon" aria-hidden="true"></i></button>

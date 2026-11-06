@@ -369,7 +369,7 @@
                                         <a href="#" class="btn btn-sm btn-alt-primary"
                                            data-id="{{ $mitigation->id }}"
                                            data-toggle="modal"
-                                           data-placement="top" title="View"
+                                           data-placement="top" title="View mitigation action" aria-label="View mitigation action"
                                            data-target="#viewModal{{ $mitigation->id }}">
                                             <i class="far fa-eye text-center " style="font-size:10px;cursor:pointer" ></i>
                                         </a>

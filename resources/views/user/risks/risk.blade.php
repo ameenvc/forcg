@@ -251,8 +251,8 @@
                                         @endif
                                     </div>
                                     <!-- Action: View detail -->
-                                    <button type="button" class="btn register-view-button show-detail" data-id="{{ $value->Rid }}" aria-label="View risk {{ $value->grp_id }}">
-                                        <i class="far fa-eye" aria-hidden="true"></i><span>View</span>
+                                    <button type="button" class="btn register-view-button show-detail" data-id="{{ $value->Rid }}" aria-label="View risk {{ $value->grp_id }}" title="View risk">
+                                        <i class="far fa-eye" aria-hidden="true"></i>
                                     </button>
                                 </div>
                             </td>

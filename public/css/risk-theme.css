@@ -112,3 +112,10 @@ html[data-risk-theme=dark] :is(.risk-ai-dialog-body,.risk-review-assist,.risk-ai
 html[data-risk-theme=dark] :is(.risk-ai-dialog-body,.risk-review-assist,.risk-ai-feedback) :is(input,textarea)::placeholder { color:var(--risk-muted,#a1b2cd)!important; opacity:1; }
 html[data-risk-theme=dark] :is(.risk-ai-dialog-body,.risk-review-assist,.risk-ai-feedback) :is(input,textarea,select):focus { border-color:#7897df!important; box-shadow:0 0 0 3px #7897df26; }
 html[data-risk-theme=dark] :is(.risk-ai-dialog-body,.risk-review-assist,.risk-ai-feedback) :is(input,textarea,select):is(:disabled,[readonly]) { background:#17243a!important; color:var(--risk-muted,#a1b2cd)!important; }
+
+/* Icon-only global theme switch retains a full-size interaction target. */
+button.risk-theme-control { display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; padding:0; border:1px solid #dce3f0; border-radius:10px; background:#fff; color:#526bb0; cursor:pointer; flex:none; font-size:16px; }
+button.risk-theme-control:hover { background:#eef2ff; border-color:#a7b7df; }
+button.risk-theme-control:focus-visible { outline:3px solid #a99ae6; outline-offset:3px; }
+html[data-risk-theme=dark] button.risk-theme-control { background:#233148; border-color:#3c506e; color:#d5c6ff; }
+html[data-risk-theme=dark] button.risk-theme-control:hover { background:#30405c; }

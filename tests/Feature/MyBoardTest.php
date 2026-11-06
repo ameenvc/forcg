@@ -60,6 +60,8 @@ class MyBoardTest extends TestCase
         $this->assertContains('Warehouse audit', array_column($board['updates'], 'title'));
         $this->assertStringNotContainsString('ISO 9001', json_encode($board));
         $this->assertSame('WHS1/26', $board['tasks'][0]['reference']);
+        $this->assertSame('Continue audit', $board['tasks'][0]['action_label']);
+        $this->assertSame(url('/user/internalaudit/update').'?val=1', $board['tasks'][0]['action_url']);
     }
     public function testPersonalActionsMatchExactIdsAndJsonListsWithoutSubstringLeaks()
     {

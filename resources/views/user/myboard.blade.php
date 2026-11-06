@@ -1,7 +1,7 @@
 @extends('layouts.backend')
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/user/myboard.css') }}?v=20261106-1">
-<script defer src="{{ asset('js/my-board.js') }}?v=20261106-1"></script>
+<link rel="stylesheet" href="{{ asset('css/user/myboard.css') }}?v=20261106-2">
+<script defer src="{{ asset('js/my-board.js') }}?v=20261106-2"></script>
 @php
     $firstName = explode(' ', trim($user->name))[0];
     $score = $board['score'];

@@ -292,10 +292,22 @@ class MyBoardService
         if ($key === 'criteria' && in_array($kind, ['review', 'approval'], true)) {
             $source['path'] = $kind === 'review' ? '/user/riskmgmt/racm/review/{id}/'.$this->user->id : '/user/riskmgmt/racm/approve/{id}';
         }
+        $viewUrl = isset($source['path']) ? url(str_replace('{id}', rawurlencode($id), $source['path'])) : $module['url'];
+        $actionUrl = $viewUrl;
+        $actionLabel = ['action' => 'Take action', 'review' => 'Review', 'approval' => 'Review & approve'][$kind];
+        if ($key === 'audit_schedules') {
+            $actionUrl = url('/user/internalaudit/update').'?val='.rawurlencode($id);
+            $actionLabel = 'Continue audit';
+        } elseif ($key === 'mitigations' && $kind === 'action') {
+            $actionLabel = 'Update progress';
+        } elseif (!isset($source['path'])) {
+            $actionLabel = 'Open worklist';
+        }
         return ['key' => $key.':'.$id.':'.$kind, 'module' => $source['module'], 'module_name' => $module['name'], 'area' => $module['area'], 'icon' => $module['icon'],
             'kind' => $kind, 'instruction' => $instruction ?: ['action' => 'Take action', 'review' => 'Review record', 'approval' => 'Approve or return record'][$kind],
             'title' => $title, 'reference' => $reference, 'status' => $this->text($row[$source['stage']] ?? (isset($row[$source['progress'] ?? '']) ? max(0, min(100, (int) $row[$source['progress']])).'% complete' : '')),
             'url' => isset($source['path']) ? url(str_replace('{id}', rawurlencode($id), $source['path'])) : $module['url'],
+            'action_url' => $actionUrl, 'action_label' => $actionLabel,
             'direct' => isset($source['path']), 'due' => $due, 'due_label' => $due ? Carbon::parse($due)->format('d M Y') : 'No due date',
             'overdue' => $due && $due < $this->today->toDateString(), 'due_soon' => $due && $due >= $this->today->toDateString() && $due <= $this->today->copy()->addDays(7)->toDateString(),
             'priority' => $priority, 'priority_weight' => ['High' => 3, 'Moderate' => 2, 'Low' => 1, '' => 0][$priority], 'updated_at' => $updated, 'score' => $source['score']];

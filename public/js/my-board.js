@@ -23,8 +23,12 @@
         const due = el('div', 'mb-task-due'); due.append(el('span', 'mb-kind mb-kind-' + task.kind, {action: 'Action', review: 'Review', approval: 'Approval'}[task.kind]), el('span', task.overdue ? 'mb-overdue' : '', (task.overdue ? 'Overdue · ' : '') + task.due_label));
         if (task.priority) due.append(el('small', 'mb-priority-' + task.priority.toLowerCase(), task.priority + ' priority'));
         row.append(glyph, copy, due);
+        const actions = el('div', 'mb-task-actions');
+        const actionUrl = task.action_url && safeUrl(task.action_url);
+        if (actionUrl) { const action = el('a', 'mb-task-action', task.action_label); action.href = actionUrl; action.setAttribute('aria-label', task.action_label + ' · ' + task.reference); actions.append(action); }
         const url = task.url && safeUrl(task.url);
-        if (url) { const link = el('a', 'mb-open'); link.href = url; link.title = task.direct ? 'Open record' : 'Open module'; link.setAttribute('aria-label', (task.direct ? 'Open ' : 'Open module for ') + task.reference); link.append(icon('fa-arrow-right')); row.append(link); }
+        if (url) { const link = el('a', 'mb-open'); link.href = url; link.title = task.direct ? 'View details' : 'View module'; link.setAttribute('aria-label', 'View ' + task.reference); link.append(icon('fa-eye')); actions.append(link); }
+        row.append(actions);
         return row;
     }
     function renderTasks() {

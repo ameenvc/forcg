@@ -27,3 +27,7 @@ Action closure graphs use only connected mitigation, corrective, audit-finding, 
 The header now uses the same 3px blue-to-purple gradient top line as redesigned risk pages. Priority modules list the exact contributing workflow counts and a visible Open register link. Upcoming deadlines show an explicit date range and the top five source-workflow groups with counts; the full count remains visible and additional groups link to module summaries. Closure charts label completed counts, denominators and percentages. Explanations of missing/partial summaries use plain language; methodology is available in a collapsed footer.
 
 Pending-decision counts now use exact defined review/approval stages and source-role stage lists, plus explicit progress-based review conditions (for example, mitigation progress at 100% awaiting review). A status merely containing `review` is not sufficient. Closed records are excluded. This remains record-level workflow coverage; specialist review assignment tables and additional views of the same source are not silently added or double-counted.
+
+## Department comparison
+
+The management overview includes a compact department comparison and a separate searchable Departments tab. Model weights, exact department attribution, eligibility gates, comparable peer groups, overdue-age/severity weighting and historical-baseline limits are documented in [department-performance.md](department-performance.md). Calculation is read-only and reuses dashboard column metadata. No migration is required.

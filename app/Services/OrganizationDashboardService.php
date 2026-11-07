@@ -111,6 +111,7 @@ class OrganizationDashboardService
                 if($group->status==='accepted')$evidence['assured']=(int)$group->assured_count;
             }
         }
-        return ['modules'=>array_values($modules),'totals'=>$totals,'attention'=>array_slice($attention,0,6),'exceptions'=>$exceptions,'risk'=>$risk,'compliance'=>$compliance,'closure'=>$closure,'upcoming'=>$upcoming,'areas'=>array_values($areas),'evidence'=>$evidence,'at'=>now()->toIso8601String(),'connected'=>count(array_filter($modules,function($m){return $m['connected']>0;}))];
+        $departmentPerformance=(new DepartmentPerformanceService)->snapshot($enabled,function($table){return $this->columns($table);});
+        return ['department_performance'=>$departmentPerformance,'modules'=>array_values($modules),'totals'=>$totals,'attention'=>array_slice($attention,0,6),'exceptions'=>$exceptions,'risk'=>$risk,'compliance'=>$compliance,'closure'=>$closure,'upcoming'=>$upcoming,'areas'=>array_values($areas),'evidence'=>$evidence,'at'=>now()->toIso8601String(),'connected'=>count(array_filter($modules,function($m){return $m['connected']>0;}))];
     }
 }

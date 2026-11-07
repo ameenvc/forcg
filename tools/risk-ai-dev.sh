@@ -18,7 +18,7 @@ case "${1:-test}" in
             "$image" install --no-interaction --prefer-source --no-scripts --no-plugins
         ;;
     test)
-        docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit --filter 'RiskAi|RiskSubmission|RiskRegister|MyBoard|OrganizationEsg|EsgEvidence|OrganizationDashboard'
+        docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit --filter 'RiskAi|RiskSubmission|RiskRegister|MyBoard|OrganizationEsg|EsgEvidence|OrganizationDashboard|DepartmentPerformance'
         ;;
     migrate-esg)
         docker run "${common[@]}" --entrypoint php "$image" artisan migrate --path=database/migrations/2026_11_06_210000_create_esg_evidence_tables.php --force

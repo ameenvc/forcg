@@ -178,6 +178,38 @@ class DepartmentPerformanceTest extends TestCase
         Schema::drop('departments');$dashboard=(new \App\Services\OrganizationDashboardService)->snapshot(['riskmanagement']);
         $html=view('user.userdashboard',['dashboard'=>$dashboard,'company'=>'Sample company','model'=>null])->render();$this->assertStringContainsString('Department records are unavailable',$html);
     }
+    public function testPartialScoresAreVisibleWithoutWeakeningRankingRequirements()
+    {
+        foreach(range(1,4) as $i)$this->action(1);
+        $data=$this->data();$row=$this->rows($data)[1];
+        $this->assertNull($row['score']);$this->assertNull($row['rank']);$this->assertSame(100.0,$row['observed_score']);$this->assertSame(1,$data['departments'][0]['id']);
+        $this->assertStringContainsString('Only 4 eligible records',$row['ranking_reasons'][0]);
+        $html=view('user.department-performance',['performance'=>$data,'compact'=>false])->render();
+        $this->assertStringContainsString('Partial score / 100',$html);$this->assertStringContainsString('Partial score: 100 / 100',$html);$this->assertStringContainsString('Why not ranked?',$html);
+    }
+    public function testMeasuredZeroIsDisplayedRatherThanReplacedByADash()
+    {
+        foreach(range(1,5) as $i)$this->action(1,['status'=>'Open','due_date'=>'2025-01-01','reviewed_date'=>null]);
+        $data=$this->data();$row=$this->rows($data)[1];$this->assertSame(0.0,$row['observed_score']);$this->assertNull($row['score']);$this->assertNull($row['rank']);
+        $html=view('user.department-performance',['performance'=>$data,'compact'=>false])->render();$this->assertStringContainsString('Partial score: 0 / 100',$html);
+    }
+    public function testDepartmentsWithNoMeasuredActivityDoNotGetInventedScores()
+    {
+        $data=$this->data();$row=$this->rows($data)[1];$this->assertNull($row['observed_score']);$this->assertNull($row['score']);
+        $this->assertStringContainsString('No eligible dated records',$row['ranking_reasons'][0]);
+        $html=view('user.department-performance',['performance'=>$data,'compact'=>false])->render();$this->assertStringContainsString('No measured score yet.',$html);
+    }
+    public function testIncompleteEvidenceShowsPartialScoreAndSpecificBlockingReasons()
+    {
+        foreach(range(1,5) as $i){$this->action(1);$this->action(1,['due_date'=>null]);}
+        $row=$this->rows($this->data())[1];$this->assertSame(100.0,$row['observed_score']);$this->assertNull($row['score']);$this->assertNull($row['rank']);
+        $this->assertContains('Date/status completeness is 50%; 80% required for ranking.',$row['ranking_reasons']);
+    }
+    public function testQualifiedScoreAndNoPeerReasonRemainDistinctFromPartialScores()
+    {
+        $this->comparable();$rows=$this->rows($this->data());$this->assertSame($rows[1]['score'],$rows[1]['observed_score']);$this->assertSame(1,$rows[1]['rank']);$this->assertSame([],$rows[1]['ranking_reasons']);
+        DB::table('departments')->where('id',2)->update(['is_active'=>0]);$rows=$this->rows($this->data());$this->assertSame(100.0,$rows[1]['score']);$this->assertNull($rows[1]['rank']);$this->assertStringContainsString('No other eligible department',$rows[1]['ranking_reasons'][0]);
+    }
     public function testDashboardIncludesDepartmentComparisonAndFullBreakdownTab()
     {
         $this->comparable();$this->action(3);$this->action(3);
@@ -186,7 +218,7 @@ class DepartmentPerformanceTest extends TestCase
         $html=view('user.userdashboard',['dashboard'=>$dashboard,'company'=>'Sample company','model'=>null])->render();
         $this->assertStringContainsString('data-dashboard-tab="od-departments"',$html);
         $this->assertStringContainsString('Department ranking &amp; score breakdown',$html);
-        $this->assertStringContainsString('Insufficient data',$html);$this->assertStringContainsString('#1 / 2',$html);
+        $this->assertStringContainsString('Partial score · not eligible for ranking',$html);$this->assertStringContainsString('#1 / 2',$html);
         if(getenv('DEPARTMENT_DASHBOARD_PREVIEW_PATH'))file_put_contents(getenv('DEPARTMENT_DASHBOARD_PREVIEW_PATH'),$html);
     }
     public function testBreakdownRendersEscapedNamesAndExplainsProvisionalRanks(){

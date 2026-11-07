@@ -120,6 +120,15 @@ class DepartmentPerformanceService
             $complete=$d['records']+$d['missing_dates'] ? 100*$d['records']/($d['records']+$d['missing_dates']) : 0;
             $d['completeness']=round($complete,2);
             $d['score']=$complete>=80&&$d['records']>=$config['minimum_records']&&$d['coverage']>=$config['minimum_coverage']?round($points/$d['coverage'],1):null;
+            // A measured, partial result is useful even when evidence is insufficient for ranking.
+            // Keep the qualified score and cohort eligibility unchanged.
+            $d['observed_score']=$d['coverage']>0?round($points/$d['coverage'],1):null;
+            $d['ranking_reasons']=[];
+            if($d['records']===0)$d['ranking_reasons'][]='No eligible dated records in this reporting window.';
+            elseif($d['records']<$config['minimum_records'])$d['ranking_reasons'][]='Only '.$d['records'].' eligible records; '.$config['minimum_records'].' required for ranking.';
+            if($d['coverage']<$config['minimum_coverage'])$d['ranking_reasons'][]='Metric coverage is '.$d['coverage'].'%; '.$config['minimum_coverage'].'% required for ranking.';
+            if($complete<80 && $d['records']+$d['missing_dates']>0)$d['ranking_reasons'][]='Date/status completeness is '.$d['completeness'].'%; 80% required for ranking.';
+            if($d['metrics']['on_time']['unknown'] && $d['metrics']['on_time']['score']===null)$d['ranking_reasons'][]=$d['metrics']['on_time']['unknown'].' due actions lack valid completion dates, so on-time scoring is unavailable.';
             $d['rank']=null;$d['peer_count']=0;$d['cohort']=implode('|',$signature);$d['status']=$d['score']===null?'Insufficient data':'Provisional score';
             $d['change']=null; // Never reconstruct past scores from today's mutable record statuses.
             unset($d['weight'],$d['penalty'],$d['scope']);
@@ -129,11 +138,11 @@ class DepartmentPerformanceService
         foreach($cohorts as $signature=>$keys){
             $number++;usort($keys,function($a,$b)use($departments){return ($departments[$b]['score']<=>$departments[$a]['score'])?:strcasecmp($departments[$a]['name'],$departments[$b]['name']);});
             $last=null;$rank=0;
-            foreach($keys as $position=>$key){$d=&$departments[$key];if($last!==$d['score'])$rank=$position+1;$last=$d['score'];$d['peer_count']=count($keys);$d['cohort_label']='Comparison group '.$number;$d['rank']=count($keys)>1?$rank:null;if(count($keys)===1)$d['status']='No comparable peer';unset($d);}
+            foreach($keys as $position=>$key){$d=&$departments[$key];if($last!==$d['score'])$rank=$position+1;$last=$d['score'];$d['peer_count']=count($keys);$d['cohort_label']='Comparison group '.$number;$d['rank']=count($keys)>1?$rank:null;if(count($keys)===1){$d['status']='No comparable peer';$d['ranking_reasons'][]='No other eligible department has the same measures and source workflows.';}unset($d);}
             $result['cohorts'][]=['label'=>'Comparison group '.$number,'ids'=>array_map('intval',$keys),'coverage'=>$departments[$keys[0]]['coverage']];
         }
         $result['departments']=array_values($departments);
-        usort($result['departments'],function($a,$b){if($a['score']===null||$b['score']===null)return (($a['score']===null)<=>($b['score']===null))?:strcasecmp($a['name'],$b['name']);return strcmp($a['cohort_label'],$b['cohort_label'])?:($b['score']<=>$a['score'])?:strcasecmp($a['name'],$b['name']);});
+        usort($result['departments'],function($a,$b){if($a['score']===null||$b['score']===null)return (($a['score']===null)<=>($b['score']===null))?:(($a['observed_score']===null)<=>($b['observed_score']===null))?:strcasecmp($a['name'],$b['name']);return strcmp($a['cohort_label'],$b['cohort_label'])?:($b['score']<=>$a['score'])?:strcasecmp($a['name'],$b['name']);});
         return $result;
     }
 }

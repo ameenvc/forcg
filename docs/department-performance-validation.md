@@ -2,7 +2,7 @@
 
 ## Result
 
-The complete repository PHPUnit suite passes: **131 tests, 2,823 assertions**. This includes 23 dedicated department-performance tests and regressions for dashboard, My Board, ESG, risk workflows and evidence handling. Browser checks pass **41 assertions**, and MySQL aggregation/calculation checks pass on a larger synthetic dataset. PHP, JavaScript and shell syntax checks pass.
+The complete repository PHPUnit suite passes: **136 tests, 2,849 assertions**. This includes 28 dedicated department-performance tests and regressions for dashboard, My Board, ESG, risk workflows and evidence handling. Browser checks pass **43 assertions**, and MySQL aggregation/calculation checks pass on a larger synthetic dataset. PHP, JavaScript and shell syntax checks pass.
 
 This validates the local build and rendered fixtures. The signed-in production deployment has not been verified: no authenticated production session or server access was available. No production records were changed. Historical trend baselines, training-plan attribution and review-turnaround metrics remain explicitly outside the current model.
 
@@ -10,6 +10,7 @@ This validates the local build and rendered fixtures. The signed-in production d
 
 | Issue | Correction and regression coverage |
 | --- | --- |
+| Measured department scores were hidden whenever ranking eligibility failed | Show a clearly labelled available-data partial score, keep ranks gated, expose exact reasons and prioritize measured departments in the overview. No score is invented for absent data. |
 | Display rounding admitted a department at 79.96% completeness through an 80% gate | Apply the gate to the exact ratio; display completeness to two decimals. |
 | Future/out-of-period records with missing status reduced current-period completeness | Apply known date-window exclusions before missing-status checks. |
 | Literal NULL/N/A/none/dash statuses became open/overdue evidence | Classify placeholder statuses as missing evidence. |
@@ -36,6 +37,7 @@ This validates the local build and rendered fixtures. The signed-in production d
 Chromium checks use Laravel-rendered synthetic fixtures and real local CSS/JS assets:
 
 - Management overview, full department tab, compact comparison and expandable metric breakdowns.
+- Partial scores remain visible without unsupported ranks; collapsed rows explain unmet eligibility requirements.
 - Native Enter/Space disclosure controls; arrow/Home/End tab navigation; visible keyboard focus.
 - Tab/tabpanel ARIA relationships, one selected panel, labelled search fields and unique DOM IDs.
 - Direct department hash links, shortcut focus, module search, case/whitespace-insensitive department search and safe no-results text.

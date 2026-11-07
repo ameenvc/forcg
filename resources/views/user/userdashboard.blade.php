@@ -1,6 +1,6 @@
 @extends('layouts.backend')
 @section('css_after')
-<link rel="stylesheet" href="{{ asset('css/user/organization-dashboard.css') }}?v=20261107-2">
+<link rel="stylesheet" href="{{ asset('css/user/organization-dashboard.css') }}?v=20261107-3">
 @endsection
 @section('content')
 <div class="content od-page" id="organization-dashboard">
@@ -44,5 +44,5 @@
 <section id="od-departments" tabindex="-1">@include('user.department-performance', ['performance'=>$dashboard['department_performance'], 'compact'=>false])</section>
 <footer class="od-method"><i class="fa fa-info-circle" aria-hidden="true"></i><details><summary>How dashboard figures are calculated</summary><p>Live database snapshot at page load. Totals cover connected record sources and exclude deleted, archived and cancelled records. Multiple workflow views of the same table are counted once. Module availability follows the company configuration; existing destination permissions still apply. Summaries do not include medical details, individual activity tracking or an inferred company score.</p></details></footer>
 </div>
-<script defer src="{{ asset('js/organization-dashboard.js') }}?v=20261107-2"></script>
+<script defer src="{{ asset('js/organization-dashboard.js') }}?v=20261107-3"></script>
 @endsection

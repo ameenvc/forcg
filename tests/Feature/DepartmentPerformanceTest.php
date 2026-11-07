@@ -210,6 +210,52 @@ class DepartmentPerformanceTest extends TestCase
         $this->comparable();$rows=$this->rows($this->data());$this->assertSame($rows[1]['score'],$rows[1]['observed_score']);$this->assertSame(1,$rows[1]['rank']);$this->assertSame([],$rows[1]['ranking_reasons']);
         DB::table('departments')->where('id',2)->update(['is_active'=>0]);$rows=$this->rows($this->data());$this->assertSame(100.0,$rows[1]['score']);$this->assertNull($rows[1]['rank']);$this->assertStringContainsString('No other eligible department',$rows[1]['ranking_reasons'][0]);
     }
+    public function testZeroExplainsOldOverdueBacklogAndExcludedHistoricalClosures()
+    {
+        foreach(range(1,5) as $i)$this->action(1,['status'=>'Open','due_date'=>'2025-01-01','reviewed_date'=>null]);
+        $this->action(1,['due_date'=>'2025-01-01']);$this->action(1,['due_date'=>'2025-01-02']);
+        $data=$this->data();$row=$this->rows($data)[1];$this->assertSame(0.0,$row['observed_score']);$this->assertNull($row['score']);
+        $this->assertCount(1,$row['score_contributions']);$this->assertSame(100.0,$row['score_contributions'][0]['weight_percent']);$this->assertSame(0.0,$row['score_contributions'][0]['points']);
+        $this->assertStringContainsString('Only overdue action control',$row['score_summary']);
+        $e=$row['source_evidence']['mitigations'];$this->assertSame(5,$e['included']);$this->assertSame(5,$e['overdue']);$this->assertSame(5,$e['older_overdue']);$this->assertSame(2,$e['excluded_old']);$this->assertSame(0,$e['closed']);
+        $this->assertGreaterThanOrEqual($row['eligible_action_weight'],$row['overdue_exposure']);
+        $html=view('user.department-performance',['performance'=>$data,'compact'=>false])->render();$this->assertStringContainsString('What produced this score?',$html);$this->assertStringContainsString('older records fall before the reporting window',$html);
+        if(getenv('DEPARTMENT_ZERO_PREVIEW_PATH')){view()->getFinder()->prependLocation(base_path('tests/Fixtures/views'));app('events')->forget('composing: *');$dashboard=(new \App\Services\OrganizationDashboardService)->snapshot(['riskmanagement']);file_put_contents(getenv('DEPARTMENT_ZERO_PREVIEW_PATH'),view('user.userdashboard',['dashboard'=>$dashboard,'company'=>'Sample company','model'=>null])->render());}
+    }
+    public function testCompletedButUnclosedMitigationsAreIdentifiedRatherThanCalledClosed()
+    {
+        Schema::table('mitigations',function(Blueprint $t){$t->integer('progress')->nullable();});
+        foreach(range(1,5) as $i)$this->action(1,['status'=>'Completed','progress'=>100,'reviewed_date'=>null]);
+        $data=$this->data();$row=$this->rows($data)[1];$this->assertSame(0.0,$row['observed_score']);$this->assertSame(5,$row['source_evidence']['mitigations']['pending_closure']);$this->assertSame(0,$row['source_evidence']['mitigations']['closed']);
+        $html=view('user.department-performance',['performance'=>$data,'compact'=>false])->render();$this->assertStringContainsString('marked Completed / 100% but are not formally Closed',$html);
+    }
+    public function testAvailableWeightsAndPointsExplainAnActualNonzeroScore()
+    {
+        foreach(range(1,5) as $i)$this->action(1);
+        $row=$this->rows($this->data())[1];$this->assertSame(100.0,$row['score']);$this->assertCount(2,$row['score_contributions']);
+        $this->assertSame(58.33,$row['score_contributions'][0]['points']);$this->assertSame(41.67,$row['score_contributions'][1]['points']);$this->assertSame(100.0,array_sum(array_column($row['score_contributions'],'points')));
+        $this->assertSame(5,$row['source_evidence']['mitigations']['closed']);$this->assertSame(0,$row['source_evidence']['mitigations']['overdue']);
+    }
+    public function testAuditAndObjectiveZeroIsNotMisreportedAsAnOverdueActionScore()
+    {
+        Schema::create('audit',function(Blueprint $t){$t->increments('id');$t->integer('department');$t->string('status');$t->string('enddate');});
+        Schema::create('objectives',function(Blueprint $t){$t->increments('Oid');$t->integer('department');$t->string('status');$t->string('todate');});
+        foreach(range(1,3) as $i){DB::table('audit')->insert(['department'=>1,'status'=>'Planned','enddate'=>'2026-11-01']);DB::table('objectives')->insert(['department'=>1,'status'=>'Not Achieved','todate'=>'2026-11-01']);}
+        $row=$this->rows($this->data(['auditmanagement','objectives']))[1];$this->assertSame(0.0,$row['observed_score']);$this->assertCount(2,$row['score_contributions']);$this->assertSame('audits',$row['score_contributions'][0]['key']);$this->assertSame('objectives',$row['score_contributions'][1]['key']);$this->assertStringContainsString('available measures currently contribute 0',$row['score_summary']);
+    }
+    public function testSourceEvidenceSeparatesFutureMissingAndExcludedOldRecords()
+    {
+        foreach(range(1,5) as $i)$this->action(1);$this->action(1,['due_date'=>'2026-12-01']);$this->action(1,['due_date'=>null]);$this->action(1,['due_date'=>'2025-01-01']);
+        $row=$this->rows($this->data())[1];$e=$row['source_evidence']['mitigations'];$this->assertSame(5,$e['included']);$this->assertSame(1,$e['excluded_future']);$this->assertSame(1,$e['excluded_old']);$this->assertSame(1,$e['missing']);$this->assertSame(100.0,$row['observed_score']);
+        $empty=$this->rows($this->data())[3];$this->assertNull($empty['observed_score']);$this->assertSame([],$empty['score_contributions']);
+    }
+    public function testTinyPositiveResultsAreExplainedAsRoundedRatherThanNoCompletions()
+    {
+        $this->action(1);
+        $record=['department_id'=>'1','status'=>'Open','due_date'=>'2026-11-02','reviewed_date'=>null,'priority_level'=>'Moderate'];
+        foreach(array_chunk(array_fill(0,2999,$record),100) as $chunk)DB::table('mitigations')->insert($chunk);
+        $row=$this->rows($this->data())[1];$this->assertSame(0.0,$row['observed_score']);$this->assertSame(1,$row['metrics']['on_time']['passed']);$this->assertSame(1,$row['source_evidence']['mitigations']['closed']);$this->assertStringContainsString('rounds to 0',$row['score_summary']);
+    }
     public function testDashboardIncludesDepartmentComparisonAndFullBreakdownTab()
     {
         $this->comparable();$this->action(3);$this->action(3);

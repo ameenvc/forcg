@@ -9,3 +9,5 @@ html[data-risk-theme=dark] .od-page{--od-panel:#19273b;--od-soft:#22334c;--od-in
 .od-department-search{max-width:340px;margin:16px 0 0}.od-department-search input{width:100%}.od-department-row summary:focus-visible{outline:3px solid var(--od-blue);outline-offset:3px;border-radius:12px}
 
 .od-department-name .od-score-reason{font-size:10px;color:var(--od-muted);line-height:1.6;margin-top:5px}.od-ranking-reasons{padding-left:18px;margin:0 0 14px;font-size:11px;line-height:1.7;color:var(--od-muted)}
+
+.od-score-trace{border:1px solid var(--od-line);border-radius:10px;background:var(--od-soft);padding:16px;margin:14px 0}.od-page .od-score-trace h3{font-size:13px!important}.od-score-contribution{display:flex;justify-content:space-between;flex-wrap:wrap;gap:7px;padding:10px 0;border-bottom:1px solid var(--od-line);font-size:11px}.od-score-contribution span{color:var(--od-muted)}.od-score-source{padding-top:10px;margin-top:10px;border-top:1px solid var(--od-line);font-size:11px}.od-score-source p{margin:5px 0!important}

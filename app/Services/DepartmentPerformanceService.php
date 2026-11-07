@@ -26,6 +26,12 @@ class DepartmentPerformanceService
         if(in_array('is_deleted',$columns,true))$q->where(function($q){$q->whereNull('is_deleted')->orWhere('is_deleted',0);});
         return $q->select($fields)->selectRaw('COUNT(*) AS performance_count')->groupBy($fields)->cursor();
     }
+    private function evidence(array &$department,string $table):void
+    {
+        if(isset($department['source_evidence'][$table]))return;
+        $labels=['mitigations'=>'Risk mitigation actions','corrective'=>'Corrective actions','issues'=>'Audit findings','hseissues'=>'HSE actions','nearmiss'=>'Near-miss actions','audit'=>'Scheduled audits','objectives'=>'Department objectives'];
+        $department['source_evidence'][$table]=['name'=>$labels[$table]??$table,'included'=>0,'closed'=>0,'overdue'=>0,'older_overdue'=>0,'pending_closure'=>0,'excluded_old'=>0,'excluded_future'=>0,'due_today_pending'=>0,'missing'=>0];
+    }
     private function emptyMetric(){return ['total'=>0,'passed'=>0,'unknown'=>0,'sources'=>[]];}
     public function snapshot(array $enabled,?callable $columns=null):array
     {
@@ -37,14 +43,14 @@ class DepartmentPerformanceService
         if(in_array('is_active',$dc,true))$q->where('is_active',1);
         if(in_array('deleted_at',$dc,true))$q->whereNull('deleted_at');
         $departments=[];
-        foreach($q->orderBy('departmentname')->get() as $d)$departments[(string)$d->id]=['id'=>(int)$d->id,'name'=>$d->departmentname,'metrics'=>array_fill_keys(array_keys($config['metrics']),$this->emptyMetric()),'records'=>0,'overdue'=>0,'missing_dates'=>0,'missing_severity'=>0,'weight'=>0,'penalty'=>0,'scope'=>[]];
+        foreach($q->orderBy('departmentname')->get() as $d)$departments[(string)$d->id]=['id'=>(int)$d->id,'name'=>$d->departmentname,'metrics'=>array_fill_keys(array_keys($config['metrics']),$this->emptyMetric()),'records'=>0,'overdue'=>0,'missing_dates'=>0,'missing_severity'=>0,'weight'=>0,'penalty'=>0,'scope'=>[],'source_evidence'=>[]];
         $result['available']=true;
         foreach($config['actions'] as $mapping){
             [$module,$table,$department,$stage,$dueField,$completionFields,$severityField,$closed]=$mapping;
             if(!in_array($module,$enabled,true))continue;
             $source=['name'=>$table,'module'=>$module,'available'=>false];$cols=$this->columns($table);
             if(array_diff([$department,$stage,$dueField],$cols)){$result['sources'][]=$source;continue;}
-            $fields=array_values(array_unique(array_merge([$department,$stage,$dueField],array_intersect(array_merge($completionFields,[$severityField]),$cols))));
+            $fields=array_values(array_unique(array_merge([$department,$stage,$dueField],array_intersect(array_merge($completionFields,[$severityField],$table==='mitigations'?['progress']:[]),$cols))));
             // Keep a source atomic: a failed aggregate cannot leave half its points in the comparison.
             $working=$departments;$unassigned=0;
             try{
@@ -53,14 +59,17 @@ class DepartmentPerformanceService
                     if(in_array($state,['cancelled','canceled','archived','deleted'],true))continue;
                     $key=trim((string)$row[$department]);
                     if(!preg_match('/^[1-9][0-9]*$/D',$key)||!isset($working[$key])){$unassigned+=$count;continue;}
-                    $d=&$working[$key];$d['scope'][$table]=true;
+                    $d=&$working[$key];$d['scope'][$table]=true;$this->evidence($d,$table);
                     $due=$this->date($row[$dueField]);
-                    if(!$due){$d['missing_dates']+=$count;unset($d);continue;}
-                    if($due->gt($today)){unset($d);continue;}
-                    if($this->missingStatus($state)){$d['missing_dates']+=$count;unset($d);continue;}
+                    if(!$due){$d['missing_dates']+=$count;$d['source_evidence'][$table]['missing']+=$count;unset($d);continue;}
+                    if($due->gt($today)){$d['source_evidence'][$table]['excluded_future']+=$count;unset($d);continue;}
+                    if($this->missingStatus($state)){$d['missing_dates']+=$count;$d['source_evidence'][$table]['missing']+=$count;unset($d);continue;}
                     $isClosed=in_array($state,array_map('strtolower',$closed),true);
-                    if($isClosed&&$due->lt($start)){unset($d);continue;}
-                    $d['records']+=$count;
+                    if($isClosed&&$due->lt($start)){$d['source_evidence'][$table]['excluded_old']+=$count;unset($d);continue;}
+                    $d['records']+=$count;$d['source_evidence'][$table]['included']+=$count;
+                    if($isClosed)$d['source_evidence'][$table]['closed']+=$count;
+                    if(!$isClosed&&$due->lt($today)){$d['source_evidence'][$table]['overdue']+=$count;if($due->lt($start))$d['source_evidence'][$table]['older_overdue']+=$count;}
+                    if(!$isClosed&&$table==='mitigations'&&($state==='completed'||(isset($row['progress'])&&(float)$row['progress']>=100)))$d['source_evidence'][$table]['pending_closure']+=$count;
                     $severity=strtolower(trim((string)($row[$severityField]??'')));
                     $weight=in_array($severity,['critical','high','urgent'],true)?3:($severity==='low'?1:2);
                     if(!in_array($severity,['critical','high','urgent','low','medium','moderate'],true))$d['missing_severity']+=$count;
@@ -91,13 +100,13 @@ class DepartmentPerformanceService
                     $row=(array)$record;$state=strtolower(trim((string)$row[$stage]));$count=(int)$row['performance_count'];
                     if(in_array($state,['cancelled','canceled','archived','deleted'],true))continue;
                     $key=trim((string)$row[$department]);if(!preg_match('/^[1-9][0-9]*$/D',$key)||!isset($working[$key])){$unassigned+=$count;continue;}
-                    $d=&$working[$key];$d['scope'][$table]=true;$due=$this->date($row[$dueField]);
-                    if(!$due){$d['missing_dates']+=$count;unset($d);continue;}
-                    if($due->lt($start)||$due->gt($today)){unset($d);continue;}
-                    if($this->missingStatus($state)){$d['missing_dates']+=$count;unset($d);continue;}
+                    $d=&$working[$key];$d['scope'][$table]=true;$this->evidence($d,$table);$due=$this->date($row[$dueField]);
+                    if(!$due){$d['missing_dates']+=$count;$d['source_evidence'][$table]['missing']+=$count;unset($d);continue;}
+                    if($due->lt($start)||$due->gt($today)){$d['source_evidence'][$table][$due->lt($start)?'excluded_old':'excluded_future']+=$count;unset($d);continue;}
+                    if($this->missingStatus($state)){$d['missing_dates']+=$count;$d['source_evidence'][$table]['missing']+=$count;unset($d);continue;}
                     $isComplete=in_array($state,array_map('strtolower',$closed),true);
-                    if($due->eq($today)&&!$isComplete){unset($d);continue;}
-                    $d['records']+=$count;$d['metrics'][$metric]['total']+=$count;$d['metrics'][$metric]['sources'][$table]=true;
+                    if($due->eq($today)&&!$isComplete){$d['source_evidence'][$table]['due_today_pending']+=$count;unset($d);continue;}
+                    $d['records']+=$count;$d['source_evidence'][$table]['included']+=$count;if($isComplete)$d['source_evidence'][$table]['closed']+=$count;elseif($due->lt($today))$d['source_evidence'][$table]['overdue']+=$count;$d['metrics'][$metric]['total']+=$count;$d['metrics'][$metric]['sources'][$table]=true;
                     if($isComplete)$d['metrics'][$metric]['passed']+=$count;
                     unset($d);
                 }
@@ -123,6 +132,14 @@ class DepartmentPerformanceService
             // A measured, partial result is useful even when evidence is insufficient for ranking.
             // Keep the qualified score and cohort eligibility unchanged.
             $d['observed_score']=$d['coverage']>0?round($points/$d['coverage'],1):null;
+            $d['score_contributions']=[];
+            foreach($d['metrics'] as $key=>$metric)if($metric['score']!==null){
+                $d['score_contributions'][]=['key'=>$key,'label'=>$metric['label'],'score'=>$metric['score'],'weight_percent'=>round(100*$metric['weight']/$d['coverage'],1),'points'=>round($metric['score']*$metric['weight']/$d['coverage'],2)];
+            }
+            $d['score_summary']=$d['observed_score']===null?'No usable scoring measure is available.':count($d['score_contributions']).' of 4 measures contribute to this score.';
+            if($d['observed_score']===0.0)$d['score_summary']=count($d['score_contributions'])===1?'Only '.lcfirst($d['score_contributions'][0]['label']).' is measurable and it contributes 0 points.':'The available measures currently contribute 0 points; expand the breakdown to see why.';
+            if($d['observed_score']===0.0 && ($points>0 || array_sum(array_column($d['metrics'],'passed'))>0))$d['score_summary']='The measured result rounds to 0 at the displayed precision; see the counts in the breakdown.';
+            $d['overdue_exposure']=round($d['penalty'],2);$d['eligible_action_weight']=round($d['weight'],2);
             $d['ranking_reasons']=[];
             if($d['records']===0)$d['ranking_reasons'][]='No eligible dated records in this reporting window.';
             elseif($d['records']<$config['minimum_records'])$d['ranking_reasons'][]='Only '.$d['records'].' eligible records; '.$config['minimum_records'].' required for ranking.';

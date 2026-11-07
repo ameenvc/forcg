@@ -36,3 +36,11 @@ The comprehensive regression results and corrected edge cases are recorded in [d
 ## Partial scores and ranking eligibility
 
 `score` remains the eligibility-gated score used for ranking. `observed_score` is the weighted result over available measured indicators, independent of whether enough records/coverage/completeness exist to rank. It stays null when no indicator can be measured. A true measured zero is displayed as zero, never replaced by a dash. Partial values are labelled as partial rather than presented as full department performance. `ranking_reasons` exposes low record counts, low metric coverage, incomplete dates/statuses, missing completion proof or absence of comparable peers. These reasons are visible on the row and in the breakdown, rather than hidden behind generic Insufficient data. The original ranking thresholds and cohort rules are unchanged.
+
+## Explaining a zero
+
+A measured zero is not a missing-data default. For example, when only overdue control is available and every included action is overdue, weighted overdue exposure meets/exceeds the eligible action-weight denominator, giving zero under the existing capped formula. Older overdue actions remain included, while completed records due before the reporting window are excluded; therefore this is not a lifetime department score.
+
+Each department now exposes available-metric weighted contributions, overdue exposure/denominator and source-level included, completed/closed, overdue, older-overdue, future, out-of-period, due-today and invalid-data counts. The expanded **What produced this score?** section shows those values. Only measured metrics contribute; missing metrics do not become zeros. Contribution values are rounded for display. No scoring weights or eligibility rules were changed by this diagnostic addition.
+
+Mitigations marked Completed or at 100% progress but not formally Closed are counted and labelled separately. This model still treats them as unresolved until formal closure review; it does not infer a verified closure date from progress or last-updated time. The source counts make that distinction explicit and link to the mitigation register. Empty evidence still displays no measured score. No authenticated production data was available to verify any particular department's live zero.

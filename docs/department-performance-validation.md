@@ -2,7 +2,7 @@
 
 ## Result
 
-The complete repository PHPUnit suite passes: **136 tests, 2,849 assertions**. This includes 28 dedicated department-performance tests and regressions for dashboard, My Board, ESG, risk workflows and evidence handling. Browser checks pass **43 assertions**, and MySQL aggregation/calculation checks pass on a larger synthetic dataset. PHP, JavaScript and shell syntax checks pass.
+The complete repository PHPUnit suite passes: **142 tests, 2,891 assertions**. This includes 34 dedicated department-performance tests and regressions for dashboard, My Board, ESG, risk workflows and evidence handling. Browser checks pass **51 assertions**, and MySQL aggregation/calculation checks pass on a larger synthetic dataset. PHP, JavaScript and shell syntax checks pass.
 
 This validates the local build and rendered fixtures. The signed-in production deployment has not been verified: no authenticated production session or server access was available. No production records were changed. Historical trend baselines, training-plan attribution and review-turnaround metrics remain explicitly outside the current model.
 
@@ -10,6 +10,7 @@ This validates the local build and rendered fixtures. The signed-in production d
 
 | Issue | Correction and regression coverage |
 | --- | --- |
+| A measured zero did not explain its contributing evidence | Add per-measure points, source counts, age/period exclusions, overdue exposure and Completed-but-unclosed mitigation counts. Distinguish rounded tiny results from literal zero. Scoring weights are unchanged. |
 | Measured department scores were hidden whenever ranking eligibility failed | Show a clearly labelled available-data partial score, keep ranks gated, expose exact reasons and prioritize measured departments in the overview. No score is invented for absent data. |
 | Display rounding admitted a department at 79.96% completeness through an 80% gate | Apply the gate to the exact ratio; display completeness to two decimals. |
 | Future/out-of-period records with missing status reduced current-period completeness | Apply known date-window exclusions before missing-status checks. |
@@ -38,6 +39,7 @@ Chromium checks use Laravel-rendered synthetic fixtures and real local CSS/JS as
 
 - Management overview, full department tab, compact comparison and expandable metric breakdowns.
 - Partial scores remain visible without unsupported ranks; collapsed rows explain unmet eligibility requirements.
+- A zero fixture explains the exact overdue/closed counts, excluded historical records and point contributions, with responsive light/dark rendering. This reproduces a valid zero but does not establish the cause of a particular live department result.
 - Native Enter/Space disclosure controls; arrow/Home/End tab navigation; visible keyboard focus.
 - Tab/tabpanel ARIA relationships, one selected panel, labelled search fields and unique DOM IDs.
 - Direct department hash links, shortcut focus, module search, case/whitespace-insensitive department search and safe no-results text.
@@ -54,7 +56,7 @@ The fixture uses temporary tables on the development connection, discarded when 
 | Active departments | 100 |
 | Action records | 12,501 |
 | Aggregate queries for the comparison | 5 |
-| Snapshot time | 0.0631 seconds |
+| Snapshot time | 0.0852 seconds |
 | PHP peak memory, including bootstrap | 28 MiB |
 
 Assertions cover the 79.96% threshold, future/status exclusion, actual corrective closure, permanent audit closure, due-today grace, ties, no-peer handling, ambiguous department IDs, repeatability and read-only behavior. These local timings are not a production performance guarantee.

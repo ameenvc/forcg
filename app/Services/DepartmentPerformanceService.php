@@ -19,6 +19,7 @@ class DepartmentPerformanceService
         foreach(['Y-m-d','Y-m-d H:i:s','d/m/Y','d-m-Y'] as $format){try{$d=Carbon::createFromFormat('!'.$format,$value,config('app.timezone'));if($d&&$d->format($format)===$value)return $d->startOfDay();}catch(\Exception $e){}}
         return null;
     }
+    private function missingStatus($state){return in_array($state,['','null','n/a','na','none','-','--'],true);}
     private function query($table,$fields){
         $columns=$this->columns($table);$q=DB::table($table);
         if(in_array('deleted_at',$columns,true))$q->whereNull('deleted_at');
@@ -53,10 +54,10 @@ class DepartmentPerformanceService
                     $key=trim((string)$row[$department]);
                     if(!preg_match('/^[1-9][0-9]*$/D',$key)||!isset($working[$key])){$unassigned+=$count;continue;}
                     $d=&$working[$key];$d['scope'][$table]=true;
-                    if($state===''){$d['missing_dates']+=$count;unset($d);continue;}
                     $due=$this->date($row[$dueField]);
                     if(!$due){$d['missing_dates']+=$count;unset($d);continue;}
                     if($due->gt($today)){unset($d);continue;}
+                    if($this->missingStatus($state)){$d['missing_dates']+=$count;unset($d);continue;}
                     $isClosed=in_array($state,array_map('strtolower',$closed),true);
                     if($isClosed&&$due->lt($start)){unset($d);continue;}
                     $d['records']+=$count;
@@ -91,10 +92,13 @@ class DepartmentPerformanceService
                     if(in_array($state,['cancelled','canceled','archived','deleted'],true))continue;
                     $key=trim((string)$row[$department]);if(!preg_match('/^[1-9][0-9]*$/D',$key)||!isset($working[$key])){$unassigned+=$count;continue;}
                     $d=&$working[$key];$d['scope'][$table]=true;$due=$this->date($row[$dueField]);
-                    if(!$due||$state===''){$d['missing_dates']+=$count;unset($d);continue;}
+                    if(!$due){$d['missing_dates']+=$count;unset($d);continue;}
                     if($due->lt($start)||$due->gt($today)){unset($d);continue;}
+                    if($this->missingStatus($state)){$d['missing_dates']+=$count;unset($d);continue;}
+                    $isComplete=in_array($state,array_map('strtolower',$closed),true);
+                    if($due->eq($today)&&!$isComplete){unset($d);continue;}
                     $d['records']+=$count;$d['metrics'][$metric]['total']+=$count;$d['metrics'][$metric]['sources'][$table]=true;
-                    if(in_array($state,array_map('strtolower',$closed),true))$d['metrics'][$metric]['passed']+=$count;
+                    if($isComplete)$d['metrics'][$metric]['passed']+=$count;
                     unset($d);
                 }
                 $source['available']=true;$departments=$working;$result['unassigned']+=$unassigned;
@@ -113,8 +117,9 @@ class DepartmentPerformanceService
                 }
                 $m['sources']=array_keys($m['sources']);unset($m);
             }
-            $d['completeness']=$d['records']+$d['missing_dates'] ? round(100*$d['records']/($d['records']+$d['missing_dates']),1) : 0;
-            $d['score']=$d['completeness']>=80&&$d['records']>=$config['minimum_records']&&$d['coverage']>=$config['minimum_coverage']?round($points/$d['coverage'],1):null;
+            $complete=$d['records']+$d['missing_dates'] ? 100*$d['records']/($d['records']+$d['missing_dates']) : 0;
+            $d['completeness']=round($complete,2);
+            $d['score']=$complete>=80&&$d['records']>=$config['minimum_records']&&$d['coverage']>=$config['minimum_coverage']?round($points/$d['coverage'],1):null;
             $d['rank']=null;$d['peer_count']=0;$d['cohort']=implode('|',$signature);$d['status']=$d['score']===null?'Insufficient data':'Provisional score';
             $d['change']=null; // Never reconstruct past scores from today's mutable record statuses.
             unset($d['weight'],$d['penalty'],$d['scope']);

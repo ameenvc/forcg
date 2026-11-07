@@ -10,13 +10,13 @@ return [
     // Use the record-owning department ID, never names, record authors or employee headcounts.
     'actions'=>[
         ['riskmanagement','mitigations','department_id','status','due_date',['reviewed_date'],'priority_level',['Closed']],
-        ['correctiveaction','corrective','department','processstage','duedate',['completion_date'],'type',['Closed','Closed After Due','Accomplished']],
+        ['correctiveaction','corrective','department','processstage','duedate',['closed','completion_date'],'type',['Closed','Closed After Due','Accomplished']],
         ['auditmanagement','issues','department','processstage','duedate',['closed','completion_date'],'type',['Closed','Closed After Due','Accomplished']],
         ['hse','hseissues','department','processstage','duedate',['closed','completion_date'],'type',['Closed','Closed After Due','Accomplished']],
         ['nearmiss','nearmiss','department','processstage','targetdate',['closed','completion_date'],'type',['Closed','Closed After Due','Accomplished']],
     ],
     'obligations'=>[
-        ['audits','auditmanagement','audit','department','status','enddate',['Completed']],
+        ['audits','auditmanagement','audit','department','status','enddate',['Completed','Permanently closed']],
         ['objectives','objectives','objectives','department','status','todate',['Achieved']],
     ],
 ];

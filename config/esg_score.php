@@ -15,7 +15,7 @@ return [
         ['Incident investigation completion', 'S', 'incidentreport', 'incident_reports', 'investigation_status', ['Investigation Completed'], 15],
         ['Labour rights, diversity and worker welfare', 'S', null, null, null, [], 30],
         ['Legal compliance', 'G', 'compliance', 'compliance', 'comp_status', ['Complied'], 20],
-        ['Audit schedule completion', 'G', 'auditmanagement', 'audit', 'status', ['Completed'], 10],
+        ['Audit schedule completion', 'G', 'auditmanagement', 'audit', 'status', ['Completed', 'Permanently closed'], 10],
         ['Audit finding closure', 'G', 'auditmanagement', 'issues', 'processstage', ['Closed', 'Closed After Due', 'Accomplished'], 10],
         ['Corrective action closure', 'G', 'correctiveaction', 'corrective', 'processstage', ['Closed', 'Closed After Due', 'Accomplished'], 10],
         ['Risk mitigation completion', 'G', 'riskmanagement', 'mitigations', 'status', ['Closed', 'Completed'], 10],

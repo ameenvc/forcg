@@ -116,7 +116,7 @@ return [
         ], ['score' => false, 'watch' => []]),
         'audit_schedules' => $source('auditmanagement', 'audit', ['department_audit_title'], ['aud_id'], 'status', [
             $role('email', 'email', 'action', '*', ['title' => 'Prepare or complete assigned audit']),
-        ], ['score' => false, 'due' => ['enddate', 'date'], 'complete' => ['Completed', 'Cancelled', 'Archived'], 'watch' => []]),
+        ], ['score' => false, 'due' => ['enddate', 'date'], 'complete' => ['Completed', 'Permanently closed', 'Cancelled', 'Archived'], 'watch' => []]),
         'waste' => $source('wastemanagement', 'waste', ['wastedesc', 'itemname'], ['request_no'], 'process_stage', [
             $role('responsibility', 'unique_name', 'action', ['Approved', 'Disposal Requested', 'Sales Requested']), $role('reviewer', 'email', 'review', ['HOD Approved', 'Disposal Requested', 'Sales Requested']),
             $role('approver', 'email', 'approval', $approvalStages),

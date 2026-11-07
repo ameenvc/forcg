@@ -20,6 +20,9 @@ case "${1:-test}" in
     test)
         docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit --filter 'RiskAi|RiskSubmission|RiskRegister|MyBoard|OrganizationEsg|EsgEvidence|OrganizationDashboard|DepartmentPerformance'
         ;;
+    test-all)
+        docker run "${common[@]}" --entrypoint php "$image" vendor/bin/phpunit
+        ;;
     migrate-esg)
         docker run "${common[@]}" --entrypoint php "$image" artisan migrate --path=database/migrations/2026_11_06_210000_create_esg_evidence_tables.php --force
         ;;
@@ -30,5 +33,5 @@ case "${1:-test}" in
         docker run "${common[@]}" -p 127.0.0.1:8080:8080 --entrypoint php "$image" \
             -d curl.cainfo=/run/ca.pem -d openssl.cafile=/run/ca.pem -S 0.0.0.0:8080 -t public server.php
         ;;
-    *) echo 'Usage: bash tools/risk-ai-dev.sh {install|test|migrate-learning|migrate-esg|serve}' >&2; exit 2 ;;
+    *) echo 'Usage: bash tools/risk-ai-dev.sh {install|test|test-all|migrate-learning|migrate-esg|serve}' >&2; exit 2 ;;
 esac

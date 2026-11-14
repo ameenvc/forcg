@@ -1,5 +1,5 @@
 <?php
-use App\Complaint;
+use Illuminate\Support\Facades\DB;
 use App\Customer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,13 +14,13 @@ class ChangeCustomerInComplaintManagement extends Migration
      */
     public function up()
     {
-        $complaints = Complaint::all();
+        $complaints = DB::table('complaint')->get();
         foreach($complaints as $comp)
         {
             $compcust = $comp->customer;
             $custid = Customer::where('customer',$compcust)->value('id');
             $comp->customer = $custid ? $custid : $compcust;
-            $comp->save();
+            DB::table('complaint')->where('id', $comp->id)->update(['customer' => $comp->customer]);
 
         }
     }
@@ -32,13 +32,13 @@ class ChangeCustomerInComplaintManagement extends Migration
      */
     public function down()
     {
-        $complaints = Complaint::all();
+        $complaints = DB::table('complaint')->get();
         foreach($complaints as $comp)
         {
             $compcust = $comp->customer;
             $custname = Customer::where('id',$compcust)->value('customer');
             $comp->customer = $custname ? $custname : '-';
-            $comp->save();
+            DB::table('complaint')->where('id', $comp->id)->update(['customer' => $comp->customer]);
 
         }
     }

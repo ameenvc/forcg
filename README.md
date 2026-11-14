@@ -33,3 +33,8 @@
 - Active departments
 
 
+
+
+## SaaS tenancy
+
+The Laravel app supports company subdomains such as `tenant.leanston.cgbod.com` and central management at `admin.cgbod.com`. See [SaaS setup and migration guide](docs/tenancy.md) for moving an existing installation, creating tenants, DNS/SSL configuration, and operation. SaaS mode defaults to disabled until a separate central database is configured.

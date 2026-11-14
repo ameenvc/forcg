@@ -1,6 +1,6 @@
 <?php
 
-use App\Risk;
+use Illuminate\Support\Facades\DB;
 use App\Departments;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,11 +15,11 @@ class ChangeRiskareaToItsIdInRisksTable extends Migration
      */
     public function up()
     {
-        $risk_items = Risk::all();
+        $risk_items = DB::table('risks')->get();
         foreach ($risk_items as $item) {
             $deptid = Departments::where('departmentname', $item->riskarea)->value('id');
             $item->riskarea = $deptid ? $deptid : 0;
-            Risk::where('Rid', $item->Rid)->update([
+            DB::table('risks')->where('Rid', $item->Rid)->update([
                 'riskarea' => $item->riskarea
             ]);
         }
@@ -32,11 +32,11 @@ class ChangeRiskareaToItsIdInRisksTable extends Migration
      */
     public function down()
     {
-        $risk_items = Risk::all();
+        $risk_items = DB::table('risks')->get();
         foreach ($risk_items as $item) {
             $deptname = Departments::where('id', $item->riskarea)->value('departmentname');
             $item->riskarea = $deptname ? $deptname : '-';
-            Risk::where('Rid', $item->Rid)->update([
+            DB::table('risks')->where('Rid', $item->Rid)->update([
                 'riskarea' => $item->riskarea
             ]);
         }

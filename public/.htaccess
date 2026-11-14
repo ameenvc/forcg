@@ -5,6 +5,12 @@
 
     RewriteEngine On
 
+    # The SaaS vhost sets this flag. Tenant files must pass through Laravel,
+    # even if old public/storage files or a legacy storage symlink still exist.
+    RewriteCond %{ENV:CGBOD_SAAS} =1
+    RewriteRule ^(?:storage|files|uploads)(?:/|$) index.php [L]
+
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

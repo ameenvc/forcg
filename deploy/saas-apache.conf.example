@@ -1,0 +1,15 @@
+# Enable mod_rewrite, mod_setenvif and SSL, replace paths and certificate locations.
+<VirtualHost *:443>
+    ServerName admin.cgbod.com
+    ServerAlias tenant.*.cgbod.com cgbod.com
+    DocumentRoot /var/www/cgbod/public
+    SetEnvIf Request_URI "^/" CGBOD_SAAS=1
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/cgbod/fullchain.pem
+    SSLCertificateKeyFile /etc/ssl/cgbod/privkey.pem
+    <Directory /var/www/cgbod/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>

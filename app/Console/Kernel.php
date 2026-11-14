@@ -34,22 +34,27 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $tenantTask = function ($command) use ($schedule) {
+            return $schedule->command(config('tenancy.enabled')
+                ? 'tenants:run ' . $command . ' --all' : $command);
+        };
+
         //$schedule->command('calibrationstatusupdate:daily')->dailyAt('01:00');
-        $schedule->command('documentreadrequestemailnotification:daily')->daily();
-        $schedule->command('licensepermitsrenewalemailnotification:daily')->daily();
-        $schedule->command('send-mail:audit-delay')->daily();
-        $schedule->command('send-mail:remind-evaluate-vendor')->daily();
-        $schedule->command('change-risk-status:awaiting-periodic-review')->daily();
-        $schedule->command('riskreminderforaddmitigationaction:daily')->daily();
-        $schedule->command('racmapprovalrequestnotification:daily')->daily();
-        $schedule->command('racmreviewrequestnotification:daily')->daily();
-        $schedule->command('externalcalibrationstatusupdatenotification:daily')->dailyAt('02:00');
-        $schedule->command('internalcalibrationstatusupdatenotification:daily')->dailyAt('02:30');
-        $schedule->command('opportunityissuedueremainder:daily')->dailyAt('01:30');
-        $schedule->command('compliance-review-evaluation-status-update:daily')->dailyAt('00:40');
-        $schedule->command('send-corrective-escalation-alert-email:daily')->dailyAt('01:00');
-        $schedule->command('send-customer-complaint-escalation-alert-email:daily')->dailyAt('00:30');
-        $schedule->command('generate-profile-picture-when-null:daily')->dailyAt('01:15');
+        $tenantTask('documentreadrequestemailnotification:daily')->daily();
+        $tenantTask('licensepermitsrenewalemailnotification:daily')->daily();
+        $tenantTask('send-mail:audit-delay')->daily();
+        $tenantTask('send-mail:remind-evaluate-vendor')->daily();
+        $tenantTask('change-risk-status:awaiting-periodic-review')->daily();
+        $tenantTask('riskreminderforaddmitigationaction:daily')->daily();
+        $tenantTask('racmapprovalrequestnotification:daily')->daily();
+        $tenantTask('racmreviewrequestnotification:daily')->daily();
+        $tenantTask('externalcalibrationstatusupdatenotification:daily')->dailyAt('02:00');
+        $tenantTask('internalcalibrationstatusupdatenotification:daily')->dailyAt('02:30');
+        $tenantTask('opportunityissuedueremainder:daily')->dailyAt('01:30');
+        $tenantTask('compliance-review-evaluation-status-update:daily')->dailyAt('00:40');
+        $tenantTask('send-corrective-escalation-alert-email:daily')->dailyAt('01:00');
+        $tenantTask('send-customer-complaint-escalation-alert-email:daily')->dailyAt('00:30');
+        $tenantTask('generate-profile-picture-when-null:daily')->dailyAt('01:15');
     }
 
     /**
@@ -60,6 +65,7 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__.'/Commands/Saas');
 
         require base_path('routes/console.php');
     }

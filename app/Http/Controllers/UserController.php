@@ -535,7 +535,7 @@ class UserController extends Controller
                     DB::table('chats')->where('id', $msg->id)->update(['vistosender' => 0]);
                 } else {
                     if ($msg->img == 1) {
-                        $path = 'storage/chat_files';
+                        $path = public_path('storage/chat_files/');
                         File::delete($path . $msg->message);
                         DB::table('chats')->where('id', $msg->id)->delete();
                     } else {
@@ -547,7 +547,7 @@ class UserController extends Controller
                     DB::table('chats')->where('id', $msg->id)->update(['vistoreciever' => 0]);
                 } else {
                     if ($msg->img == 1) {
-                        $path = 'storage/chat_files';
+                        $path = public_path('storage/chat_files/');
                         File::delete($path . $msg->message);
                         DB::table('chats')->where('id', $msg->id)->delete();
                     } else {

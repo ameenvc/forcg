@@ -18,6 +18,10 @@ class LastSeenUserActivity
      */
     public function handle($request, Closure $next)
     {
+        if (config('tenancy.enabled') && !app(\App\Tenancy\TenantContext::class)->tenant) {
+            return $next($request);
+        }
+
         if (Auth::check())
         {
             $expiresAt = Carbon::now()->addMinutes(1); // keep online for 1 min

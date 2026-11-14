@@ -11,6 +11,12 @@ class SuperAdmin extends Authenticatable
     
     use Notifiable;
 
+    public function getConnectionName()
+    {
+        return config('tenancy.enabled') ? config('tenancy.central_connection') : parent::getConnectionName();
+    }
+
+
     /**
      * The attributes that are mass assignable.
      *

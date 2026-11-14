@@ -10227,6 +10227,10 @@ class SuperAdminsSeeder extends Seeder
      */
     public function run()
     {
+        if (config('tenancy.enabled')) {
+            return; // Platform accounts are created separately by saas:install.
+        }
+
         $time = date("Y-m-d H:i:s");
         $default_values = [
             [

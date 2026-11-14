@@ -42,6 +42,12 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        if (config('tenancy.enabled')) {
+            Route::domain('admin.' . config('tenancy.base_domain'))
+                ->middleware('web')->namespace($this->namespace)
+                ->group(base_path('routes/saas.php'));
+        }
+
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
@@ -58,7 +64,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware('web')
+        Route::middleware(['web', 'tenant.application'])
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
     }
@@ -73,7 +79,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiRoutes()
     {
         Route::prefix('api')
-            ->middleware('api')
+            ->middleware(['api', 'tenant.application'])
             ->namespace($this->namespace)
             ->group(base_path('routes/api.php'));
     }

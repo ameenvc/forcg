@@ -1,5 +1,5 @@
 <?php
-use App\Complaint;
+use Illuminate\Support\Facades\DB;
 use App\Departments;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,13 +14,13 @@ class ChangeDepartmentInComplaintManagementModule extends Migration
      */
     public function up()
     {
-        $complaints = Complaint::all();
+        $complaints = DB::table('complaint')->get();
         foreach($complaints as $comp)
         {
             $compdept = $comp->dept;
             $deptid = Departments::where('departmentname',$compdept)->value('id');
             $comp->dept = $deptid ? $deptid : $compdept;
-            $comp->save();
+            DB::table('complaint')->where('id', $comp->id)->update(['dept' => $comp->dept]);
 
         }
     }
@@ -32,13 +32,13 @@ class ChangeDepartmentInComplaintManagementModule extends Migration
      */
     public function down()
     {
-        $complaints = Complaint::all();
+        $complaints = DB::table('complaint')->get();
         foreach($complaints as $comp)
         {
             $compdept = $comp->dept;
             $deptname = Departments::where('id',$compdept)->value('departmentname');
             $comp->dept = $deptname ? $deptname : '-' ;
-            $comp->save();
+            DB::table('complaint')->where('id', $comp->id)->update(['dept' => $comp->dept]);
 
         }
     }

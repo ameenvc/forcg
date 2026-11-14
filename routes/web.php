@@ -17,6 +17,12 @@ use App\Http\Controllers\CustomFieldController;
 |
  */
 
+if (config('tenancy.enabled')) {
+    Route::get('/{directory}/{path}', 'Saas\TenantFileController@show')
+        ->where('directory', 'storage|files|uploads')->where('path', '.*')
+        ->name('tenant.file');
+}
+
 // Example Routes
 // Route::get('/', 'Auth\LoginController@showLoginForm');
 Route::post('/ajaxAllUsers', 'UserController@ajaxShowAllUsers')->name('ajaxAllUsers');
@@ -556,9 +562,9 @@ Route::get('/admin/editcorrectiverootcorrective/{id}', 'AdminController@editcorr
 Route::post('/admin/updatecorrectiverootcorrective/', 'AdminController@updatecorrectiverootcorrective')->name('update_corrective_root_corrective');
 Route::get('/admin/deletecorrectiverootcorrective/{id}', 'AdminController@deletecorrectiverootcorrective')->name('delete_corrective_root_corrective');
 //forgot password routes
-Route::post('/verify/email', 'Auth\ForgotPasswordController@verifyEmails')->name('verifyemail');
-Route::post('/reset/password', 'Auth\ResetPasswordController@verifyVerificationcode')->name('resetpassword');
-Route::post('/reset/password/confirm', 'Auth\ResetPasswordController@confirmResetPassword')->name('confirmreset');
+Route::post('/verify/email', config('tenancy.enabled') ? 'Saas\TenantPasswordController@requestCode' : 'Auth\ForgotPasswordController@verifyEmails')->name('verifyemail')->middleware(config('tenancy.enabled') ? 'throttle:3,1' : []);
+Route::post('/reset/password', config('tenancy.enabled') ? 'Saas\TenantPasswordController@verifyCode' : 'Auth\ResetPasswordController@verifyVerificationcode')->name('resetpassword')->middleware(config('tenancy.enabled') ? 'throttle:5,1' : []);
+Route::post('/reset/password/confirm', config('tenancy.enabled') ? 'Saas\TenantPasswordController@resetPassword' : 'Auth\ResetPasswordController@confirmResetPassword')->name('confirmreset')->middleware(config('tenancy.enabled') ? 'throttle:5,1' : []);
 
 //for converting to pdf
 Route::post('/user/convert/file/{tvalue}', 'UserController@convertpdf');

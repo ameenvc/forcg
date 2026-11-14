@@ -39,8 +39,8 @@ class FixOpportunityTableDefaultValues extends Migration
             // Special case: ndareason was varchar(2000) -> text, lost default
             // If you need to restore a default 'NULL' string:
             DB::statement("ALTER TABLE `$table` 
-                           MODIFY `ndareason` TEXT NOT NULL DEFAULT 'NULL'
-                           CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                           MODIFY `ndareason` TEXT CHARACTER SET utf8mb4
+                           COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ('NULL')");
             Log::info("Fixed column `$table.ndareason` to restore default 'NULL'");
 
             Log::info("Migration complete: defaults fixed for `$table`");

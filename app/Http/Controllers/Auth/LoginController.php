@@ -228,7 +228,7 @@ class LoginController extends Controller
         ]);
         Auth::logout();  
         session()->flush();
-        $guards = ['superadmin', 'admin', 'web'];
+        $guards = config('tenancy.enabled') ? ['admin', 'web'] : ['superadmin', 'admin', 'web'];
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->attempt([
@@ -243,6 +243,7 @@ class LoginController extends Controller
 
     private function handleLoginSuccess($guard, Request $request)
     {
+        $request->session()->regenerate();
         Auth::shouldUse($guard);
         if ($guard === 'superadmin') {
             return redirect()->intended('/superadmin/home');

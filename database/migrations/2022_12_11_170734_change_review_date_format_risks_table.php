@@ -1,6 +1,6 @@
 <?php
 
-use App\Risk;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,10 +14,10 @@ class ChangeReviewDateFormatRisksTable extends Migration
      */
     public function up()
     {
-        $risks = Risk::all();
+        $risks = DB::table('risks')->get();
         foreach ($risks as $r) {
             if ($r->review_date != null) {
-                Risk::where('Rid', $r->Rid)->update([
+                DB::table('risks')->where('Rid', $r->Rid)->update([
                     'review_date' => date('Y-m-d H:i:s', strtotime($r->review_date))
                 ]);
             }

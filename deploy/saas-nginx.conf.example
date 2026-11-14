@@ -1,0 +1,17 @@
+# Replace domain, filesystem and PHP-FPM socket paths; add your TLS configuration.
+server {
+    listen 80;
+    server_name admin.cgbod.com cgbod.com ~^tenant\.[a-z0-9-]+\.cgbod\.com$;
+    root /var/www/cgbod/public;
+    index index.php;
+    # Never serve legacy shared customer files directly, even when they exist.
+    location ~ ^/(storage|files|uploads)(/|$) { rewrite ^ /index.php last; }
+    location / { try_files $uri $uri/ /index.php?$query_string; }
+    location = /index.php {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+    }
+    location ~ \.php$ { return 404; }
+    location ~ /\. { deny all; }
+}

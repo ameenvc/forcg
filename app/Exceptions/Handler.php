@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Auth\AuthenticationException;
 use App\Errorlog;
 use Carbon\Carbon;
 use Exception;
@@ -39,6 +40,12 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
+        // Invalid hosts and central setup errors must never query a company's error table.
+        if (config('tenancy.enabled')) {
+            parent::report($exception);
+            return;
+        }
+
         $dir = substr(__DIR__, 0, -14);
         $backtrace =  $exception->getTraceAsString();
         $backtrace = str_replace([$dir], "", $backtrace);
@@ -73,7 +80,7 @@ class Handler extends ExceptionHandler
         // render method is responsible for converting a given exception into an HTTP response
         // Catch AthenticationException and redirect back to somewhere else....
         if ($exception instanceof AuthenticationException) {
-            $guard = array_get($exception->guards(), 0);
+            $guard = $exception->guards()[0] ?? null;
             if ($guard) {
                 return redirect(route('login'));
             }

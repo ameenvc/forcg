@@ -43,6 +43,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Central SaaS pages and CLI setup must not query company module tables.
+        if (config('tenancy.enabled') && !app(\App\Tenancy\TenantContext::class)->tenant) {
+            return;
+        }
+
         // if (app()->environment('remote')) {
         //     URL::forceScheme('https');
         // }

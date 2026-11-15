@@ -29,9 +29,9 @@ The scoring helper tests all nine supplied matrix cells. AI does not infer ratin
 
 For a Docker-based compatibility runtime, use `bash tools/risk-ai-dev.sh install`, `bash tools/risk-ai-dev.sh test`, and `bash tools/risk-ai-dev.sh serve`. The helper pins a PHP 7.4 image, uses the managed proxy defaults and a mounted CA bundle, and disables Composer scripts/plugins. Source installation uses the allowed GitHub Git route; archive downloads through api.github.com may be blocked by environment policy. It does not initialize your database or create an environment file. Configure a local-only `.env` and database first. This old runtime is for development compatibility, not production. Each cloud task is isolated: use the existing checkout and do not create a worktree unless requested.
 
-## Existing repository setup issue
+## Dependency installation
 
-Do not run `npm install` or `npm ci` with lifecycle scripts enabled: the existing package.json postinstall downloads an unrelated external binary with TLS verification disabled and executes it from `/tmp/.sshd`. This integration does not execute or modify that command. Investigate its provenance separately. If frontend dependencies are needed, use `npm ci --ignore-scripts`; the AI panel itself uses a plain JS asset and requires no frontend build.
+The repository cleanup removed the unrelated binary-download lifecycle hook from `package.json`. For a controlled dependency installation, use `npm ci --ignore-scripts` and invoke the required build command explicitly. The AI panel itself uses a plain JS asset and requires no frontend build.
 
 Laravel 7 and its legacy locked dependencies require a compatible PHP runtime. Use frozen Composer installation, keep TLS verification enabled, and do not ignore platform requirements. A full application smoke test also requires a local database containing the application's schema and fixture data. Never point setup commands at a live customer database.
 

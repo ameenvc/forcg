@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="robots" content="noindex, nofollow">
     <title>@yield('title', 'Platform overview · CGBOD')</title>
-    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" href="{{ asset('media/favicons/Setilas_logo.jfif') }}">
     <link rel="stylesheet" href="{{ asset('css/oneui.css') }}">
     <link rel="stylesheet" href="{{ asset('css/saas-admin.css') }}">
     <script defer src="{{ asset('js/jquery.min.js') }}"></script>
@@ -24,7 +24,7 @@
         <nav id="sidebar" aria-label="Platform navigation">
             <div class="content-header saas-side-brand">
                 <a class="saas-brand text-white" href="{{ route('saas.tenants.index') }}" aria-label="CGBOD platform overview">
-                    <span class="saas-brand-mark" aria-hidden="true"><i class="si si-layers"></i></span>cgbod<span class="saas-brand-dot">.</span>
+                    <img class="saas-cgbod-logo" src="{{ asset('media/photos/logo_cgbod.png') }}" alt="CGBOD" width="120" height="40">
                 </a>
                 <button type="button" class="btn btn-sm btn-dual d-lg-none" data-toggle="layout" data-action="sidebar_close" aria-label="Close navigation"><i class="fa fa-times" aria-hidden="true"></i></button>
             </div>
@@ -69,7 +69,7 @@
                 @yield('content')
             </div>
         </main>
-        <footer id="page-footer" class="bg-white"><div class="content py-3 d-sm-flex justify-content-between"><span class="font-size-sm text-muted">© {{ date('Y') }} <strong>CGBOD</strong>. All rights reserved.</span><span class="font-size-sm text-muted">Your organizations. One platform.</span></div></footer>
+        <footer id="page-footer" class="bg-white"><div class="content py-3 d-sm-flex justify-content-between"><span class="font-size-sm text-muted">© {{ date('Y') }} <strong>CGBOD</strong>. All rights reserved.</span><span class="saas-powered-by"><span>Powered by</span><img src="{{ asset('images/setilas.png') }}" alt="Setilas" width="110" height="33"></span></div></footer>
     </div>
 @endif
 <div id="saas-feedback" class="saas-feedback" role="status" aria-live="polite" hidden></div>

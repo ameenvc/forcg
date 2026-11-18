@@ -3,7 +3,7 @@
 @section('content')
 <div class="saas-login-layout">
     <aside class="saas-login-story" aria-label="CGBOD platform">
-        <a class="saas-brand text-white" href="{{ route('saas.login') }}"><span class="saas-brand-mark" aria-hidden="true"><i class="si si-layers"></i></span>cgbod<span class="saas-brand-dot">.</span></a>
+        <a class="saas-brand text-white" href="{{ route('saas.login') }}"><img class="saas-cgbod-logo" src="{{ asset('media/photos/logo_cgbod.png') }}" alt="CGBOD" width="120" height="40"></a>
         <div class="saas-login-message"><span class="saas-eyebrow">THE CGBOD CONTROL CENTER</span><h2>One platform.<br>Every organization.</h2><p>A clear view of your tenants, their workspaces, and your next stage of growth.</p>
             <div class="saas-login-feature"><span><i class="si si-organization" aria-hidden="true"></i></span><div><strong>A workspace for every team</strong><small>Bring organizations together under one platform.</small></div></div>
             <div class="saas-login-feature"><span><i class="si si-lock" aria-hidden="true"></i></span><div><strong>Separate by design</strong><small>Dedicated company databases and workspace access.</small></div></div>
@@ -27,7 +27,7 @@
             </form>
             <div class="saas-login-note"><i class="si si-info" aria-hidden="true"></i><p>Looking for your company workspace?<br>Sign in using your organization's tenant address.</p></div>
         </div>
-        <footer class="saas-login-footer"><span>© {{ date('Y') }} CGBOD</span><span>Governance starts here.</span></footer>
+        <footer class="saas-login-footer"><span>© {{ date('Y') }} CGBOD</span><span class="saas-powered-by"><span>Powered by</span><img src="{{ asset('images/setilas.png') }}" alt="Setilas" width="110" height="33"></span></footer>
     </section>
 </div>
 @endsection

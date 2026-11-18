@@ -15,6 +15,10 @@ The central layout does not inherit `layouts.backend`: the company layout loads 
 
 All forms retain their existing Laravel routes, CSRF protection, and server-side validation. Dialog validation returns to the submitted form and preserves its values. The table scrolls horizontally within its container on small screens, while the page remains within the viewport. OneUI supplies modal focus handling and responsive navigation. Reduced motion, labelled fields, keyboard focus, and live status feedback are supported.
 
+## Brand assets
+
+The CGBOD wordmark uses the existing `public/media/photos/logo_cgbod.png`. The Setilas attribution uses `public/images/setilas.png` on the login and admin footers. The official Setilas favicon is reused from `public/media/favicons/Setilas_logo.jfif`. Images retain their original colors and aspect ratios and load locally.
+
 ## Deployment
 
 Pull the latest code, clear compiled Blade views with `php artisan view:clear`, and reload the browser. The SaaS hostname and administrator credentials are unchanged.

@@ -1,8 +1,77 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>@yield('title', 'CGBOD SaaS administration')</title>
-<style>
-:root{--green:#285b47;--ink:#24372e;--line:#e1e7df}*{box-sizing:border-box}body{margin:0;font:14px system-ui,sans-serif;background:#f5f7f2;color:var(--ink)}a{color:var(--green)}header{background:#fff;border-bottom:1px solid var(--line);padding:22px 5%;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-weight:800;letter-spacing:-1px;font-size:26px;text-decoration:none}.brand small{font-size:10px;letter-spacing:2px;display:block;color:#839275;margin-top:3px}main{max-width:1280px;margin:auto;padding:36px 24px}h1{font-size:27px;letter-spacing:-.7px;margin:0 0 8px}h2{font-size:17px;margin:0 0 18px}p{color:#7c8977;line-height:1.7}.card{border:1px solid var(--line);border-radius:10px;background:white;padding:24px;margin:24px 0}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.stats .card{margin:12px 0}.stats strong{display:block;font-size:30px;margin-top:12px}label{display:block;font-size:12px;font-weight:600;margin-bottom:16px}input,select{width:100%;padding:11px;border:1px solid #d6dfcf;border-radius:5px;background:#fff;margin-top:7px;font:inherit;color:inherit}button,.button{display:inline-block;background:var(--green);color:#fff;border:1px solid var(--green);border-radius:5px;padding:11px 17px;font:inherit;cursor:pointer;text-decoration:none}.secondary{color:var(--green);background:white;border-color:var(--line)}.row{display:flex;gap:14px;align-items:end;flex-wrap:wrap}.row>label{flex:1;min-width:140px;margin:0}.notice{padding:15px 18px;background:#e8f2df;border:1px solid #d6e5c8;border-radius:5px;margin-bottom:20px;overflow-wrap:anywhere}.error{background:#fff1ec;color:#914c37;border-color:#e8c9bf}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;text-align:left;white-space:nowrap}th,td{padding:15px 12px;border-bottom:1px solid #eaf0e5;font-size:12px}th{color:#8a967d;font-weight:500}td strong{font-size:13px}td small{display:block;color:#95a18b;margin-top:5px}.badge{background:#edf3e6;color:#547b40;padding:5px 8px;border-radius:4px;font-size:11px}.badge.suspended,.badge.failed{background:#f8ece6;color:#a1694f}.badge.pending,.badge.provisioning{background:#f8f2df;color:#947c38}summary{cursor:pointer;color:var(--green)}details form{padding:15px 0;min-width:210px}details label{margin-bottom:10px}footer{font-size:11px;color:#8d9983;padding:20px 0}code{font-size:12px;background:#f0f3eb;padding:3px;overflow-wrap:anywhere;white-space:normal}.pagination{display:flex;justify-content:space-between;margin-top:20px}.login{max-width:440px;margin:50px auto}.nav{display:flex;gap:16px;align-items:center;font-size:12px}.nav form{margin:0}.empty{text-align:center;padding:30px}input:focus,select:focus,button:focus,a:focus{outline:2px solid #9ab879;outline-offset:2px}@media(max-width:700px){main{padding:25px 15px}.card{padding:18px}.stats{gap:9px}.stats .card{padding:14px}.stats strong{font-size:24px}.row{align-items:stretch}.row>label{min-width:100%}header{padding:18px}.nav span{display:none}}
-</style></head><body><header><a class="brand" href="{{ route('saas.tenants.index') }}">cgbod.<small>SAAS ADMINISTRATION</small></a>@auth('superadmin')<div class="nav"><span>{{ auth('superadmin')->user()->name }}</span><form method="post" action="{{ route('saas.logout') }}">@csrf<button class="secondary">Sign out</button></form></div>@endauth</header>
-<main>@if(session('status'))<div class="notice" role="status">{{ session('status') }}</div>@endif
-@if($errors->any())<div class="notice error" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
-@yield('content')<footer>CGBOD · Each organization has its own workspace and database.</footer></main></body></html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="robots" content="noindex, nofollow">
+    <title>@yield('title', 'Platform overview · CGBOD')</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="stylesheet" href="{{ asset('css/oneui.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/saas-admin.css') }}">
+    <script defer src="{{ asset('js/jquery.min.js') }}"></script>
+    <script defer src="{{ asset('js/oneui.app.js') }}"></script>
+    <script defer src="{{ asset('js/saas-admin.js') }}"></script>
+</head>
+@php($loginPage = request()->routeIs('saas.login'))
+<body class="saas-app {{ $loginPage ? 'saas-auth' : '' }}">
+@if($loginPage)
+    <div id="page-container">
+        <main id="main-container">@yield('content')</main>
+    </div>
+@else
+    <div id="page-container" class="sidebar-o sidebar-dark side-scroll page-header-fixed main-content-boxed">
+        <nav id="sidebar" aria-label="Platform navigation">
+            <div class="content-header saas-side-brand">
+                <a class="saas-brand text-white" href="{{ route('saas.tenants.index') }}" aria-label="CGBOD platform overview">
+                    <span class="saas-brand-mark" aria-hidden="true"><i class="si si-layers"></i></span>cgbod<span class="saas-brand-dot">.</span>
+                </a>
+                <button type="button" class="btn btn-sm btn-dual d-lg-none" data-toggle="layout" data-action="sidebar_close" aria-label="Close navigation"><i class="fa fa-times" aria-hidden="true"></i></button>
+            </div>
+            <div class="saas-side-caption">SUPER ADMINISTRATION</div>
+            <div class="js-sidebar-scroll">
+                <div class="content-side">
+                    <ul class="nav-main">
+                        <li class="nav-main-heading">Workspace</li>
+                        <li class="nav-main-item"><a class="nav-main-link active" data-section-link href="{{ route('saas.tenants.index') }}#overview"><i class="nav-main-link-icon si si-speedometer" aria-hidden="true"></i><span class="nav-main-link-name">Overview</span></a></li>
+                        <li class="nav-main-item"><a class="nav-main-link" data-section-link href="{{ route('saas.tenants.index') }}#tenants"><i class="nav-main-link-icon si si-organization" aria-hidden="true"></i><span class="nav-main-link-name">Tenants</span><span class="nav-main-link-badge badge badge-primary">{{ $counts['total'] ?? 0 }}</span></a></li>
+                        <li class="nav-main-item"><button type="button" class="nav-main-link saas-nav-button" data-toggle="modal" data-target="#createTenantModal"><i class="nav-main-link-icon si si-plus" aria-hidden="true"></i><span class="nav-main-link-name">Register a tenant</span></button></li>
+                        <li class="nav-main-heading">Platform</li>
+                        <li class="nav-main-item"><a class="nav-main-link" data-section-link href="{{ route('saas.tenants.index') }}#activity"><i class="nav-main-link-icon si si-clock" aria-hidden="true"></i><span class="nav-main-link-name">Activity log</span></a></li>
+                        <li class="nav-main-item"><button type="button" class="nav-main-link saas-nav-button" data-toggle="modal" data-target="#setupGuideModal"><i class="nav-main-link-icon si si-book-open" aria-hidden="true"></i><span class="nav-main-link-name">Workspace setup</span></button></li>
+                    </ul>
+                    <div class="saas-side-help"><i class="si si-bulb" aria-hidden="true"></i><h3>A new space to grow.</h3><p>Bring your next organization onto CGBOD.</p><button class="btn btn-sm btn-alt-primary btn-block" type="button" data-toggle="modal" data-target="#createTenantModal">Add an organization <i class="fa fa-arrow-right ml-1" aria-hidden="true"></i></button></div>
+                </div>
+            </div>
+            <div class="saas-side-footer"><span class="saas-online-dot"></span> CGBOD control center <span class="badge badge-dark ml-auto">SaaS</span></div>
+        </nav>
+        <header id="page-header">
+            <div class="content-header">
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-sm btn-dual mr-3" data-toggle="layout" data-action="sidebar_toggle" aria-label="Toggle navigation"><i class="fa fa-bars" aria-hidden="true"></i></button>
+                    <nav aria-label="Breadcrumb"><ol class="breadcrumb saas-breadcrumb mb-0"><li class="breadcrumb-item d-none d-sm-block">Platform</li><li class="breadcrumb-item active" aria-current="page">Overview</li></ol></nav>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="saas-environment d-none d-md-inline-flex mr-4"><i class="si si-globe mr-2" aria-hidden="true"></i>{{ request()->getHost() }}</span>
+                    <div class="dropdown">
+                        <button type="button" class="btn saas-account-toggle" id="accountMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="saas-avatar saas-avatar-sm">{{ mb_strtoupper(mb_substr(auth('superadmin')->user()->name, 0, 1)) }}</span>
+                            <span class="d-none d-sm-block text-left mx-2"><strong>{{ auth('superadmin')->user()->name }}</strong><small>Platform administrator</small></span><i class="fa fa-angle-down font-size-sm text-muted ml-1" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right font-size-sm" aria-labelledby="accountMenu"><div class="px-3 py-2 text-muted saas-account-email">{{ auth('superadmin')->user()->email }}</div><div class="dropdown-divider"></div><form method="post" action="{{ route('saas.logout') }}">@csrf<button type="submit" class="dropdown-item"><i class="si si-logout mr-2" aria-hidden="true"></i>Sign out</button></form></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main id="main-container">
+            <div class="content saas-content">
+                @include('saas.partials.alerts')
+                @yield('content')
+            </div>
+        </main>
+        <footer id="page-footer" class="bg-white"><div class="content py-3 d-sm-flex justify-content-between"><span class="font-size-sm text-muted">© {{ date('Y') }} <strong>CGBOD</strong>. All rights reserved.</span><span class="font-size-sm text-muted">Your organizations. One platform.</span></div></footer>
+    </div>
+@endif
+<div id="saas-feedback" class="saas-feedback" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

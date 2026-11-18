@@ -19,7 +19,8 @@ class TenantController extends Controller
             });
         })->orderByDesc('id')->paginate(20);
         $counts = ['total' => Tenant::count(), 'active' => Tenant::where('status', 'active')->count(),
-            'pending' => Tenant::whereIn('status', ['pending', 'provisioning', 'failed'])->count()];
+            'pending' => Tenant::whereIn('status', ['pending', 'provisioning', 'failed'])->count(),
+            'suspended' => Tenant::where('status', 'suspended')->count()];
         $events = \Illuminate\Support\Facades\DB::connection(config('tenancy.central_connection'))
             ->table('saas_events')->join('saas_tenants', 'saas_tenants.id', '=', 'saas_events.tenant_id')
             ->select('saas_events.*', 'saas_tenants.slug')->orderByDesc('saas_events.id')->limit(10)->get();

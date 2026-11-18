@@ -40,7 +40,7 @@ class InstallSaas extends Command
             return 1;
         }
         SuperAdmin::create(['name' => $this->option('name'), 'email' => $this->argument('email'), 'password' => Hash::make($password)]);
-        $this->info('Platform ready: ' . config('tenancy.scheme') . '://admin.' . config('tenancy.base_domain') . '/login');
+        $this->info('Platform ready: ' . config('tenancy.scheme') . '://' . config('tenancy.admin_domain') . '/login');
         return 0;
     }
 }

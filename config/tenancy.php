@@ -2,6 +2,7 @@
 
 return [
     'enabled' => env('TENANCY_ENABLED', false),
+    'admin_domain' => env('TENANCY_ADMIN_DOMAIN', 'admin.' . env('TENANCY_BASE_DOMAIN', 'cgbod.com')),
     'base_domain' => env('TENANCY_BASE_DOMAIN', 'cgbod.com'),
     'host_prefix' => env('TENANCY_HOST_PREFIX', 'tenant.'),
     'central_connection' => 'saas_central',

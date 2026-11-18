@@ -16,7 +16,7 @@ class InitializeTenancy
         $request->attributes->set('tenancy.initialized', true);
         $host = strtolower($request->getHost());
         $base = strtolower(config('tenancy.base_domain'));
-        if (in_array($host, [$base, 'admin.' . $base], true)) {
+        if (in_array($host, [$base, strtolower(config('tenancy.admin_domain'))], true)) {
             $context->central($host);
             return;
         }

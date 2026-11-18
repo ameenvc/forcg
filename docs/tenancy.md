@@ -10,6 +10,23 @@ The existing Laravel application now supports a central administration site and 
 
 `TENANCY_HOST_PREFIX=tenant.` selects the requested host format. Set it to an empty string if you prefer `leanston.cgbod.com`. Unknown, pending, failed, and suspended tenant hosts return 404. Company routes are unavailable on the platform host, and platform routes are unavailable on company hosts. Slugs and database assignments cannot be edited through the web interface.
 
+## Custom platform hostname: devsaas.cgbod.com
+
+To use `https://devsaas.cgbod.com/login`, deploy the latest code and configure:
+
+```dotenv
+APP_URL=https://devsaas.cgbod.com
+TENANCY_ENABLED=true
+TENANCY_BASE_DOMAIN=cgbod.com
+TENANCY_ADMIN_DOMAIN=devsaas.cgbod.com
+TENANCY_SCHEME=https
+SESSION_SECURE_COOKIE=true
+```
+
+`TENANCY_ADMIN_DOMAIN` is a hostname only, without `https://`, a port, or `/login`. It defaults to `admin.<TENANCY_BASE_DOMAIN>` when unset. This changes the platform host; company hosts remain `tenant.<slug>.cgbod.com`. Update Apache/Nginx `ServerName`/`server_name` and the TLS certificate to cover the chosen platform hostname.
+
+After updating the server environment, run `php artisan config:clear`, `php artisan config:cache`, and `php artisan queue:restart`. If the platform administrator has not been created, run `php artisan saas:install your-email@example.com` and choose your password at the prompt. Deploying code does not create a default account.
+
 ## 1. Prepare the application and central database
 
 Use the existing project's PHP/Composer requirements and required extensions, including PDO MySQL, mysqli, GD, mbstring, XML, ZIP and bcmath. Install dependencies with `composer install`, configure an application key, and make `storage` and `bootstrap/cache` writable by PHP.

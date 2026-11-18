@@ -43,7 +43,7 @@ class RouteServiceProvider extends ServiceProvider
     public function map()
     {
         if (config('tenancy.enabled')) {
-            Route::domain('admin.' . config('tenancy.base_domain'))
+            Route::domain(config('tenancy.admin_domain'))
                 ->middleware('web')->namespace($this->namespace)
                 ->group(base_path('routes/saas.php'));
         }

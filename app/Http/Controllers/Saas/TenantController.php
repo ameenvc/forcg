@@ -24,15 +24,17 @@ class TenantController extends Controller
         $events = \Illuminate\Support\Facades\DB::connection(config('tenancy.central_connection'))
             ->table('saas_events')->join('saas_tenants', 'saas_tenants.id', '=', 'saas_events.tenant_id')
             ->select('saas_events.*', 'saas_tenants.slug')->orderByDesc('saas_events.id')->limit(10)->get();
-        return view('saas.tenants', compact('tenants', 'search', 'counts', 'events'));
+        $hostingNodes = \App\Tenancy\Hosting::nodes();
+        return view('saas.tenants', compact('tenants', 'search', 'counts', 'events', 'hostingNodes'));
     }
 
     public function store(Request $request, TenantManager $manager)
     {
         $data = $request->validate([
             'name' => 'required|string|max:150',
-            'slug' => ['required', 'regex:/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/D', 'not_in:admin,www,tenant,api', Rule::unique('saas_central.saas_tenants', 'slug')],
+            'slug' => ['required', 'regex:/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/D', Rule::notIn(app(TenantManager::class)->reservedSlugs()), Rule::unique('saas_central.saas_tenants', 'slug')],
             'plan' => ['required', Rule::in(config('tenancy.plans'))],
+            'hosting_node' => ['sometimes', 'required', 'string', Rule::in(array_keys(\App\Tenancy\Hosting::nodes()))],
             'owner_email' => 'required|email|max:190',
         ]);
         $tenant = $manager->register($data);

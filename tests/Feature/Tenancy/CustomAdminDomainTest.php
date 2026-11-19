@@ -16,7 +16,7 @@ class CustomAdminDomainTest extends TestCase
     public function createApplication()
     {
         foreach (['TENANCY_ENABLED' => 'true', 'TENANCY_SOURCE_CONNECTION' => 'sqlite',
-            'TENANCY_BASE_DOMAIN' => 'cgbod.test', 'TENANCY_ADMIN_DOMAIN' => 'devsaas.cgbod.test',
+            'TENANCY_BASE_DOMAIN' => 'cgbod.test', 'TENANCY_HOST_PREFIX' => 'tenant.', 'TENANCY_ADMIN_DOMAIN' => 'devsaas.cgbod.test',
             'TENANCY_SCHEME' => 'http', 'APP_KEY' => 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='] as $key => $value) {
             $_ENV[$key] = $_SERVER[$key] = $value;
         }
@@ -31,6 +31,8 @@ class CustomAdminDomainTest extends TestCase
         config(['tenancy.storage_root' => $this->temporary . '/storage']);
         require_once database_path('migrations/central/2026_11_07_000000_create_saas_tenants_table.php');
         (new \CreateSaasTenantsTable)->up();
+        require_once database_path('migrations/central/2026_11_19_000000_add_hosting_node_to_saas_tenants.php');
+        (new \AddHostingNodeToSaasTenants)->up();
         touch($this->temporary . '/alpha.sqlite');
         Tenant::create(['name' => 'Alpha', 'slug' => 'alpha', 'database_name' => $this->temporary . '/alpha.sqlite',
             'owner_email' => 'alpha@example.test', 'plan' => 'starter', 'status' => 'active', 'provisioned_at' => now()]);
@@ -41,7 +43,7 @@ class CustomAdminDomainTest extends TestCase
         app(TenantContext::class)->end();
         File::deleteDirectory($this->temporary);
         parent::tearDown();
-        foreach (['TENANCY_ENABLED', 'TENANCY_SOURCE_CONNECTION', 'TENANCY_BASE_DOMAIN',
+        foreach (['TENANCY_ENABLED', 'TENANCY_SOURCE_CONNECTION', 'TENANCY_BASE_DOMAIN', 'TENANCY_HOST_PREFIX',
             'TENANCY_ADMIN_DOMAIN', 'TENANCY_SCHEME', 'APP_KEY'] as $key) {
             unset($_ENV[$key], $_SERVER[$key]);
         }

@@ -2,8 +2,8 @@
 
 A Laravel application for corporate governance, audit, risk, compliance, and ISO management, with separate company workspaces on tenant subdomains.
 
-- `admin.cgbod.com`: platform administration and tenant lifecycle management.
-- `tenant.leanston.cgbod.com`: a company's CGBOD workspace.
+- `devsaas.cgbod.com`: platform administration and tenant lifecycle management.
+- `waraq.cgbod.com`: a company's CGBOD workspace.
 - Each company uses its own database, login sessions, cache, and private upload directory.
 
 ## Setup
@@ -27,6 +27,8 @@ The runnable application includes the Laravel framework entry points, existing c
 | `deploy` | SaaS Apache and Nginx configuration examples |
 | `tests/Feature/Tenancy` | Tenant isolation and lifecycle tests |
 | `docs` | SaaS deployment and company module documentation |
+
+Tenant addresses are independent of the admin hostname. Configured hosting nodes allow organizations to be assigned to different regional servers; see [regional hosting](docs/regional-hosting.md).
 
 ## Dependencies and assets
 

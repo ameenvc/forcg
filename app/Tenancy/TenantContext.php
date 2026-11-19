@@ -47,9 +47,10 @@ class TenantContext
         if (!preg_match('/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/D', $tenant->slug)) {
             throw new RuntimeException('Invalid tenant slug.');
         }
+        Hosting::assertLocal($tenant);
         $this->configureCentral();
         $central = DB::connection(config('tenancy.central_connection'));
-        $connection = $central->getConfig(); // Resolves DATABASE_URL before comparison.
+        $connection = Hosting::databaseConfig(); // Resolve this node's database settings, independently of the registry.
         if (!in_array($connection['driver'], ['mysql', 'sqlite'], true)) {
             throw new RuntimeException('Tenancy supports MySQL (and SQLite for tests).');
         }

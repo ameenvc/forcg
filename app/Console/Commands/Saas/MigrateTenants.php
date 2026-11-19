@@ -17,7 +17,7 @@ class MigrateTenants extends Command
         if ((bool) $this->option('all') === (bool) $this->option('tenant')) {
             $this->error('Choose exactly one of --all or --tenant=slug.'); return 1;
         }
-        $tenants = Tenant::whereNotNull('provisioned_at')->when($this->option('tenant'), function ($q) {
+        $tenants = Tenant::hostedLocally()->whereNotNull('provisioned_at')->when($this->option('tenant'), function ($q) {
             $q->where('slug', $this->option('tenant'));
         })->get();
         if ($tenants->isEmpty()) { $this->error('No provisioned tenants matched.'); return 1; }

@@ -15,7 +15,7 @@ class TenantWorker extends Worker
             $id = $job->payload()['tenant_id'] ?? null;
             if ($id) {
                 $tenant = Tenant::find($id);
-                if (!$tenant || $tenant->status !== 'active') {
+                if (!$tenant || $tenant->status !== 'active' || !Hosting::isLocal($tenant)) {
                     // Pause without deserializing models or executing job callbacks.
                     $job->release(300);
                     return;

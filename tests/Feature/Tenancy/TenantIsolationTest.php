@@ -27,7 +27,7 @@ class TenantIsolationTest extends TestCase
     public function createApplication()
     {
         foreach (['TENANCY_ENABLED' => 'true', 'TENANCY_SOURCE_CONNECTION' => 'sqlite',
-            'TENANCY_BASE_DOMAIN' => 'cgbod.test', 'TENANCY_SCHEME' => 'http',
+            'TENANCY_BASE_DOMAIN' => 'cgbod.test', 'TENANCY_HOST_PREFIX' => 'tenant.', 'TENANCY_SCHEME' => 'http',
             'APP_KEY' => 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='] as $key => $value) {
             $_ENV[$key] = $_SERVER[$key] = $value;
         }
@@ -42,6 +42,8 @@ class TenantIsolationTest extends TestCase
         config(['tenancy.storage_root' => $this->temporary . '/storage']);
         require_once database_path('migrations/central/2026_11_07_000000_create_saas_tenants_table.php');
         (new \CreateSaasTenantsTable)->up();
+        require_once database_path('migrations/central/2026_11_19_000000_add_hosting_node_to_saas_tenants.php');
+        (new \AddHostingNodeToSaasTenants)->up();
         Schema::connection('saas_central')->create('probe_results', function (Blueprint $t) {
             $t->increments('id'); $t->string('slug'); $t->string('secret'); $t->string('email'); $t->string('url');
         });
@@ -59,7 +61,7 @@ class TenantIsolationTest extends TestCase
         DB::purge('fixture');
         File::deleteDirectory($this->temporary);
         parent::tearDown();
-        foreach (['TENANCY_ENABLED', 'TENANCY_SOURCE_CONNECTION', 'TENANCY_BASE_DOMAIN', 'TENANCY_SCHEME', 'APP_KEY'] as $key) {
+        foreach (['TENANCY_ENABLED', 'TENANCY_SOURCE_CONNECTION', 'TENANCY_BASE_DOMAIN', 'TENANCY_HOST_PREFIX', 'TENANCY_SCHEME', 'APP_KEY'] as $key) {
             unset($_ENV[$key], $_SERVER[$key]);
         }
     }

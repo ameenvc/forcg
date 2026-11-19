@@ -6,7 +6,7 @@ foreach (['APP_ENV' => 'testing', 'APP_DEBUG' => 'false',
     'APP_KEY' => 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
     'DB_CONNECTION' => 'sqlite', 'DB_DATABASE' => $argv[1],
     'TENANCY_ENABLED' => 'true', 'TENANCY_SOURCE_CONNECTION' => 'sqlite',
-    'TENANCY_BASE_DOMAIN' => 'cgbod.test', 'TENANCY_SCHEME' => 'http',
+    'TENANCY_BASE_DOMAIN' => 'cgbod.test', 'TENANCY_HOST_PREFIX' => 'tenant.', 'TENANCY_SCHEME' => 'http',
     'TENANCY_STORAGE_ROOT' => $argv[2]] as $key => $value) {
     $_ENV[$key] = $_SERVER[$key] = $value;
 }

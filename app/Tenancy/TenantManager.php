@@ -11,9 +11,11 @@ class TenantManager
 {
     public function register(array $data)
     {
+        $data['hosting_node'] = $data['hosting_node'] ?? config('tenancy.node_id');
         Validator::make($data, [
             'name' => 'required|string|max:150',
-            'slug' => ['required', 'regex:/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/D', 'not_in:admin,www,api,tenant', Rule::unique('saas_central.saas_tenants', 'slug')],
+            'slug' => ['required', 'regex:/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/D', Rule::notIn($this->reservedSlugs()), Rule::unique('saas_central.saas_tenants', 'slug')],
+            'hosting_node' => ['required', 'string', Rule::in(array_keys(Hosting::nodes()))],
             'owner_email' => 'required|email|max:190',
             'plan' => ['required', Rule::in(config('tenancy.plans'))],
         ])->validate();
@@ -22,11 +24,24 @@ class TenantManager
         return DB::connection(config('tenancy.central_connection'))->transaction(function () use ($data, $database) {
             $tenant = Tenant::create([
                 'name' => $data['name'], 'slug' => $data['slug'], 'owner_email' => $data['owner_email'],
-                'plan' => $data['plan'], 'database_name' => $database, 'status' => 'pending',
+                'plan' => $data['plan'], 'hosting_node' => $data['hosting_node'], 'database_name' => $database, 'status' => 'pending',
             ]);
-            $this->audit($tenant, 'registered');
+            $this->audit($tenant, 'registered', ['hosting_node' => $tenant->hosting_node]);
             return $tenant;
         });
+    }
+
+    public function reservedSlugs()
+    {
+        $reserved = ['admin', 'www', 'api', 'tenant'];
+        if (config('tenancy.host_prefix') === '') {
+            $suffix = '.' . strtolower(config('tenancy.base_domain'));
+            $admin = strtolower(config('tenancy.admin_domain'));
+            if (substr($admin, -strlen($suffix)) === $suffix) {
+                $reserved[] = substr($admin, 0, -strlen($suffix));
+            }
+        }
+        return $reserved;
     }
 
     public function update(Tenant $tenant, array $data)

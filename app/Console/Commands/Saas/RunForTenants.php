@@ -20,7 +20,7 @@ class RunForTenants extends Command
         if ((bool) $this->option('all') === (bool) $this->option('tenant')) {
             $this->error('Choose exactly one of --all or --tenant=slug.'); return 1;
         }
-        $tenants = Tenant::where('status', 'active')->when($this->option('tenant'), function ($q) {
+        $tenants = Tenant::hostedLocally()->where('status', 'active')->when($this->option('tenant'), function ($q) {
             $q->where('slug', $this->option('tenant'));
         })->get();
         if ($tenants->isEmpty()) { $this->error('No active tenants matched.'); return 1; }

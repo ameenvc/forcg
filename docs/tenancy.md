@@ -4,11 +4,11 @@ The existing Laravel application now supports a central administration site and 
 
 | Host | Purpose |
 | --- | --- |
-| `admin.cgbod.com` | Platform login, tenant registration, plans, activation/suspension and activity |
-| `tenant.leanston.cgbod.com` | Leanston's existing CGBOD modules and company-user login |
-| `tenant.othercompany.cgbod.com` | Another company with its own database and files |
+| `devsaas.cgbod.com` | Platform login, tenant registration, plans, activation/suspension and activity |
+| `leanston.cgbod.com` | Leanston's existing CGBOD modules and company-user login |
+| `othercompany.cgbod.com` | Another company with its own database and files |
 
-`TENANCY_HOST_PREFIX=tenant.` selects the requested host format. Set it to an empty string if you prefer `leanston.cgbod.com`. Unknown, pending, failed, and suspended tenant hosts return 404. Company routes are unavailable on the platform host, and platform routes are unavailable on company hosts. Slugs and database assignments cannot be edited through the web interface.
+`TENANCY_HOST_PREFIX=""` is the default: a tenant named `waraq` uses `waraq.cgbod.com`. Set `TENANCY_TENANT_BASE_DOMAIN=cgbod.com` independently of the admin hostname. Legacy nested addresses remain available only when `TENANCY_HOST_PREFIX=tenant.` is explicitly configured. Unknown, pending, failed, and suspended tenant hosts return 404. Company routes are unavailable on the platform host, and platform routes are unavailable on company hosts. Slugs and database assignments cannot be edited through the web interface.
 
 ## Custom platform hostname: devsaas.cgbod.com
 
@@ -18,12 +18,14 @@ To use `https://devsaas.cgbod.com/login`, deploy the latest code and configure:
 APP_URL=https://devsaas.cgbod.com
 TENANCY_ENABLED=true
 TENANCY_BASE_DOMAIN=cgbod.com
+TENANCY_TENANT_BASE_DOMAIN=cgbod.com
+TENANCY_HOST_PREFIX=""
 TENANCY_ADMIN_DOMAIN=devsaas.cgbod.com
 TENANCY_SCHEME=https
 SESSION_SECURE_COOKIE=true
 ```
 
-`TENANCY_ADMIN_DOMAIN` is a hostname only, without `https://`, a port, or `/login`. It defaults to `admin.<TENANCY_BASE_DOMAIN>` when unset. This changes the platform host; company hosts remain `tenant.<slug>.cgbod.com`. Update Apache/Nginx `ServerName`/`server_name` and the TLS certificate to cover the chosen platform hostname.
+`TENANCY_ADMIN_DOMAIN` is a hostname only, without `https://`, a port, or `/login`. It defaults to `admin.<TENANCY_BASE_DOMAIN>` when unset. This changes the platform host; company hosts remain `<slug>.cgbod.com`. Update Apache/Nginx `ServerName`/`server_name` and the TLS certificate to cover the chosen platform hostname.
 
 After updating the server environment, run `php artisan config:clear`, `php artisan config:cache`, and `php artisan queue:restart`. If the platform administrator has not been created, run `php artisan saas:install your-email@example.com` and choose your password at the prompt. Deploying code does not create a default account.
 
@@ -36,7 +38,7 @@ Back up the existing database and uploads before changing deployment configurati
 Configure `.env`:
 
 ```dotenv
-APP_URL=https://admin.cgbod.com
+APP_URL=https://devsaas.cgbod.com
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -45,8 +47,10 @@ DB_USERNAME=cgbod_service
 DB_PASSWORD=<configured on the server>
 TENANCY_ENABLED=true
 TENANCY_SOURCE_CONNECTION=mysql
+TENANCY_ADMIN_DOMAIN=devsaas.cgbod.com
 TENANCY_BASE_DOMAIN=cgbod.com
-TENANCY_HOST_PREFIX=tenant.
+TENANCY_TENANT_BASE_DOMAIN=cgbod.com
+TENANCY_HOST_PREFIX=""
 TENANCY_DATABASE_PREFIX=cgbod_
 TENANCY_SCHEME=https
 SESSION_DRIVER=file
@@ -74,11 +78,11 @@ php artisan tenants:adopt leanston "Leanston" existing_cgbod owner@leanston.com 
 
 This registers and validates the existing database, copies the old uploads into `storage/tenants/leanston/public/storage`, and activates the tenant. The source files and database records are retained. Run provisioning/adoption as the same operating-system account as PHP-FPM, or configure shared writable ownership of `storage/tenants`; the private tenant directories use mode `0770`. It refuses the central database or a database already attached to a tenant. The copied upload directory must contain only that company's files. Copy any legacy `public/files` or `public/uploads` data into the corresponding private tenant directory as well; no shared public directory should retain customer data after cutover. Keep old copies in a backup outside the web document root.
 
-Users sign in at `https://tenant.leanston.cgbod.com/login` using their existing company credentials. Legacy company-superadmin accounts are not SaaS platform accounts and cannot log in on tenant hosts. Use company administrator accounts for workspace access and `saas:install` for platform administrators.
+Users sign in at `https://leanston.cgbod.com/login` using their existing company credentials. Legacy company-superadmin accounts are not SaaS platform accounts and cannot log in on tenant hosts. Use company administrator accounts for workspace access and `saas:install` for platform administrators.
 
 ## 3. Create additional tenants
 
-Sign in at `https://admin.cgbod.com/login`. Register the organization, slug, owner email, and plan. Alternatively:
+Sign in at `https://devsaas.cgbod.com/login`. Register the organization, slug, owner email, and plan. Alternatively:
 
 ```bash
 php artisan tenants:create anothercompany "Another Company" owner@example.com --plan=starter
@@ -99,9 +103,11 @@ Plans are stored as administrative metadata (`starter`, `professional`, `enterpr
 
 ## 4. DNS, HTTPS, and the web server
 
-Point `admin.cgbod.com` and each tenant hostname to the same application server. For the requested nested format, create an explicit record such as `tenant.leanston.cgbod.com`; a wildcard `*.cgbod.com` DNS record may be used where your DNS provider supports the intended nested resolution, but verify each host. For large tenant counts automate DNS and certificate issuance during your deployment/provisioning process.
+Point `devsaas.cgbod.com` to the platform server. Point each tenant hostname, such as `waraq.cgbod.com`, to that tenant's assigned hosting server. Separate A/AAAA or CNAME records allow different tenants to use different servers and regions. A wildcard record may be used for a default server, with explicit per-tenant records overriding it.
 
-A TLS certificate for `*.cgbod.com` **does not cover** `tenant.leanston.cgbod.com`. Use a certificate with the exact tenant hostname, a wildcard for `*.leanston.cgbod.com`, or switch to single-level tenant names. This code does not change your DNS or certificates.
+A TLS certificate for `*.cgbod.com` covers single-level hosts such as `waraq.cgbod.com` and `devsaas.cgbod.com`. The optional legacy nested format (`tenant.waraq.cgbod.com`) needs its own matching certificate; the root wildcard does not cover it. This code does not change DNS or certificates.
+
+For regional hosting, use the [hosting-node setup guide](regional-hosting.md). A hosting choice is an assignment, not an automatic server deployment or data migration.
 
 Set the document root to Laravel's `public` directory. Deploy one of the examples:
 
@@ -130,9 +136,9 @@ Run the standard database worker under your process manager:
 php artisan queue:work database --sleep=3 --tries=3
 ```
 
-Central queue tables and failure records are installed by `saas:install`. Sync jobs remain supported inside the active request. Other queue transports retain the tenant payload hook, but this conversion was tested with the database transport.
+Central queue tables and failure records are installed by `saas:install`. Database queues are partitioned as `tenants-<TENANCY_NODE_ID>`. Run a worker on each hosting node; its default queue uses that node ID. Drain the previous `default` queue before upgrading, or have the original local worker process it explicitly during cutover. Sync jobs remain supported inside the active request. Other queue transports retain the tenant payload hook, but this conversion was tested with the database transport.
 
-The existing scheduled tasks automatically run through `tenants:run ... --all`, activating each company in turn. Keep your standard `php artisan schedule:run` cron entry. To run an allowed application task manually:
+The existing scheduled tasks automatically run through `tenants:run ... --all`, activating only companies assigned to the current node in turn. Run the scheduler on each hosting server. Keep your standard `php artisan schedule:run` cron entry. To run an allowed application task manually:
 
 ```bash
 php artisan tenants:run documentreadrequestemailnotification:daily --tenant=leanston
@@ -147,23 +153,37 @@ php artisan tenants:migrate --tenant=leanston
 php artisan tenants:migrate --all
 ```
 
-The tenant migration runner refuses an unspecified tenant selection. Back up databases and test migrations on staging first. Platform registry migrations remain separate under `database/migrations/central`.
+The tenant migration runner refuses an unspecified tenant selection and only visits databases assigned to the current node. Back up databases and test migrations on staging first. Platform registry migrations remain separate under `database/migrations/central`.
+
+## Upgrade an existing SaaS registry
+
+After pulling this version, keep the existing server as `TENANCY_NODE_ID=local`. Add `TENANCY_TENANT_BASE_DOMAIN=cgbod.com`, set `TENANCY_HOST_PREFIX=""`, and retain `TENANCY_ADMIN_DOMAIN=devsaas.cgbod.com`. Clear cached configuration, apply the central schema upgrade, then rebuild caches:
+
+```bash
+php artisan config:clear
+php artisan migrate --database=saas_central --path=database/migrations/central --force
+php artisan config:cache
+php artisan view:clear
+php artisan queue:restart
+```
+
+The upgrade adds a nullable hosting-node field without rewriting existing tenants. Existing records with no assignment belong to `local`. Changing the hostname format requires matching DNS and HTTPS setup; it does not migrate customer data or preserve login sessions on the previous hostname.
 
 ## Local development and checks
 
 Add to your computer's hosts file:
 
 ```text
-127.0.0.1 admin.cgbod.test tenant.leanston.cgbod.test tenant.othercompany.cgbod.test
+127.0.0.1 devsaas.cgbod.test leanston.cgbod.test othercompany.cgbod.test
 ```
 
-Use `TENANCY_BASE_DOMAIN=cgbod.test`, `TENANCY_SCHEME=http`, `APP_URL=http://admin.cgbod.test:8000`, and `SESSION_SECURE_COOKIE=false` locally. Initialize the platform and adopt/provision the tenant as above. Start the provided local router so legacy shared files cannot bypass Laravel:
+Use `TENANCY_BASE_DOMAIN=cgbod.test`, `TENANCY_TENANT_BASE_DOMAIN=cgbod.test`, `TENANCY_ADMIN_DOMAIN=devsaas.cgbod.test`, `TENANCY_HOST_PREFIX=""`, `TENANCY_SCHEME=http`, `APP_URL=http://devsaas.cgbod.test:8000`, and `SESSION_SECURE_COOKIE=false` locally. Initialize the platform and adopt/provision the tenant as above. Start the provided local router so legacy shared files cannot bypass Laravel:
 
 ```bash
 php -S 127.0.0.1:8000 -t public tools/saas-router.php
 ```
 
-Open `http://admin.cgbod.test:8000/login` or `http://tenant.leanston.cgbod.test:8000/login`. Tenant URLs retain the development port from `APP_URL`. Omit the explicit port when deploying on standard HTTPS port 443.
+Open `http://devsaas.cgbod.test:8000/login` or `http://leanston.cgbod.test:8000/login`. Tenant URLs retain the development port from `APP_URL`. Omit the explicit port when deploying on standard HTTPS port 443.
 
 ```bash
 vendor/bin/phpunit tests/Feature/Tenancy

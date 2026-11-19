@@ -4,7 +4,7 @@ namespace App\Tenancy;
 
 class Hostname
 {
-    public static function slug($host, $baseDomain, $prefix = 'tenant.')
+    public static function slug($host, $baseDomain, $prefix = '')
     {
         $pattern = '/^' . preg_quote($prefix, '/') . '([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)\.'
             . preg_quote(strtolower($baseDomain), '/') . '$/D';

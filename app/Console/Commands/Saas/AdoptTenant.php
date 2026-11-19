@@ -25,7 +25,7 @@ class AdoptTenant extends Command
             $this->error('The files directory does not exist.'); return 1;
         }
         $tenant = $manager->register(['slug' => $this->argument('slug'), 'name' => $this->argument('name'),
-            'owner_email' => $this->argument('email'), 'plan' => 'starter']);
+            'owner_email' => $this->argument('email'), 'plan' => 'starter', 'hosting_node' => config('tenancy.node_id')]);
         $tenant->update(['database_name' => $database]);
         try {
             $context->activate($tenant, true);

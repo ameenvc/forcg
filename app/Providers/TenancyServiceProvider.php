@@ -30,14 +30,17 @@ class TenancyServiceProvider extends ServiceProvider
                 throw new RuntimeException('Run company tasks with tenants:run and an explicit tenant selection.');
             }
         });
+        \App\Tenancy\Hosting::nodes();
         // Shared transport, tenant context restored before queued models are deserialized.
         config([
             'queue.connections.database.connection' => config('tenancy.central_connection'),
             'queue.failed.database' => config('tenancy.central_connection'),
+            'queue.connections.database.queue' => 'tenants-' . config('tenancy.node_id'),
         ]);
         Queue::createPayloadUsing(function () {
             $tenant = app(TenantContext::class)->tenant;
-            return ['tenant_id' => $tenant ? $tenant->id : null];
+            return ['tenant_id' => $tenant ? $tenant->id : null,
+                'hosting_node' => $tenant ? \App\Tenancy\Hosting::nodeId($tenant) : config('tenancy.node_id')];
         });
         $this->app->singleton('queue.worker', function ($app) {
             return new \App\Tenancy\TenantWorker(

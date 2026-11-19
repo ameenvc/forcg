@@ -1,7 +1,7 @@
 # Replace domain, filesystem and PHP-FPM socket paths; add your TLS configuration.
 server {
     listen 80;
-    server_name admin.cgbod.com cgbod.com ~^tenant\.[a-z0-9-]+\.cgbod\.com$;
+    server_name devsaas.cgbod.com cgbod.com *.cgbod.com;
     root /var/www/cgbod/public;
     index index.php;
     # Never serve legacy shared customer files directly, even when they exist.

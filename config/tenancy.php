@@ -3,8 +3,13 @@
 return [
     'enabled' => env('TENANCY_ENABLED', false),
     'admin_domain' => env('TENANCY_ADMIN_DOMAIN', 'admin.' . env('TENANCY_BASE_DOMAIN', 'cgbod.com')),
-    'base_domain' => env('TENANCY_BASE_DOMAIN', 'cgbod.com'),
-    'host_prefix' => env('TENANCY_HOST_PREFIX', 'tenant.'),
+    'base_domain' => env('TENANCY_TENANT_BASE_DOMAIN', env('TENANCY_BASE_DOMAIN', 'cgbod.com')),
+    'host_prefix' => env('TENANCY_HOST_PREFIX', ''),
+    'node_id' => env('TENANCY_NODE_ID', 'local'),
+    'hosting_nodes' => env('TENANCY_HOSTING_NODES')
+        ? json_decode(env('TENANCY_HOSTING_NODES'), true)
+        : ['local' => ['name' => 'Current server', 'region' => 'Default region']],
+    'tenant_connection' => env('TENANCY_TENANT_CONNECTION'),
     'central_connection' => 'saas_central',
     'source_connection' => env('TENANCY_SOURCE_CONNECTION', 'mysql'),
     'database_prefix' => env('TENANCY_DATABASE_PREFIX', 'cgbod_'),

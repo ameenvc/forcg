@@ -20,6 +20,7 @@ class ProvisionTenant extends Command
     {
         if (!config('tenancy.enabled')) { $this->error('Tenancy is disabled.'); return 1; }
         $tenant = Tenant::where('slug', $this->argument('slug'))->firstOrFail();
+        if (!\App\Tenancy\Hosting::isLocal($tenant)) { $this->error('Run provisioning on hosting node: ' . \App\Tenancy\Hosting::nodeId($tenant)); return 1; }
         if ($tenant->status !== 'pending') { $this->error('Only pending tenants can be provisioned.'); return 1; }
         $password = $this->secret('Tenant owner password (at least 12 characters)');
         if (strlen((string) $password) < 12) { $this->error('Password is too short.'); return 1; }
@@ -29,9 +30,14 @@ class ProvisionTenant extends Command
         if (!$claimed) { $this->error('Another process claimed this tenant.'); return 1; }
         try {
             if (!preg_match('/^[a-zA-Z0-9_]{1,64}$/D', $tenant->database_name)) { throw new RuntimeException('Invalid database name.'); }
-            $central = DB::connection(config('tenancy.central_connection'));
-            if ($central->getDriverName() !== 'mysql') { throw new RuntimeException('Provisioning requires MySQL.'); }
-            $central->statement('CREATE DATABASE `' . $tenant->database_name . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+            $connection = \App\Tenancy\Hosting::databaseConfig();
+            if ($connection['driver'] !== 'mysql') { throw new RuntimeException('Provisioning requires MySQL.'); }
+            unset($connection['name']);
+            $connection['url'] = null;
+            $connection['database'] = null;
+            config(['database.connections.tenant_provisioning' => $connection]);
+            DB::purge('tenant_provisioning');
+            DB::connection('tenant_provisioning')->statement('CREATE DATABASE `' . $tenant->database_name . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
             $context->activate($tenant, true);
             if ($this->option('schema')) {
                 // Operator-controlled trusted baseline; never accepts a tenant-supplied upload.
@@ -70,6 +76,8 @@ class ProvisionTenant extends Command
             $this->error($e->getMessage());
             $this->warn('Any partially created database was preserved for inspection.');
             return 1;
+        } finally {
+            DB::purge('tenant_provisioning');
         }
     }
 }

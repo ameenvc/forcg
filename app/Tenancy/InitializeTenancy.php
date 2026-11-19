@@ -30,6 +30,7 @@ class InitializeTenancy
         $tenant = new Tenant;
         $tenant->setRawAttributes((array) $record, true);
         $tenant->exists = true;
+        abort_unless(Hosting::isLocal($tenant), 404);
         $context->activate($tenant);
         $request->attributes->set('tenant', $tenant);
     }

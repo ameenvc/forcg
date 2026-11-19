@@ -54,6 +54,8 @@ class RegionalHostingTest extends TestCase
         (new \AddHostingNodeToSaasTenants)->up();
         require_once database_path('migrations/central/2026_11_19_010000_create_saas_operations_table.php');
         (new \CreateSaasOperationsTable)->up();
+        require_once database_path('migrations/central/2026_11_19_020000_create_saas_cloudflare_tables.php');
+        (new \CreateSaasCloudflareTables)->up();
         Route::middleware(['web', 'tenant.application'])->get('/__region/probe', function () {
             return response()->json(['secret' => DB::table('records')->value('secret'),
                 'database_host' => DB::connection()->getConfig('host')]);

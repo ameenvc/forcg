@@ -16,18 +16,22 @@ class TenantOperations
         return DB::connection(config('tenancy.central_connection'))->table('saas_operations');
     }
 
-    public function enqueue(Tenant $tenant, $type, $password)
+    public function enqueue(Tenant $tenant, $type, $password = null)
     {
-        if (!in_array($type, ['provision', 'reset_password'], true) || strlen($password) < 12) {
+        if (!in_array($type, ['provision', 'reset_password', 'sync_dns'], true) || ($type !== 'sync_dns' && strlen((string) $password) < 12)) {
             throw new RuntimeException('Invalid tenant operation.');
         }
-        $hash = Hash::make($password);
+        $hash = $type === 'sync_dns' ? null : Hash::make($password);
         return DB::connection(config('tenancy.central_connection'))->transaction(function () use ($tenant, $type, $hash) {
             $tenant = Tenant::where('id', $tenant->id)->lockForUpdate()->firstOrFail();
             $allowed = $type === 'provision' ? $tenant->status === 'pending'
                 : $tenant->provisioned_at && in_array($tenant->status, ['active', 'suspended'], true);
             if (!$allowed || $this->table()->where('tenant_id', $tenant->id)->whereIn('status', ['queued', 'running'])->exists()) {
                 throw ValidationException::withMessages(['operation' => 'This workspace is not ready for this action or already has an action in progress.']);
+            }
+            if ($type === 'sync_dns') {
+                try { app(CloudflareDns::class)->markQueued($tenant); }
+                catch (DnsException $e) { throw ValidationException::withMessages(['operation' => $e->getMessage()]); }
             }
             $id = $this->table()->insertGetId([
                 'tenant_id' => $tenant->id, 'actor_id' => Auth::guard('superadmin')->id(),
@@ -50,11 +54,22 @@ class TenantOperations
             $operation = $this->table()->where('id', $id)->first();
             $context = app(TenantContext::class);
             $status = 'failed';
+            unset($tenant);
             try {
                 $tenant = Tenant::findOrFail($operation->tenant_id);
                 Hosting::assertLocal($tenant);
                 if ($operation->type === 'provision') {
                     app(TenantProvisioner::class)->provision($tenant, $operation->password_hash);
+                    // DNS failures leave the successfully provisioned database and owner intact.
+                    try {
+                        $dns = app(CloudflareDns::class);
+                        if ($dns->automatic()) { $dns->sync($tenant->fresh()); }
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::warning('Automatic DNS requires review', ['tenant_id' => $tenant->id, 'exception_type' => get_class($e)]);
+                    }
+                } elseif ($operation->type === 'sync_dns') {
+                    if (!$tenant->provisioned_at || !in_array($tenant->status, ['active', 'suspended'], true)) { throw new DnsException('Workspace is not provisioned.'); }
+                    if (!app(CloudflareDns::class)->sync($tenant)) { throw new DnsException('DNS setup requires review.'); }
                 } elseif ($operation->type === 'reset_password') {
                     if (!$tenant->provisioned_at || !in_array($tenant->status, ['active', 'suspended'], true)) {
                         throw new RuntimeException('Workspace is not provisioned.');
@@ -71,6 +86,9 @@ class TenantOperations
                 } else { throw new RuntimeException('Unknown tenant operation.'); }
                 $status = 'succeeded';
             } catch (\Throwable $e) {
+                if ($operation->type === 'sync_dns' && isset($tenant)) {
+                    app(CloudflareDns::class)->failPending($tenant);
+                }
                 // No SQL, credential material, or customer data is copied into the dashboard/logs.
                 \Illuminate\Support\Facades\Log::warning('Tenant operation requires review', ['operation_id' => $id, 'exception_type' => get_class($e)]);
             } finally {

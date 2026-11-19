@@ -81,7 +81,7 @@ Create separate records as required:
 
 These may be A/AAAA records, or CNAME records pointing to stable regional ingress names. Install an appropriate certificate on each ingress; a root wildcard `*.cgbod.com` covers these single-level names. Preserve the original hostname when using a load balancer or reverse proxy and configure Laravel's trusted proxies appropriately. Do not redirect users to a region-specific public hostname: the customer's canonical address remains `waraq.cgbod.com`.
 
-No DNS provider, cloud account, or production server is modified by this code. DNS/SSL automation, cloud provisioning, geographic load balancing, and disaster recovery remain deployment work.
+Cloudflare DNS can be configured and applied from the platform dashboard; see [Cloudflare setup](cloudflare-dns.md). DNS changes occur only when enabled for automatic provisioning or explicitly queued with Apply DNS. Origin TLS, cloud server provisioning, geographic load balancing, and disaster recovery remain deployment work.
 
 ## Jobs, schedules, and migrations
 

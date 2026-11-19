@@ -46,6 +46,8 @@ class TenantIsolationTest extends TestCase
         (new \AddHostingNodeToSaasTenants)->up();
         require_once database_path('migrations/central/2026_11_19_010000_create_saas_operations_table.php');
         (new \CreateSaasOperationsTable)->up();
+        require_once database_path('migrations/central/2026_11_19_020000_create_saas_cloudflare_tables.php');
+        (new \CreateSaasCloudflareTables)->up();
         Schema::connection('saas_central')->create('probe_results', function (Blueprint $t) {
             $t->increments('id'); $t->string('slug'); $t->string('secret'); $t->string('email'); $t->string('url');
         });

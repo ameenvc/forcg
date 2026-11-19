@@ -44,8 +44,8 @@ If a process crashes, its operation remains `running` rather than being automati
 
 ## DNS and HTTPS
 
-Application/database setup is automatic with the above deployment. DNS records, TLS certificates, and cloud servers are not created by this processor.
+Application/database setup is automatic with the above deployment. Cloudflare DNS record creation is now available through the superadmin configuration and automatic post-provisioning option. See [Cloudflare DNS setup and results](cloudflare-dns.md). Origin TLS certificates and cloud servers still require hosting setup.
 
 For tenants on one ingress, configure `*.cgbod.com` once, with a matching HTTPS certificate, and point `devsaas.cgbod.com` explicitly to the platform. New tenant names then need no separate DNS change. For tenants spread across regional ingresses, use individual tenant records or a DNS/ingress automation service that sends each tenant to its assigned region. Configure certificates on those ingresses in advance or use the hosting provider's managed TLS.
 
-Provider integration requires the actual DNS/hosting provider and appropriately scoped credentials configured outside the application repository. Never paste those credentials into chat or tenant forms. The public address remains `https://<slug>.cgbod.com` in every region. Provisioning success means the database/account is ready; confirm DNS and HTTPS before sharing the workspace URL.
+For Cloudflare, configure the zone-scoped API token in the encrypted dashboard settings. Other providers require a separate integration. Never paste those credentials into chat or tenant forms. The public address remains `https://<slug>.cgbod.com` in every region. Provisioning success means the database/account is ready; confirm DNS and HTTPS before sharing the workspace URL.

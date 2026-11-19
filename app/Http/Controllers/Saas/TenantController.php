@@ -29,8 +29,10 @@ class TenantController extends Controller
         $operations = \Illuminate\Support\Facades\DB::connection(config('tenancy.central_connection'))
             ->table('saas_operations')->select('id', 'tenant_id', 'type', 'status', 'created_at')
             ->whereIn('id', $latestOperations)->get()->keyBy('tenant_id');
+        $dnsRecords = \Illuminate\Support\Facades\DB::connection(config('tenancy.central_connection'))
+            ->table('saas_dns_records')->whereIn('tenant_id', $tenants->pluck('id'))->get()->keyBy('tenant_id');
         $hostingNodes = \App\Tenancy\Hosting::nodes();
-        return view('saas.tenants', compact('tenants', 'search', 'counts', 'events', 'hostingNodes', 'operations'));
+        return view('saas.tenants', compact('tenants', 'search', 'counts', 'events', 'hostingNodes', 'operations', 'dnsRecords'));
     }
 
     public function store(Request $request, TenantManager $manager)
@@ -58,10 +60,10 @@ class TenantController extends Controller
     {
         $tenant = Tenant::findOrFail($id);
         $data = $request->validate([
-            'type' => ['required', Rule::in(['provision', 'reset_password'])],
-            'password' => 'required|string|min:12|max:128|confirmed',
+            'type' => ['required', Rule::in(['provision', 'reset_password', 'sync_dns'])],
+            'password' => 'nullable|required_unless:type,sync_dns|string|min:12|max:128|confirmed',
         ]);
-        app(\App\Tenancy\TenantOperations::class)->enqueue($tenant, $data['type'], $data['password']);
+        app(\App\Tenancy\TenantOperations::class)->enqueue($tenant, $data['type'], $data['password'] ?? null);
         return back()->with('status', 'Action queued on the assigned hosting server. Refresh to check progress.');
     }
 

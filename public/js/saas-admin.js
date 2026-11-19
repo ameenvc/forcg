@@ -39,7 +39,7 @@
         var sectionLinks = document.querySelectorAll('[data-section-link]');
         function highlightSection(hash) {
             sectionLinks.forEach(function (link) {
-                var current = new URL(link.href).hash === hash;
+                var current = document.getElementById('overview') && new URL(link.href).hash === hash;
                 link.classList.toggle('active', current);
                 if (current) link.setAttribute('aria-current', 'location');
                 else link.removeAttribute('aria-current');
@@ -61,6 +61,8 @@
         });
         if (window.jQuery) {
             window.jQuery('[data-open-on-error="true"]').modal('show');
+            if (window.location.hash === '#register') window.jQuery('#createTenantModal').modal('show');
+            if (window.location.hash === '#setup') window.jQuery('#setupGuideModal').modal('show');
             window.jQuery('.modal').on('shown.bs.modal', function () {
                 var first = this.querySelector('input:not([type="hidden"]), select');
                 if (first) first.focus();

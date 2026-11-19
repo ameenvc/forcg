@@ -24,21 +24,45 @@ class TenantController extends Controller
         $events = \Illuminate\Support\Facades\DB::connection(config('tenancy.central_connection'))
             ->table('saas_events')->join('saas_tenants', 'saas_tenants.id', '=', 'saas_events.tenant_id')
             ->select('saas_events.*', 'saas_tenants.slug')->orderByDesc('saas_events.id')->limit(10)->get();
+        $latestOperations = \Illuminate\Support\Facades\DB::connection(config('tenancy.central_connection'))
+            ->table('saas_operations')->selectRaw('MAX(id)')->whereIn('tenant_id', $tenants->pluck('id'))->groupBy('tenant_id');
+        $operations = \Illuminate\Support\Facades\DB::connection(config('tenancy.central_connection'))
+            ->table('saas_operations')->select('id', 'tenant_id', 'type', 'status', 'created_at')
+            ->whereIn('id', $latestOperations)->get()->keyBy('tenant_id');
         $hostingNodes = \App\Tenancy\Hosting::nodes();
-        return view('saas.tenants', compact('tenants', 'search', 'counts', 'events', 'hostingNodes'));
+        return view('saas.tenants', compact('tenants', 'search', 'counts', 'events', 'hostingNodes', 'operations'));
     }
 
     public function store(Request $request, TenantManager $manager)
     {
         $data = $request->validate([
+            'password' => 'sometimes|required|string|min:12|max:128|confirmed',
             'name' => 'required|string|max:150',
             'slug' => ['required', 'regex:/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/D', Rule::notIn(app(TenantManager::class)->reservedSlugs()), Rule::unique('saas_central.saas_tenants', 'slug')],
             'plan' => ['required', Rule::in(config('tenancy.plans'))],
             'hosting_node' => ['sometimes', 'required', 'string', Rule::in(array_keys(\App\Tenancy\Hosting::nodes()))],
             'owner_email' => 'required|email|max:190',
         ]);
-        $tenant = $manager->register($data);
-        return redirect()->route('saas.tenants.index')->with('status', 'Tenant registered. Provision its database with: php artisan tenants:provision ' . $tenant->slug);
+        \Illuminate\Support\Facades\DB::connection(config('tenancy.central_connection'))->transaction(function () use ($manager, $data) {
+            $tenant = $manager->register($data);
+            if (isset($data['password'])) {
+                app(\App\Tenancy\TenantOperations::class)->enqueue($tenant, 'provision', $data['password']);
+            }
+        });
+        return redirect()->route('saas.tenants.index')->with('status', isset($data['password'])
+            ? 'Tenant registered. Automatic setup is queued on its hosting server. Refresh to check progress.'
+            : 'Tenant registered. Set the owner password using Set up in the tenant directory.');
+    }
+
+    public function operation(Request $request, $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        $data = $request->validate([
+            'type' => ['required', Rule::in(['provision', 'reset_password'])],
+            'password' => 'required|string|min:12|max:128|confirmed',
+        ]);
+        app(\App\Tenancy\TenantOperations::class)->enqueue($tenant, $data['type'], $data['password']);
+        return back()->with('status', 'Action queued on the assigned hosting server. Refresh to check progress.');
     }
 
     public function update(Request $request, $id, TenantManager $manager)

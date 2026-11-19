@@ -52,6 +52,8 @@ class RegionalHostingTest extends TestCase
         (new \CreateSaasTenantsTable)->up();
         require_once database_path('migrations/central/2026_11_19_000000_add_hosting_node_to_saas_tenants.php');
         (new \AddHostingNodeToSaasTenants)->up();
+        require_once database_path('migrations/central/2026_11_19_010000_create_saas_operations_table.php');
+        (new \CreateSaasOperationsTable)->up();
         Route::middleware(['web', 'tenant.application'])->get('/__region/probe', function () {
             return response()->json(['secret' => DB::table('records')->value('secret'),
                 'database_host' => DB::connection()->getConfig('host')]);
@@ -165,4 +167,135 @@ class RegionalHostingTest extends TestCase
             $this->assertArrayHasKey('hosting_node', $e->errors());
         }
     }
+    private function platformLogin()
+    {
+        $admin = SuperAdmin::create(['name' => 'Platform', 'email' => 'admin@example.test', 'password' => Hash::make('platform-password')]);
+        $this->actingAs($admin, 'superadmin');
+        return $admin;
+    }
+
+    private function ownerTables(Tenant $tenant)
+    {
+        app(TenantContext::class)->activate($tenant);
+        foreach (['users', 'admins'] as $table) {
+            Schema::connection('tenant')->create($table, function (Blueprint $t) {
+                $t->increments('id'); $t->string('email'); $t->string('password'); $t->string('remember_token')->nullable();
+            });
+            DB::connection('tenant')->table($table)->insert([
+                ['email' => $tenant->owner_email, 'password' => Hash::make('original-owner-password'), 'remember_token' => 'old-token'],
+                ['email' => 'employee@example.test', 'password' => 'employee-unchanged', 'remember_token' => 'employee-token'],
+            ]);
+        }
+        app(TenantContext::class)->end();
+    }
+
+    public function test_dashboard_registration_queues_hashed_password_for_assigned_server()
+    {
+        $admin = $this->platformLogin();
+        $this->post('http://devsaas.cgbod.test/tenants', ['name' => 'Automatic', 'slug' => 'automatic',
+            'owner_email' => 'owner@example.test', 'plan' => 'starter', 'hosting_node' => 'europe',
+            'password' => 'new-owner-password-2026', 'password_confirmation' => 'new-owner-password-2026'])->assertRedirect();
+        $operation = DB::connection('saas_central')->table('saas_operations')->first();
+        $this->assertSame('europe', $operation->hosting_node);
+        $this->assertSame('queued', $operation->status);
+        $this->assertSame($admin->id, (int) $operation->actor_id);
+        $this->assertTrue(Hash::check('new-owner-password-2026', $operation->password_hash));
+        $this->assertSame(0, app(\App\Tenancy\TenantOperations::class)->process());
+        $this->get('http://devsaas.cgbod.test/tenants')->assertSee('Setup: queued')->assertDontSee($operation->password_hash);
+    }
+
+    public function test_automatic_provisioning_executes_once_and_clears_password_material()
+    {
+        $tenant = app(TenantManager::class)->register(['name' => 'New', 'slug' => 'new-customer', 'owner_email' => 'owner@example.test', 'plan' => 'starter']);
+        $id = app(\App\Tenancy\TenantOperations::class)->enqueue($tenant, 'provision', 'new-owner-password');
+        $calls = 0;
+        $mock = \Mockery::mock(\App\Tenancy\TenantProvisioner::class);
+        $mock->shouldReceive('provision')->once()->andReturnUsing(function ($customer, $hash) use (&$calls, $tenant) {
+            $calls++; $this->assertSame($tenant->id, $customer->id);
+            $this->assertTrue(Hash::check('new-owner-password', $hash));
+            $customer->update(['status' => 'active', 'provisioned_at' => now()]);
+        });
+        $this->app->instance(\App\Tenancy\TenantProvisioner::class, $mock);
+        $this->assertSame(1, app(\App\Tenancy\TenantOperations::class)->process());
+        $this->assertSame(0, app(\App\Tenancy\TenantOperations::class)->process());
+        $operation = DB::connection('saas_central')->table('saas_operations')->find($id);
+        $this->assertSame('succeeded', $operation->status);
+        $this->assertNull($operation->password_hash);
+        $this->assertSame(1, $calls);
+    }
+
+    public function test_superadmin_resets_only_selected_owner_and_suspension_is_preserved()
+    {
+        $a = $this->tenant('customer-a'); $b = $this->tenant('customer-b');
+        $this->ownerTables($a); $this->ownerTables($b);
+        $a->update(['status' => 'suspended']);
+        $admin = $this->platformLogin();
+        $this->post('http://devsaas.cgbod.test/tenants/' . $a->id . '/operations', [
+            'type' => 'reset_password', 'password' => 'replacement-owner-password', 'password_confirmation' => 'replacement-owner-password',
+        ])->assertRedirect();
+        $this->assertSame(1, app(\App\Tenancy\TenantOperations::class)->process());
+        $this->assertSame('suspended', $a->fresh()->status);
+        app(TenantContext::class)->activate($a, true);
+        foreach (['users', 'admins'] as $table) {
+            $owner = DB::connection('tenant')->table($table)->where('email', $a->owner_email)->first();
+            $this->assertTrue(Hash::check('replacement-owner-password', $owner->password));
+            $this->assertNotSame('old-token', $owner->remember_token);
+            $this->assertSame('employee-unchanged', DB::connection('tenant')->table($table)->where('email', 'employee@example.test')->value('password'));
+        }
+        app(TenantContext::class)->end();
+        app(TenantContext::class)->activate($b);
+        $this->assertTrue(Hash::check('original-owner-password', DB::connection('tenant')->table('users')->where('email', $b->owner_email)->value('password')));
+        app(TenantContext::class)->end();
+        $this->assertTrue(Hash::check('platform-password', SuperAdmin::find($admin->id)->password));
+        $this->assertNull(DB::connection('saas_central')->table('saas_operations')->first()->password_hash);
+        $this->assertNull(app(TenantContext::class)->tenant);
+    }
+
+    public function test_password_actions_require_auth_confirmation_and_no_duplicate_pending_action()
+    {
+        $tenant = $this->tenant('customer-a');
+        $url = 'http://devsaas.cgbod.test/tenants/' . $tenant->id . '/operations';
+        $this->post($url, ['type' => 'reset_password', 'password' => 'replacement-password'])->assertRedirect('http://devsaas.cgbod.test/login');
+        $this->platformLogin();
+        $this->post($url, ['type' => 'reset_password', 'password' => 'replacement-password'])->assertSessionHasErrors('password');
+        $this->assertFalse(session()->hasOldInput('password'));
+        $data = ['type' => 'reset_password', 'password' => 'replacement-password', 'password_confirmation' => 'replacement-password'];
+        $this->post($url, $data)->assertRedirect();
+        $this->post($url, $data)->assertSessionHasErrors('operation');
+        $this->assertSame(1, DB::connection('saas_central')->table('saas_operations')->count());
+    }
+
+    public function test_failed_owner_reset_rolls_back_and_never_retries_automatically()
+    {
+        $tenant = $this->tenant('customer-a'); $this->ownerTables($tenant);
+        app(TenantContext::class)->activate($tenant);
+        DB::connection('tenant')->table('admins')->where('email', $tenant->owner_email)->delete();
+        app(TenantContext::class)->end();
+        app(\App\Tenancy\TenantOperations::class)->enqueue($tenant, 'reset_password', 'replacement-password');
+        $this->assertSame(1, app(\App\Tenancy\TenantOperations::class)->process());
+        $operation = DB::connection('saas_central')->table('saas_operations')->first();
+        $this->assertSame('failed', $operation->status);
+        $this->assertNull($operation->password_hash);
+        $this->assertSame(0, app(\App\Tenancy\TenantOperations::class)->process());
+        app(TenantContext::class)->activate($tenant);
+        $this->assertTrue(Hash::check('original-owner-password', DB::connection('tenant')->table('users')->where('email', $tenant->owner_email)->value('password')));
+        app(TenantContext::class)->end();
+    }
+
+    public function test_reassigned_tenant_operation_cannot_touch_the_wrong_server()
+    {
+        $tenant = $this->tenant('reassigned'); $this->ownerTables($tenant);
+        app(\App\Tenancy\TenantOperations::class)->enqueue($tenant, 'reset_password', 'replacement-password');
+        $tenant->update(['hosting_node' => 'europe']);
+        $this->assertSame(1, app(\App\Tenancy\TenantOperations::class)->process());
+        $operation = DB::connection('saas_central')->table('saas_operations')->first();
+        $this->assertSame('failed', $operation->status);
+        $this->assertNull($operation->password_hash);
+        $this->assertNull(app(TenantContext::class)->tenant);
+        $tenant->update(['hosting_node' => 'local']);
+        app(TenantContext::class)->activate($tenant);
+        $this->assertTrue(Hash::check('original-owner-password', DB::connection('tenant')->table('users')->where('email', $tenant->owner_email)->value('password')));
+        app(TenantContext::class)->end();
+    }
+
 }

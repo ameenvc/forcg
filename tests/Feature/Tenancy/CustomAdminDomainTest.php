@@ -33,6 +33,8 @@ class CustomAdminDomainTest extends TestCase
         (new \CreateSaasTenantsTable)->up();
         require_once database_path('migrations/central/2026_11_19_000000_add_hosting_node_to_saas_tenants.php');
         (new \AddHostingNodeToSaasTenants)->up();
+        require_once database_path('migrations/central/2026_11_19_010000_create_saas_operations_table.php');
+        (new \CreateSaasOperationsTable)->up();
         touch($this->temporary . '/alpha.sqlite');
         Tenant::create(['name' => 'Alpha', 'slug' => 'alpha', 'database_name' => $this->temporary . '/alpha.sqlite',
             'owner_email' => 'alpha@example.test', 'plan' => 'starter', 'status' => 'active', 'provisioned_at' => now()]);

@@ -34,6 +34,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        if (config('tenancy.enabled')) {
+            $schedule->command('tenants:process-operations')->everyMinute()
+                ->name('tenant-operations-' . config('tenancy.node_id'))->withoutOverlapping(60);
+        }
         $tenantTask = function ($command) use ($schedule) {
             return $schedule->command(config('tenancy.enabled')
                 ? 'tenants:run ' . $command . ' --all' : $command);

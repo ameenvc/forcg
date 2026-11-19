@@ -53,3 +53,5 @@ vendor/bin/phpunit tests/Unit/TenantHostnameTest.php
 ```
 
 For local serving, use the [tenant-aware development router](tools/saas-router.php) with the hosts-file and environment settings in the setup guide.
+
+Automatic workspace provisioning and client owner password resets are available from the superadmin dashboard. See [deployment and scheduler setup](docs/tenant-automation.md).

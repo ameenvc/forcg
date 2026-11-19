@@ -195,3 +195,7 @@ The isolation tests use separate SQLite databases and cover matching record IDs,
 ## Operational limits
 
 This implements application multitenancy, not a payment service or a hosting control panel. DNS, TLS, server deployment, database permissions, backups, and SMTP still need real server configuration. Existing business workflows and within-company authorization remain the application's responsibility. The legacy arbitrary SQL/ZIP restore and platform-reset endpoints are blocked on tenant hosts; restore tenant backups through controlled server operations. Review custom storage integrations and new maintenance commands before adding them to this deployment.
+
+## Dashboard automation
+
+Tenant registration can queue automatic database/account setup on its assigned server. The directory also provides a client owner password-reset dialog and action status. Deploy the new central migration and run the scheduler on every node. See [automatic setup and owner password resets](tenant-automation.md) for setup, failure handling, and DNS/HTTPS boundaries.

@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Tenancy;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use RuntimeException;
+
+class TenantProvisioner
+{
+    public function provision(Tenant $tenant, $passwordHash, $schema = null)
+    {
+        Hosting::assertLocal($tenant);
+        if ($tenant->status !== 'pending') { throw new RuntimeException('Only pending tenants can be provisioned.'); }
+        if ($schema && !is_file($schema)) { throw new RuntimeException('Baseline SQL file does not exist.'); }
+        $context = app(TenantContext::class);
+        $manager = app(TenantManager::class);
+        // Atomic claim prevents concurrent provisioning. Never reuse or drop an existing database.
+        $claimed = Tenant::where('id', $tenant->id)->where('status', 'pending')->update(['status' => 'provisioning']);
+        if (!$claimed) { throw new RuntimeException('Another process claimed this tenant.'); }
+        try {
+            if (!preg_match('/^[a-zA-Z0-9_]{1,64}$/D', $tenant->database_name)) { throw new RuntimeException('Invalid database name.'); }
+            $connection = \App\Tenancy\Hosting::databaseConfig();
+            if ($connection['driver'] !== 'mysql') { throw new RuntimeException('Provisioning requires MySQL.'); }
+            unset($connection['name']);
+            $connection['url'] = null;
+            $connection['database'] = null;
+            config(['database.connections.tenant_provisioning' => $connection]);
+            DB::purge('tenant_provisioning');
+            DB::connection('tenant_provisioning')->statement('CREATE DATABASE `' . $tenant->database_name . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+            $context->activate($tenant, true);
+            if ($schema) {
+                // Operator-controlled trusted baseline; never accepts a tenant-supplied upload.
+                $sql = file_get_contents($schema);
+                if (preg_match('/\b(USE|CREATE\s+DATABASE|DROP\s+DATABASE)\b/i', $sql)) {
+                    throw new RuntimeException('Baseline must not select or create/drop databases.');
+                }
+                DB::connection('tenant')->getPdo()->exec($sql);
+            } else {
+                if (\Illuminate\Support\Facades\Artisan::call('migrate', ['--database' => 'tenant', '--force' => true]) !== 0 ||
+                    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--database' => 'tenant', '--force' => true]) !== 0) {
+                    throw new RuntimeException('Legacy schema initialization failed. Use a validated baseline or adopt an initialized database.');
+                }
+            }
+            DB::table('super_admins')->delete(); // Never inherit seeded platform credentials.
+            $values = ['name' => $tenant->name . ' administrator', 'email' => $tenant->owner_email,
+                'password' => $passwordHash, 'type' => 1, 'approved' => 1,
+                'employeeid' => 'OWNER', 'logdevices' => 0, 'is_email_verified' => 1,
+                'email_verified_at' => now(), 'created_at' => now(), 'updated_at' => now()];
+            foreach (['admins', 'users'] as $table) {
+                if (DB::table($table)->exists()) { throw new RuntimeException('Baseline must not contain user or admin accounts.'); }
+                $row = array_intersect_key($values, array_flip(Schema::getColumnListing($table)));
+                if ($table === 'admins') { $row['appname'] = $tenant->slug; $row['appname_to_display'] = $tenant->name; }
+                DB::table($table)->insert($row);
+            }
+            DB::table('companysize')->where('id', 1)->update(['name' => $tenant->name, 'email' => $tenant->owner_email, 'loginsperperson' => 5]);
+            $context->end();
+            $tenant->update(['status' => 'active', 'provisioned_at' => now()]);
+            $manager->audit($tenant, 'provisioned');
+        } catch (\Throwable $e) {
+            $context->end();
+            $tenant->update(['status' => 'failed']);
+            $manager->audit($tenant, 'provisioning_failed');
+            throw $e;
+        } finally {
+            $context->end();
+            DB::purge('tenant_provisioning');
+        }
+    }
+}

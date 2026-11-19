@@ -57,7 +57,9 @@ The CLI equivalent is:
 php artisan tenants:create waraq "Waraq" owner@example.com --node=eu-1
 ```
 
-Run provisioning **on the assigned node**:
+Dashboard registration with an initial owner password now queues provisioning automatically on the assigned node. See [automatic setup and password resets](tenant-automation.md) for the one-time scheduler configuration.
+
+For manual CLI provisioning, run **on the assigned node**:
 
 ```bash
 php artisan tenants:provision waraq
